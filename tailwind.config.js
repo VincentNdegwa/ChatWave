@@ -1,26 +1,39 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
-  darkMode: false, // or 'media' or 'class'
+  media: false,
   theme: {
     extend: {
       colors: {
-        primary: {
+        // primary: {
+        //   light: "#a7f3d0", // Light Mint Green
+        //   DEFAULT: "#34d399", // Mint Green
+        //   dark: "#065f46", // Dark Green
+        //   main: "#dbeafe", // Light Sky Blue
+        //   font: "#222222", // Font size
+        // },
+        // secondary: {
+        //   light: "#ffedd5", // Light Peach
+        //   DEFAULT: "#fb923c", // Peach
+        //   dark: "#c2410c", // Dark Orange
+        // },
+        // accent: {
+        //   light: "#dbeafe", // Light Sky Blue
+        //   DEFAULT: "#3b82f6", // Sky Blue
+        //   dark: "#1e3a8a", // Dark Blue
+        // },
+        mintGreen: {
           light: "#a7f3d0", // Light Mint Green
           DEFAULT: "#34d399", // Mint Green
-          dark: "#065f46", // Dark Green
-          main: "#dbeafe", // Light Sky Blue
+          dark: "#065f46", // Dark Mint Green
         },
-        secondary: {
-          light: "#ffedd5", // Light Peach
-          DEFAULT: "#fb923c", // Peach
-          dark: "#c2410c", // Dark Orange
-        },
-        accent: {
+        skyBlue: {
           light: "#dbeafe", // Light Sky Blue
           DEFAULT: "#3b82f6", // Sky Blue
-          dark: "#1e3a8a", // Dark Blue
+          dark: "#1e3a8a", // Dark Sky Blue
+          main: "#CDE8E5", //Main bg color
         },
+        font: "#222222", // Font color
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
