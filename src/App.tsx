@@ -5,7 +5,7 @@ type Props = {};
 
 export default function App({}: Props) {
   return (
-    <div className="h-screen flex">
+    <div className="flex h-full">
       <div className="w-1/6 bg-sky-100 text-sky-950 sticky top-0 left-0">
         <div className="h-full">
           <SideBar />

@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
-  media: false,
+  content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
+  // media: true,
   theme: {
     extend: {
       colors: {
@@ -31,7 +31,7 @@ export default {
           light: "#dbeafe", // Light Sky Blue
           DEFAULT: "#3b82f6", // Sky Blue
           dark: "#1e3a8a", // Dark Sky Blue
-          main: "#CDE8E5", //Main bg color
+          main: "#FFFFFF", //Main bg color
         },
         font: "#222222", // Font color
       },
