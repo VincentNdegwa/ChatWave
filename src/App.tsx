@@ -4,7 +4,7 @@ type Props = {};
 
 export default function App({}: Props) {
   return (
-    <div className="flex h-full w-full md:gap-x-3">
+    <div className="flex h-full w-full gap-x-3">
       <div className="w-2/6 text-sky-950 sticky top-0 left-0">
         <div className="h-full">
           <SideBar />
