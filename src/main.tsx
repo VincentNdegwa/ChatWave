@@ -5,7 +5,7 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <div className="main-content-holder shadow-md">
+    <div className="main-content-holder shadow-md p-4">
       <App />
     </div>
   </React.StrictMode>

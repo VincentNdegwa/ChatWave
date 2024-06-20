@@ -1,10 +1,14 @@
+import Contact from "./Contact";
 
-type Props = {}
+type Props = {};
 
 function ContactList({}: Props) {
   return (
-    <div>ContactList</div>
-  )
+    <div className="w-full flex flex-col gap-1">
+      <Contact />
+      <Contact />
+    </div>
+  );
 }
 
-export default ContactList
+export default ContactList;
