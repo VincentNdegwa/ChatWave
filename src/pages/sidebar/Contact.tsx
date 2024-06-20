@@ -2,9 +2,9 @@ function Contact() {
   return (
     <div className="flex gap-x-3 p-3 hover:bg-sky-100 ease-in duration-100 rounded-md shadow-lg">
       <img
-        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+       src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
         alt="profile-pic"
-        className="rounded h-12 w-12 min-w-0 gap-x-3"
+         className="rounded h-12 w-12 min-w-0 gap-x-3"
       />
       <div className="flex justify-between flex-row w-full">
         <div className="flex flex-col justify-between">
