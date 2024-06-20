@@ -7,10 +7,10 @@ function index() {
       <div className="shadow-lg p-1 h-16 rounded-lg">
         <ChatHead />
       </div>
-      <div className=" bg-sky-950 h-full">
+      <div className="h-full">
         <ChatConversation />
       </div>
-      <div className="h-14 bg-sky-100">
+      <div className="h-14 w-full rounded-md shadow-lg">
         <SenderBox />
       </div>
     </div>
