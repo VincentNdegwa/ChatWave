@@ -15,3 +15,23 @@
     max-width: 1300px;
     width: 100%;
 }
+/* custom-scrollbar.css */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Background of the scrollbar track */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #0c4a6e; /* Scrollbar thumb color (sky-950) */
+  border-radius: 6px; /* Rounded corners of the scrollbar thumb */
+  border: 3px solid #f1f1f1; /* Space around the thumb */
+}
+
+/* For Firefox */
+.scrollbar-custom {
+  scrollbar-color: #0c4a6e #f1f1f1;
+  scrollbar-width: thin;
+}

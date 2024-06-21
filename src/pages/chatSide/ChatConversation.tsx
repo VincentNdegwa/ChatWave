@@ -2,8 +2,9 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 
 function ChatConversation() {
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-col w-full gap-y-3">
+    <div className="flex flex-col w-full">
+      <div className="flex flex-col justify-end w-full gap-y-3">
+        {/* 1 */}
         <div className="left w-3/6 self-start">
           <div className="flex gap-x-2">
             <img
@@ -26,6 +27,7 @@ function ChatConversation() {
             </div>
           </div>
         </div>
+        {/* 2 */}
         <div className="right w-3/6 p-2 self-end">
           <div className="text-sm flex flex-col">
             <div className="p-2 bg-sky-100 text-sky-950 rounded-t-lg rounded-bl-lg">
