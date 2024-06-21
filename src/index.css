@@ -35,3 +35,6 @@
   scrollbar-color: #0c4a6e #f1f1f1;
   scrollbar-width: thin;
 }
+.scrollbar-none::-webkit-scrollbar{
+  display: none;
+}
