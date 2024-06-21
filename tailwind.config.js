@@ -19,14 +19,14 @@ export default {
       },
     },
     screens: {
-      phone: "540px",
-      tablet: "840px",
+      sm: "540px",
+      md: "840px",
       // => @media (min-width: 640px) { ... }
 
-      laptop: "1024px",
+      xl: "1024px",
       // => @media (min-width: 1024px) { ... }
 
-      desktop: "1280px",
+      xxl: "1280px",
       // => @media (min-width: 1280px) { ... }
     },
   },

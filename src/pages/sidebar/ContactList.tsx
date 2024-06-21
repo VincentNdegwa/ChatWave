@@ -1,12 +1,13 @@
 import Contact from "./Contact";
 
-type Props = {};
+type Props = {
+  onItemClick: () => void;
+};
 
-function ContactList({}: Props) {
+function ContactList({ onItemClick }: Props) {
   return (
     <div className="w-full flex flex-col gap-1">
-      <Contact />
-      <Contact />
+      <Contact onItemClick={onItemClick} />
     </div>
   );
 }
