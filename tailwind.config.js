@@ -4,37 +4,7 @@ export default {
   // media: true,
   theme: {
     extend: {
-      colors: {
-        // primary: {
-        //   light: "#a7f3d0", // Light Mint Green
-        //   DEFAULT: "#34d399", // Mint Green
-        //   dark: "#065f46", // Dark Green
-        //   main: "#dbeafe", // Light Sky Blue
-        //   font: "#222222", // Font size
-        // },
-        // secondary: {
-        //   light: "#ffedd5", // Light Peach
-        //   DEFAULT: "#fb923c", // Peach
-        //   dark: "#c2410c", // Dark Orange
-        // },
-        // accent: {
-        //   light: "#dbeafe", // Light Sky Blue
-        //   DEFAULT: "#3b82f6", // Sky Blue
-        //   dark: "#1e3a8a", // Dark Blue
-        // },
-        mintGreen: {
-          light: "#a7f3d0", // Light Mint Green
-          DEFAULT: "#34d399", // Mint Green
-          dark: "#065f46", // Dark Mint Green
-        },
-        skyBlue: {
-          light: "#dbeafe", // Light Sky Blue
-          DEFAULT: "#3b82f6", // Sky Blue
-          dark: "#1e3a8a", // Dark Sky Blue
-          main: "#FFFFFF", //Main bg color
-        },
-        font: "#222222", // Font color
-      },
+      colors: {},
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         serif: ["Merriweather", "serif"],
@@ -49,7 +19,8 @@ export default {
       },
     },
     screens: {
-      tablet: "640px",
+      phone: "540px",
+      tablet: "840px",
       // => @media (min-width: 640px) { ... }
 
       laptop: "1024px",

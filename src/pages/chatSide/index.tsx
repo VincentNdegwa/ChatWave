@@ -7,7 +7,7 @@ function index() {
       <div className="shadow-lg p-1 h-16 rounded-lg">
         <ChatHead />
       </div>
-      <div className="h-full overflow-y-scroll scrollbar-custom">
+      <div className="h-5/6">
         <ChatConversation />
       </div>
       <div className="h-14 w-full rounded-md shadow-lg">
