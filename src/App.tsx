@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import SideBar from "./pages/sidebar";
 import ChatSide from "./pages/chatSide";
+import StartPage from "./pages/startPage";
 
 type Props = {};
 
@@ -24,8 +25,9 @@ export default function App({}: Props) {
             isChatOpen ? "block" : "hidden"
           } md:w-4/6 md:block`}>
           <Routes>
+            <Route path="/" element={<StartPage />} />
             <Route
-              path="/"
+              path="/chat"
               element={
                 <ChatSide onItemClick={() => setIsChatOpen(!isChatOpen)} />
               }

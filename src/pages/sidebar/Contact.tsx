@@ -11,8 +11,8 @@ function Contact({ onItemClick }: Props) {
   };
   return (
     <div
-      onClick={() => handleNavigate("/")}
-      className="flex gap-x-3 p-3 hover:bg-sky-100 ease-in duration-100 rounded-md shadow-lg">
+      onClick={() => handleNavigate("/chat")}
+      className="flex gap-x-3 p-3 hover:bg-sky-100 ease-in duration-100 rounded-md shadow-lg cursor-pointer">
       <img
         src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
         alt="profile-pic"
