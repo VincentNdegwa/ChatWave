@@ -11,8 +11,10 @@ export default function App({}: Props) {
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [isOverLayOpen, setOperLayOpen] = useState<boolean>(false);
   const [component, setComponent] = useState<JSX.Element>();
+  const [overLayHeader, setOverLayHeader] = useState<string>("");
   const openOverlayProfile = () => {
     setOperLayOpen(true);
+    setOverLayHeader("Contact Details");
     setComponent(<ProfilePage />);
   };
   return (
@@ -47,6 +49,7 @@ export default function App({}: Props) {
           isOverLayOpen={isOverLayOpen}
           closeOverLay={() => setOperLayOpen(false)}
           component={component}
+          overLayHeader={overLayHeader}
         />
       </div>
     </Router>
