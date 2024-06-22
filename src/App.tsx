@@ -3,12 +3,18 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import SideBar from "./pages/sidebar";
 import ChatSide from "./pages/chatSide";
 import StartPage from "./pages/startPage";
-
+import Overlay from "./pages/Components/Overlay";
+import ProfilePage from "./pages/profilePage";
 type Props = {};
 
 export default function App({}: Props) {
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
-
+  const [isOverLayOpen, setOperLayOpen] = useState<boolean>(false);
+  const [component, setComponent] = useState<JSX.Element>();
+  const openOverlayProfile = () => {
+    setOperLayOpen(true);
+    setComponent(<ProfilePage />);
+  };
   return (
     <Router>
       <div className="flex h-full w-full md:divide-x">
@@ -29,11 +35,19 @@ export default function App({}: Props) {
             <Route
               path="/chat"
               element={
-                <ChatSide onItemClick={() => setIsChatOpen(!isChatOpen)} />
+                <ChatSide
+                  onItemClick={() => setIsChatOpen(!isChatOpen)}
+                  openProfile={() => openOverlayProfile()}
+                />
               }
             />
           </Routes>
         </div>
+        <Overlay
+          isOverLayOpen={isOverLayOpen}
+          closeOverLay={() => setOperLayOpen(false)}
+          component={component}
+        />
       </div>
     </Router>
   );

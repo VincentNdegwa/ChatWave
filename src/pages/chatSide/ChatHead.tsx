@@ -3,8 +3,9 @@ import { FaVideo } from "react-icons/fa6";
 import { IoMdArrowRoundBack } from "react-icons/io";
 type Props = {
   onItemClick: () => void;
+  openProfile: () => void;
 };
-function ChatHead({ onItemClick }: Props) {
+function ChatHead({ onItemClick, openProfile }: Props) {
   return (
     <div className="flex justify-between items-center">
       <div className="flex gap-3 items-center">
@@ -18,7 +19,9 @@ function ChatHead({ onItemClick }: Props) {
           alt="profile-pic"
           className=" rounded-full h-14 w-14 min-w-0 gap-x-3"
         />
-        <div className="flex flex-col justify-center">
+        <div
+          className="flex flex-col justify-center hover:bg-gray-50 h-full md:min-w-[200px]"
+          onClick={openProfile}>
           <div className="text-sky-950 font-extrabold text-lg">User name</div>
           <div className="text-xs text-green-700">Online</div>
         </div>

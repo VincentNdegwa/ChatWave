@@ -37,4 +37,5 @@
 }
 .scrollbar-none::-webkit-scrollbar{
   display: none;
+  /* color: #0000004d; */
 }
