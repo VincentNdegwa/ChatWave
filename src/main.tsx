@@ -10,7 +10,7 @@ import './index.css'
 // toggleMode();
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <div className="main-content-holder shadow-md p-4">
+    <div className="main-content-holder shadow-md py-2">
       <App />
     </div>
   </React.StrictMode>
