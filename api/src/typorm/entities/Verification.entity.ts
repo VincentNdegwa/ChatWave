@@ -1,14 +1,10 @@
-import { Column, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './User.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity({ name: 'verifications' })
 export class Verification {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   OTP: number;
-
-  @OneToOne(() => User)
-  @JoinColumn()
-  user: User;
 }

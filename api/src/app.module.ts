@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserService } from './user/service/service.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Profile } from './typorm/entities/Profile.entity';
+import { UserModule } from './user/module/user/user.module';
 import { User } from './typorm/entities/User.entity';
+import { Profile } from './typorm/entities/Profile.entity';
 import { Verification } from './typorm/entities/Verification.entity';
-import { ControllerController } from './user/controller/controller.controller';
 
 @Module({
   imports: [
@@ -17,12 +16,14 @@ import { ControllerController } from './user/controller/controller.controller';
       username: 'vincent',
       password: 'Vincent07$',
       database: 'ChatWave',
-      entities: [Profile, User, Verification],
-      // entities: [__dirname + '/../typeorm/entities/*{.ts,.js}'],
+      entities: [User, Profile, Verification],
+      // entities: [__dirname + '/../typorm/entities/*.entity.{ts,js}'],
       synchronize: true,
+      logging: true,
     }),
+    UserModule,
   ],
-  controllers: [AppController, ControllerController],
-  providers: [AppService, UserService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

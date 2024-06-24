@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Profile } from './Profile.entity';
+import { Verification } from './Verification.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -24,4 +25,8 @@ export class User {
   @OneToOne(() => Profile)
   @JoinColumn()
   profile: Profile;
+
+  @OneToOne(() => Verification)
+  @JoinColumn()
+  verification: Verification;
 }
