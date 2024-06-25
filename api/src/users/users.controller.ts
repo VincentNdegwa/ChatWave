@@ -21,6 +21,12 @@ export class UsersController {
     return response;
   }
 
+  @Post('login')
+  async loginUser(@Body() createUserDto: CreateUserDto) {
+    const response = await this.usersService.loginUser(createUserDto);
+    return response;
+  }
+
   @Get()
   async findAll() {
     const response = await this.usersService.findAll();
