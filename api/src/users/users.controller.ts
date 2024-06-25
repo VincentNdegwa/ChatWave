@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -23,7 +24,6 @@ export class UsersController {
     return response;
   }
 
-  @UseGuards(AuthGuard)
   @Get()
   async findAll() {
     const response = await this.usersService.findAll();
