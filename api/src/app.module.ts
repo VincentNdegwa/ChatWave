@@ -9,6 +9,7 @@ import { Profile } from './profiles/entities/profile.entity';
 import { Verification } from './verification/entities/verification.entity';
 import { ProfilesService } from './profiles/profiles.service';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UsersModule } from './users/users.module';
     ProfilesModule,
     UsersModule,
     VerificationModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProfilesService],

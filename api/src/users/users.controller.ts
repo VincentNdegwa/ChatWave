@@ -9,7 +9,9 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -21,12 +23,7 @@ export class UsersController {
     return response;
   }
 
-  @Post('login')
-  async loginUser(@Body() createUserDto: CreateUserDto) {
-    const response = await this.usersService.loginUser(createUserDto);
-    return response;
-  }
-
+  @UseGuards(AuthGuard)
   @Get()
   async findAll() {
     const response = await this.usersService.findAll();

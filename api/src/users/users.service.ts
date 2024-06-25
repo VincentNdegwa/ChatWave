@@ -38,29 +38,6 @@ export class UsersService {
     }
   }
 
-  async loginUser(userDetails: createUserParams) {
-    try {
-      const user = await this.userRepository.findOne({
-        where: { phone_number: userDetails.phone_number },
-      });
-      if (user) {
-        const isMatch = await this.ComparePassword(
-          userDetails.password,
-          user.password,
-        );
-        if (isMatch) {
-          return { error: false, message: 'You can login', data: null };
-        } else {
-          return { error: true, message: 'Incorrect password', data: null };
-        }
-      } else {
-        return { error: true, message: 'User not found', data: null };
-      }
-    } catch (error) {
-      return { error: true, message: error.message, data: null };
-    }
-  }
-
   async findAll() {
     try {
       const users = await this.userRepository.find({
