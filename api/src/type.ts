@@ -6,3 +6,7 @@ export type verifyOTP = {
   id: number;
   OTP: number;
 };
+export type updateUserParams = {
+  old_password: string;
+  new_password: string;
+};

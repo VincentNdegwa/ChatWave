@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { UserModule } from './user/module/user/user.module';
-// import { ProfileService } from './profile/profile/profile.service';
 import { ProfilesModule } from './profiles/profiles.module';
 import { VerificationModule } from './verification/verification.module';
 import { User } from './users/entities/user.entity';
@@ -22,7 +20,6 @@ import { UsersModule } from './users/users.module';
       password: 'Vincent07$',
       database: 'ChatWave',
       entities: [User, Profile, Verification],
-      // entities: [__dirname + '/../typorm/entities/*.entity.{ts,js}'],
       synchronize: true,
       logging: true,
     }),
