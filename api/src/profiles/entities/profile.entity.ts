@@ -16,4 +16,10 @@ export class Profile {
 
   @Column()
   about: string;
+
+  @Column()
+  created_at: Date;
+
+  @Column({ nullable: true })
+  updated_at: Date;
 }

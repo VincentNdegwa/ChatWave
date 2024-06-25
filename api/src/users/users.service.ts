@@ -3,6 +3,7 @@ import { createUserParams, updateUserParams } from 'src/type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -10,10 +11,24 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
+  private async HashPasword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
+  }
+
+  private async ComparePassword(
+    password: string,
+    hashString: string,
+  ): Promise<boolean> {
+    return bcrypt.compare(password, hashString);
+  }
+
   async create(userDetails: createUserParams) {
     try {
+      const hashedPassword = await this.HashPasword(userDetails.password);
       const newUser = this.userRepository.create({
         ...userDetails,
+        password: hashedPassword,
         created_at: new Date(),
       });
       const user = await this.userRepository.save(newUser);
@@ -53,11 +68,16 @@ export class UsersService {
   async update(id: number, userDetails: updateUserParams) {
     try {
       const user = await this.userRepository.findOneBy({ id });
-      if (user && user.password === userDetails.old_password) {
-        await this.userRepository.update(id, {
-          password: userDetails.new_password,
+      const comparePass = await this.ComparePassword(
+        userDetails.old_password,
+        user.password,
+      );
+      if (user && comparePass) {
+        const updatedUser = await this.userRepository.update(id, {
+          password: await this.HashPasword(userDetails.new_password),
+          updated_at: new Date(),
         });
-        return { error: false, message: 'User updated', data: user };
+        return { error: false, message: 'User updated', data: updatedUser };
       } else {
         return {
           error: true,

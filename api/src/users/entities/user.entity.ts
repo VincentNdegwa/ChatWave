@@ -22,6 +22,9 @@ export class User {
   @Column()
   created_at: Date;
 
+  @Column({ nullable: true })
+  updated_at: Date;
+
   @OneToOne(() => Profile)
   @JoinColumn()
   profile: Profile;
