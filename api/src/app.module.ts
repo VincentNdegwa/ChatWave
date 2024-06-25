@@ -2,10 +2,15 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/module/user/user.module';
-import { User } from './typorm/entities/User.entity';
-import { Profile } from './typorm/entities/Profile.entity';
-import { Verification } from './typorm/entities/Verification.entity';
+// import { UserModule } from './user/module/user/user.module';
+// import { ProfileService } from './profile/profile/profile.service';
+import { ProfilesModule } from './profiles/profiles.module';
+import { VerificationModule } from './verification/verification.module';
+import { User } from './users/entities/user.entity';
+import { Profile } from './profiles/entities/profile.entity';
+import { Verification } from './verification/entities/verification.entity';
+import { ProfilesService } from './profiles/profiles.service';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -21,9 +26,11 @@ import { Verification } from './typorm/entities/Verification.entity';
       synchronize: true,
       logging: true,
     }),
-    UserModule,
+    ProfilesModule,
+    UsersModule,
+    VerificationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ProfilesService],
 })
 export class AppModule {}

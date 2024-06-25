@@ -1,3 +1,5 @@
+import { Profile } from 'src/profiles/entities/profile.entity';
+import { Verification } from 'src/verification/entities/verification.entity';
 import {
   Column,
   Entity,
@@ -5,8 +7,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Profile } from './Profile.entity';
-import { Verification } from './Verification.entity';
 
 @Entity({ name: 'users' })
 export class User {
