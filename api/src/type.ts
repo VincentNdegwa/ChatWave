@@ -31,3 +31,20 @@ export type updateProfileParams = {
   profile_pic: string;
   about: string;
 };
+
+// Chats
+export type createChatParams = {
+  user_id: number;
+  added_user_id: number;
+};
+
+export enum Role {
+  ADMIN = 'admin',
+  OWNER = 'owner',
+  OTHER = 'other',
+}
+
+export type createParticipantParams = {
+  conversationId: number;
+  userId: createChatParams;
+};

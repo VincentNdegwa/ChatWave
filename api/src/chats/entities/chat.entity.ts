@@ -13,6 +13,6 @@ export class Chat {
   @OneToMany(() => Message, (message) => message.chat)
   messages: Message[];
 
-  @OneToMany(() => Participant, (participant) => participant.conversation)
+  @OneToMany(() => Participant, (participant) => participant.chat)
   participants: Participant[];
 }

@@ -1,15 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ParticipantsService } from './participants.service';
-import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
+import { createParticipantParams } from 'src/type';
+import { EntityManager } from 'typeorm';
 
 @Controller('participants')
 export class ParticipantsController {
-  constructor(private readonly participantsService: ParticipantsService) {}
+  constructor(
+    private readonly participantsService: ParticipantsService,
+    private manager: EntityManager,
+  ) {}
 
-  @Post()
-  create(@Body() createParticipantDto: CreateParticipantDto) {
-    return this.participantsService.create(createParticipantDto);
+  @Post('add')
+  async create(@Body() createParticipantParams: createParticipantParams) {
+    const response = await this.participantsService.create(
+      createParticipantParams,
+      this.manager,
+    );
+    return response;
   }
 
   @Get()
@@ -23,7 +40,10 @@ export class ParticipantsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateParticipantDto: UpdateParticipantDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateParticipantDto: UpdateParticipantDto,
+  ) {
     return this.participantsService.update(+id, updateParticipantDto);
   }
 

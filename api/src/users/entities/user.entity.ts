@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Message } from 'src/messages/entities/message.entity';
 import { Participant } from 'src/participants/entities/participant.entity';
 import { Profile } from 'src/profiles/entities/profile.entity';
@@ -20,6 +21,7 @@ export class User {
   phone_number: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column()
