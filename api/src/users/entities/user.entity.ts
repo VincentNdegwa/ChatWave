@@ -1,9 +1,12 @@
+import { Message } from 'src/messages/entities/message.entity';
+import { Participant } from 'src/participants/entities/participant.entity';
 import { Profile } from 'src/profiles/entities/profile.entity';
 import { Verification } from 'src/verification/entities/verification.entity';
 import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -32,4 +35,10 @@ export class User {
   @OneToOne(() => Verification)
   @JoinColumn()
   verification: Verification;
+
+  @OneToMany(() => Message, (message) => message.sender)
+  messages: Message[];
+
+  @OneToMany(() => Participant, (participant) => participant.user)
+  participants: Participant[];
 }

@@ -10,6 +10,12 @@ import { Verification } from './verification/entities/verification.entity';
 import { ProfilesService } from './profiles/profiles.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ChatsModule } from './chats/chats.module';
+import { MessagesModule } from './messages/messages.module';
+import { Chat } from './chats/entities/chat.entity';
+import { ParticipantsModule } from './participants/participants.module';
+import { Message } from './messages/entities/message.entity';
+import { Participant } from './participants/entities/participant.entity';
 
 @Module({
   imports: [
@@ -20,7 +26,7 @@ import { AuthModule } from './auth/auth.module';
       username: 'vincent',
       password: 'Vincent07$',
       database: 'ChatWave',
-      entities: [User, Profile, Verification],
+      entities: [User, Profile, Verification, Chat, Message, Participant],
       synchronize: true,
       logging: true,
     }),
@@ -28,6 +34,9 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     VerificationModule,
     AuthModule,
+    ChatsModule,
+    MessagesModule,
+    ParticipantsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProfilesService],
