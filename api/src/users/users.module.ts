@@ -10,6 +10,6 @@ import { Verification } from 'src/verification/entities/verification.entity';
   imports: [TypeOrmModule.forFeature([User, Profile, Verification])],
   controllers: [UsersController],
   providers: [UsersService],
-  // exports: [UsersService],
+  exports: [TypeOrmModule, UsersService],
 })
 export class UsersModule {}

@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
 } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
@@ -18,27 +17,20 @@ export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 
   @Post()
-  create(@Body() createProfileDto: CreateProfileDto) {
-    return this.profilesService.create(createProfileDto);
+  async create(@Body() createProfileDto: CreateProfileDto) {
+    const response = await this.profilesService.create(createProfileDto);
+    return response;
   }
 
-  @Get()
-  findAll() {
-    return this.profilesService.findAll();
+  @Get(':user_id')
+  async findOne(@Param('user_id') id: string) {
+    const response = await this.profilesService.findOne(+id);
+    return response;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.profilesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-    return this.profilesService.update(+id, updateProfileDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.profilesService.remove(+id);
+  @Patch()
+  async update(@Body() updateProfileDto: UpdateProfileDto) {
+    const response = await this.profilesService.update(updateProfileDto);
+    return response;
   }
 }
