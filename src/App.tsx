@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ProfilePage from "./pages/profilePage";
 import Login from "./pages/AuthPage/Login";
 import MainLayout from "./MainLayout";
+import Register from "./pages/AuthPage/Register";
+import ForgotPassword from "./pages/AuthPage/ForgotPassword";
+import OTPVerification from "./pages/AuthPage/OTPVerification";
 type Props = {};
 
 export default function App({}: Props) {
@@ -21,6 +24,10 @@ export default function App({}: Props) {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/otp-verification" element={<OTPVerification />} />
+
         <Route
           path="/*"
           element={

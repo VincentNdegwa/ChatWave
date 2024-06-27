@@ -5,7 +5,7 @@ type Props = {};
 
 type CodeCountry = { code: string; country: string; flag: string };
 
-function Login({}: Props) {
+function ForgotPassword({}: Props) {
   const [countryCodes, setCountryCodes] = useState<CodeCountry[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [selectedCountry, setSelectedCountry] = useState<CodeCountry | null>({
@@ -43,13 +43,8 @@ function Login({}: Props) {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <img
-          src="/images/Logo.jpg"
-          alt="Logo"
-          className="mx-auto mb-8 h-[200px] w-[200px]"
-        />
         <h2 className="text-2xl font-bold mb-6 text-center text-sky-600">
-          Login to ChatWave
+          Forgot Your Password?
         </h2>
         <form>
           <div className="mb-4">
@@ -109,35 +104,18 @@ function Login({}: Props) {
               </div>
             </div>
           </div>
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="password">
-              Password
-            </label>
-            <input
-              className="shadow appearance-none border rounded h-full w-full py-3 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500"
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-            />
-          </div>
-          <div className="flex flex-col gap-y-2 md:flex-row  md:items-center justify-between">
+
+          <div className="flex flex-col gap-y-3 justify-between">
             <button
               className="bg-sky-900 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button">
-              Sign In
+              Send OTP
             </button>
-            <div className="flex justify-between md:flex-col">
+            <div className="flex flex-col">
               <a
                 className="inline-block align-baseline font-bold text-sm text-sky-500 hover:text-sky-800"
-                href="/forgot-password">
-                Forgot Password?
-              </a>
-              <a
-                className="inline-block align-baseline font-bold text-sm text-sky-900 hover:text-sky-800"
-                href="/register">
-                Create Account
+                href="/login">
+                Sign In
               </a>
             </div>
           </div>
@@ -147,4 +125,4 @@ function Login({}: Props) {
   );
 }
 
-export default Login;
+export default ForgotPassword;
