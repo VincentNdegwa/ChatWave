@@ -91,6 +91,7 @@ export class ChatsService {
         'participants.user',
         'participants.user.profile',
         'messages',
+        'messages.sender.profile',
       ],
     });
     return chatsData;

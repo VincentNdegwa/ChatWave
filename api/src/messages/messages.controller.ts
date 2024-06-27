@@ -32,12 +32,17 @@ export class MessagesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messagesService.update(+id, updateMessageDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateMessageDto: UpdateMessageDto,
+  ) {
+    const response = await this.messagesService.update(+id, updateMessageDto);
+    return response;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.messagesService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const response = await this.messagesService.remove(+id);
+    return response;
   }
 }

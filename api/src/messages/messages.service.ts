@@ -61,9 +61,6 @@ export class MessagesService {
       };
     }
   }
-  findAll() {
-    return `This action returns all messages`;
-  }
 
   async findOne(id: number) {
     try {
@@ -78,16 +75,54 @@ export class MessagesService {
           data: null,
         };
       } else {
-        return { error: true, message: 'Message retrieved', data: chats };
+        return { error: false, message: 'Message retrieved', data: chats };
       }
     } catch (error) {}
   }
 
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return `This action updates a #${id} message ${updateMessageDto}`;
+  async update(id: number, updateMessageDto: UpdateMessageDto) {
+    const message = await this.messageRepository.update(
+      { id },
+      {
+        ...updateMessageDto,
+        updated_at: new Date(),
+      },
+    );
+    if (message) {
+      const updatedMessage = await this.findOne(id);
+      if (updatedMessage.error) {
+        return updatedMessage;
+      } else {
+        return {
+          error: false,
+          message: 'Message Updated',
+          data: updatedMessage,
+        };
+      }
+    } else {
+      return {
+        error: true,
+        message: 'Failed to update message',
+        data: null,
+      };
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} message`;
+  findAll() {
+    return `This action returns all messages`;
+  }
+
+  async remove(id: number) {
+    try {
+      const message = await this.messageRepository.delete(id);
+
+      if (message.affected) {
+        return { error: false, message: 'Message deleted', data: message };
+      } else {
+        return { error: true, message: 'Message not found', data: null };
+      }
+    } catch (error) {
+      return { error: true, message: error.message, data: null };
+    }
   }
 }
