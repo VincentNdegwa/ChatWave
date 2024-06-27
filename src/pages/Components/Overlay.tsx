@@ -20,7 +20,7 @@ function Overlay({
           className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center p-2"
           onClick={closeOverLay}>
           <div
-            className="flex p-2 flex-col bg-sky-50 max-h-[96vh] min-w-[500px] min-h-[20vh] rounded-md overflow-scroll scrollbar-none"
+            className="flex p-2 flex-col bg-white max-h-[96vh] min-w-[500px] min-h-[20vh] rounded-md overflow-scroll scrollbar-none"
             onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-x-3 border-b-2 border-sky-950 p-1">
               <div
