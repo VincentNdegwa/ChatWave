@@ -72,6 +72,17 @@ export class ChatsService {
     }
   }
 
+  async findExactlyOne(id: number) {
+    const chatsData = await this.chatRepository.findOne({
+      where: { id },
+    });
+    if (!chatsData) {
+      return { error: true, message: 'Chat not found', data: null };
+    } else {
+      return { error: false, message: 'Chat found', data: chatsData };
+    }
+  }
+
   async findOne(id: number) {
     const chatsData = await this.chatRepository.findOne({
       where: { id },
@@ -85,8 +96,13 @@ export class ChatsService {
     return chatsData;
   }
 
-  findAll() {
-    return `This action returns all chats`;
+  async getChatOnly(id: number) {
+    const chat = await this.chatRepository.findOne({ where: { id } });
+    return {
+      error: false,
+      message: 'Chat retreived',
+      data: chat,
+    };
   }
 
   update(id: number, updateChatDto: UpdateChatDto) {

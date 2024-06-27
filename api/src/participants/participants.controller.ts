@@ -12,6 +12,7 @@ import { ParticipantsService } from './participants.service';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
 import { createParticipantParams } from 'src/type';
 import { EntityManager } from 'typeorm';
+import { chatAndUserDto } from './dto/chat-and-user.dto';
 
 @Controller('participants')
 export class ParticipantsController {
@@ -26,6 +27,11 @@ export class ParticipantsController {
       createParticipantParams,
       this.manager,
     );
+    return response;
+  }
+  @Get('chatAndUser')
+  async findBy(@Body() chatAndUserDto: chatAndUserDto) {
+    const response = await this.participantsService.findBy(chatAndUserDto);
     return response;
   }
 

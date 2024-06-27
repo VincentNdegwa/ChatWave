@@ -13,6 +13,9 @@ export class Message {
   @Column()
   sent_at: Date;
 
+  @Column({ nullable: true })
+  updated_at: Date;
+
   @ManyToOne(() => Chat, (chat) => chat.messages)
   chat: Chat;
 

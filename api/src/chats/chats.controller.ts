@@ -21,9 +21,10 @@ export class ChatsController {
     return response;
   }
 
-  @Get()
-  findAll() {
-    return this.chatsService.findAll();
+  @Get('single/:id')
+  async getChatOnly(@Param('id') id: string) {
+    const response = await this.chatsService.getChatOnly(+id);
+    return response;
   }
 
   @Get(':id')

@@ -48,3 +48,9 @@ export type createParticipantParams = {
   conversationId: number;
   userId: createChatParams;
 };
+
+export type createMessageParams = {
+  text: string;
+  chat_id: number;
+  sender_id: number;
+};

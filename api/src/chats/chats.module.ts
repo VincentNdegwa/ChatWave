@@ -10,5 +10,6 @@ import { Participant } from 'src/participants/entities/participant.entity';
   imports: [TypeOrmModule.forFeature([Chat, Participant])],
   controllers: [ChatsController],
   providers: [ChatsService, ParticipantsService],
+  exports: [ChatsService],
 })
 export class ChatsModule {}
