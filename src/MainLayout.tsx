@@ -3,6 +3,8 @@ import ChatSide from "./pages/chatSide";
 import StartPage from "./pages/startPage";
 import Overlay from "./pages/Components/Overlay";
 import SideBar from "./pages/sidebar";
+import { useEffect } from "react";
+import useCustomAxios from "./modules/customAxios";
 
 type Props = {
   isChatOpen: boolean;
@@ -23,6 +25,19 @@ function MainLayout({
   component,
   overLayHeader,
 }: Props) {
+  const axios = useCustomAxios();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await axios.get("/users");
+        console.log(data);
+      } catch (error) {
+        alert(error);
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div className="flex h-full w-full md:divide-x">
       <div

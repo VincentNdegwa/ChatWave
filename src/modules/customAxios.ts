@@ -1,38 +1,41 @@
-import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Assuming you're using React Router for navigation
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const api = axios.create({
-  baseURL: "https://your-backend-api-url.com/api", // Replace with your backend API URL
+  baseURL: "http://localhost:3000",
 });
-const navigate = useNavigate();
 
-// Add a request interceptor
-api.interceptors.request.use(
-  (config) => {
-    // Add token to headers if available
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+const useCustomAxios = () => {
+  const navigate = useNavigate();
+
+  api.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers = config.headers ?? {};
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error: AxiosError) => {
+      return Promise.reject(error);
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+  );
 
-// Add a response interceptor
-api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response.status === 401) {
-      navigate("/login");
-      localStorage.removeItem("token");
+  api.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error: AxiosError) => {
+      if (error.response?.status === 401) {
+        navigate("/login");
+        localStorage.removeItem("token");
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
 
-export default api;
+  return api;
+};
+
+export default useCustomAxios;

@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
+import useCustomAxios from "../../modules/customAxios";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
@@ -13,6 +16,12 @@ function Login({}: Props) {
     country: "KE",
     flag: "https://flagcdn.com/w320/ke.png",
   });
+
+  const [loginPhone, setLoginPhone] = useState<string>("");
+  const [phoneIsValid, setPhoneIsValid] = useState<boolean>(false);
+  const [loginPassword, setLoginPassword] = useState<string>("");
+  const axios = useCustomAxios();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all")
@@ -40,9 +49,51 @@ function Login({}: Props) {
     setDropdownOpen(false);
   };
 
+  const validatePhone = () => {
+    const phoneNumber: string = selectedCountry?.code + loginPhone;
+    console.log(phoneNumber);
+    axios
+      .post("/auth/phone-number", { phone: phoneNumber })
+      .then((res) => {
+        if (res.data.error) {
+          alert("phone number does not exist");
+        } else {
+          setPhoneIsValid(true);
+        }
+      })
+      .catch((err) => alert(err));
+  };
+
+  const handleSubmit = () => {
+    if (phoneIsValid) {
+      const phone = selectedCountry?.code + loginPhone;
+      axios
+        .post("/auth/login", {
+          phone_number: phone,
+          password: loginPassword,
+        })
+        .then((res) => {
+          if (res.data.error) {
+            alert(res.data.error);
+            return;
+          }
+          console.log(res.data);
+          localStorage.setItem("token", res.data.accessToken);
+          navigate("/");
+        });
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative">
+        {phoneIsValid && (
+          <button
+            onClick={() => setPhoneIsValid(false)}
+            className="absolute top-1 left-2 rounded-full bg-sky-900 hover:bg-sky-600 transition-all duration-200 p-2 text-white">
+            <IoMdArrowRoundBack />
+          </button>
+        )}
         <img
           src="/images/Logo.jpg"
           alt="Logo"
@@ -62,7 +113,9 @@ function Login({}: Props) {
               <div className="w-fit">
                 <div
                   className="shadow appearance-none border rounded-l py-2 pl-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500 cursor-pointer"
-                  onClick={() => setDropdownOpen(!dropdownOpen)}>
+                  onClick={() =>
+                    setDropdownOpen(!phoneIsValid && !dropdownOpen)
+                  }>
                   <div className="flex items-center gap-x-1 p-1">
                     <img
                       src={selectedCountry?.flag}
@@ -97,37 +150,56 @@ function Login({}: Props) {
                   type="text"
                   id="code"
                   value={selectedCountry?.code}
-                  className="w-1/6 focus:outline-non h-full outline-none bottom-0"
+                  className="w-1/6 focus:outline-none h-full outline-none bottom-0"
                   readOnly
                 />
                 <input
-                  className=" h-full leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-gray-100 w-5/6"
+                  className="h-full leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-gray-100 w-5/6"
                   id="phone"
                   type="tel"
                   placeholder="Enter your phone number"
+                  onInput={(ev) => setLoginPhone(ev.currentTarget.value)}
+                  value={loginPhone}
+                  disabled={phoneIsValid}
                 />
               </div>
             </div>
           </div>
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="password">
-              Password
-            </label>
-            <input
-              className="shadow appearance-none border rounded h-full w-full py-3 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500"
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-            />
-          </div>
+          {phoneIsValid && (
+            <div className="mb-6">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="password">
+                Password
+              </label>
+              <input
+                className="shadow appearance-none border rounded h-full w-full py-3 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500"
+                id="password"
+                type="password"
+                onInput={(ev) => setLoginPassword(ev.currentTarget.value)}
+                placeholder="Enter your password"
+                value={loginPassword}
+              />
+            </div>
+          )}
           <div className="flex flex-col gap-y-2 md:flex-row  md:items-center justify-between">
-            <button
-              className="bg-sky-900 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="button">
-              Sign In
-            </button>
+            {phoneIsValid && (
+              <button
+                onClick={() => handleSubmit()}
+                className="bg-sky-900 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="button">
+                Sign In
+              </button>
+            )}
+            {!phoneIsValid && (
+              <button
+                onClick={() => validatePhone()}
+                className="bg-sky-900 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="button">
+                Validate Phone
+              </button>
+            )}
+
             <div className="flex justify-between md:flex-col">
               <a
                 className="inline-block align-baseline font-bold text-sm text-sky-500 hover:text-sky-800"
