@@ -31,8 +31,7 @@ function MainLayout({
       try {
         const data = await axios.get("/users");
         console.log(data);
-      } catch (error) {
-        alert(error);
+      } catch (error) {console.log(error);
       }
     };
     fetchData();

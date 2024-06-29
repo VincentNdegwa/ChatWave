@@ -3,10 +3,15 @@ import { useEffect, useState } from "react";
 import useCustomAxios from "../../modules/customAxios";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import AlertNotification from "../Components/AlertNotification";
 
 type Props = {};
 
 type CodeCountry = { code: string; country: string; flag: string };
+type alertType = {
+  message: string;
+  type: "success" | "error" | "info" | "warning";
+};
 
 function Login({}: Props) {
   const [countryCodes, setCountryCodes] = useState<CodeCountry[]>([]);
@@ -16,7 +21,7 @@ function Login({}: Props) {
     country: "KE",
     flag: "https://flagcdn.com/w320/ke.png",
   });
-
+  const [alert, setAlert] = useState<alertType>({ message: "", type: "info" });
   const [loginPhone, setLoginPhone] = useState<string>("");
   const [phoneIsValid, setPhoneIsValid] = useState<boolean>(false);
   const [loginPassword, setLoginPassword] = useState<string>("");
@@ -56,15 +61,18 @@ function Login({}: Props) {
       .post("/auth/phone-number", { phone: phoneNumber })
       .then((res) => {
         if (res.data.error) {
-          alert("phone number does not exist");
+          setAlert({ message: res.data.message, type: "error" });
         } else {
           setPhoneIsValid(true);
         }
       })
-      .catch((err) => alert(err));
+      .catch((err) => {
+        setAlert({ message: err.response.data.message, type: "error" });
+      });
   };
 
   const handleSubmit = () => {
+    setAlert({ message: "Validating....", type: "info" });
     if (phoneIsValid) {
       const phone = selectedCountry?.code + loginPhone;
       axios
@@ -74,18 +82,34 @@ function Login({}: Props) {
         })
         .then((res) => {
           if (res.data.error) {
-            alert(res.data.error);
+            setAlert({ message: res.data.message, type: "error" });
             return;
           }
-          console.log(res.data);
           localStorage.setItem("token", res.data.accessToken);
+          localStorage.setItem("userId", res.data.userId);
           navigate("/");
+        })
+        .catch((error) => {
+          if (error.response) {
+            const errorMessage = error.response.data.message;
+            setAlert({ message: errorMessage, type: "error" });
+          } else if (error.request) {
+            setAlert({
+              message: "No response received from the server.",
+              type: "error",
+            });
+          } else {
+            setAlert({ message: error.message, type: "error" });
+          }
         });
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
+      {alert.message && (
+        <AlertNotification message={alert.message} type={alert.type} />
+      )}
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative">
         {phoneIsValid && (
           <button
