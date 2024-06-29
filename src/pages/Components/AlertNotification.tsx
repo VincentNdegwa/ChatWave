@@ -3,18 +3,20 @@ import { useEffect, useState } from "react";
 type AlertProps = {
   message: string;
   type: "success" | "error" | "info" | "warning";
+  onClose: () => void; // New prop for closing the alert
 };
 
-const AlertNotification = ({ message, type }: AlertProps) => {
+const AlertNotification = ({ message, type, onClose }: AlertProps) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false);
+      onClose(); // Hide the alert after timeout
     }, 10000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [message, onClose]);
 
   if (!visible) return null;
 

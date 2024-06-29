@@ -22,6 +22,7 @@ function Login({}: Props) {
     flag: "https://flagcdn.com/w320/ke.png",
   });
   const [alert, setAlert] = useState<alertType>({ message: "", type: "info" });
+  const [alertVisible, setAlertVisible] = useState<boolean>(false); // New state for alert visibility
   const [loginPhone, setLoginPhone] = useState<string>("");
   const [phoneIsValid, setPhoneIsValid] = useState<boolean>(false);
   const [loginPassword, setLoginPassword] = useState<string>("");
@@ -62,17 +63,18 @@ function Login({}: Props) {
       .then((res) => {
         if (res.data.error) {
           setAlert({ message: res.data.message, type: "error" });
+          setAlertVisible(true); // Show the alert
         } else {
           setPhoneIsValid(true);
         }
       })
       .catch((err) => {
         setAlert({ message: err.response.data.message, type: "error" });
+        setAlertVisible(true); // Show the alert
       });
   };
 
   const handleSubmit = () => {
-    setAlert({ message: "Validating....", type: "info" });
     if (phoneIsValid) {
       const phone = selectedCountry?.code + loginPhone;
       axios
@@ -83,6 +85,7 @@ function Login({}: Props) {
         .then((res) => {
           if (res.data.error) {
             setAlert({ message: res.data.message, type: "error" });
+            setAlertVisible(true); // Show the alert
             return;
           }
           localStorage.setItem("token", res.data.accessToken);
@@ -93,13 +96,16 @@ function Login({}: Props) {
           if (error.response) {
             const errorMessage = error.response.data.message;
             setAlert({ message: errorMessage, type: "error" });
+            setAlertVisible(true); // Show the alert
           } else if (error.request) {
             setAlert({
               message: "No response received from the server.",
               type: "error",
             });
+            setAlertVisible(true); // Show the alert
           } else {
             setAlert({ message: error.message, type: "error" });
+            setAlertVisible(true); // Show the alert
           }
         });
     }
@@ -107,9 +113,14 @@ function Login({}: Props) {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      {alert.message && (
-        <AlertNotification message={alert.message} type={alert.type} />
-      )}
+      {alertVisible &&
+        alert.message && ( // Conditionally render AlertNotification
+          <AlertNotification
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlertVisible(false)} // Hide the alert after it's closed
+          />
+        )}
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative">
         {phoneIsValid && (
           <button
