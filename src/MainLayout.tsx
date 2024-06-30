@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Route, Routes } from "react-router-dom";
 import ChatSide from "./pages/chatSide";
 import StartPage from "./pages/startPage";
@@ -8,7 +9,9 @@ import useCustomAxios from "./modules/customAxios";
 import { getUserId } from "./modules/getUserId";
 import Loading from "./pages/Components/Loading";
 import AlertNotification from "./pages/Components/AlertNotification";
-import { alertType } from "./types";
+import { RoleList, alertType } from "./types";
+import ErrorPage from "./pages/Components/ErrorPage";
+import { AxiosError } from "axios";
 
 type Props = {
   isChatOpen: boolean;
@@ -36,6 +39,16 @@ function MainLayout({
   const [loading, setLoading] = useState<boolean>(true);
   const [alert, setAlert] = useState<alertType>({ message: "", type: "info" });
   const [alertVisible, setAlertVisible] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [chatsData, setChatsData] = useState<RoleList>([]);
+  const [singleChat, setSingleChat] = useState<any>([]);
+  const navigateOpenChat = (chatId: number) => {
+    setIsChatOpen(true);
+    const chats = chatsData.find((chatItem) => chatItem.id === chatId);
+    if (chats) {
+      setSingleChat(chats);
+    }
+  };
   useEffect(() => {
     const uid = getUserId();
     if (uid) {
@@ -52,18 +65,25 @@ function MainLayout({
             const { error, message, data } = res.data;
             if (!error) {
               setLoading(false);
-              console.log(data);
+              setChatsData(data);
             } else {
               setAlert({ message: message, type: "error" });
               setAlertVisible(true);
             }
-            console.log(res.data);
           })
           .catch((err) => {
-            console.log(err);
+            const errorMessage = err.response.data.message;
+            setError(errorMessage);
           });
-      } catch (error) {
-        console.log(error);
+      } catch (error: unknown) {
+        if (error instanceof AxiosError && error.response) {
+          const errorMessage = error.response.data.message;
+          setError(errorMessage);
+        } else {
+          setError("Something went wrong");
+        }
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -73,6 +93,7 @@ function MainLayout({
   if (loading) {
     return <Loading />;
   }
+  if (error) return <ErrorPage message={error} />;
   return (
     <div className="flex h-full w-full md:divide-x">
       {alertVisible && alert.message && (
@@ -87,7 +108,10 @@ function MainLayout({
           isChatOpen ? "hidden" : "block"
         } md:w-2/6 md:block text-sky-950 sticky top-0 left-0 h-full`}>
         <div className="h-full">
-          <SideBar onItemClick={() => setIsChatOpen(!isChatOpen)} />
+          <SideBar
+            onItemClick={(chatId: number) => navigateOpenChat(chatId)}
+            chatsData={chatsData}
+          />
         </div>
       </div>
       <div
@@ -102,6 +126,7 @@ function MainLayout({
               <ChatSide
                 onItemClick={() => setIsChatOpen(!isChatOpen)}
                 openProfile={() => openOverlayProfile()}
+                chatData={singleChat}
               />
             }
           />

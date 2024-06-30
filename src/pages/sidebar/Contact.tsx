@@ -1,27 +1,54 @@
 import { useNavigate } from "react-router-dom";
+import { Chat, Participant, LastMessage } from "../../types";
+import { getUserId } from "../../modules/getUserId";
 
 type Props = {
-  onItemClick: () => void;
+  onItemClick: (chatId: number) => void;
+  chat: Chat;
 };
-function Contact({ onItemClick }: Props) {
+
+function Contact({ onItemClick, chat }: Props) {
   const navigate = useNavigate();
+
   const handleNavigate = (path: string) => {
     navigate(path);
-    onItemClick()
+    onItemClick(chat.id);
   };
+
+  const getUserProfile = (participants: Participant[]) => {
+    const currentUserId = getUserId();
+    const currentUserIdNumber =
+      currentUserId !== undefined ? Number(currentUserId) : undefined;
+    return participants.find(
+      (participant) => participant.user.id !== currentUserIdNumber
+    );
+  };
+
+  const renderLastMessage = (
+    lastMessage: LastMessage | null
+  ): React.ReactNode => {
+    return lastMessage ? lastMessage.text : "";
+  };
+
+  const profile = getUserProfile(chat.participants);
+
   return (
     <div
       onClick={() => handleNavigate("/chat")}
       className="flex gap-x-3 p-3 hover:bg-sky-100 ease-in duration-100 rounded-md shadow-lg cursor-pointer">
       <img
-        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+        src={profile?.user.profile?.profile_pic || "/images/avatar.jpg"}
         alt="profile-pic"
-        className="rounded h-12 w-12 min-w-0 gap-x-3"
+        className="rounded-full h-12 w-12 min-w-0"
       />
       <div className="flex justify-between flex-row w-full">
         <div className="flex flex-col justify-between">
-          <div className="font-extrabold text-sky-950">User name</div>
-          <div className="text-xs text-sky-600">text message</div>
+          <div className="font-extrabold text-sky-950">
+            {profile?.user.profile?.first_name || profile?.user.phone_number}
+          </div>
+          <div className="text-xs text-sky-600">
+            {renderLastMessage(chat.lastMessage)}
+          </div>
         </div>
         <div className="flex flex-col items-end justify-between">
           <span className="h-4 w-4 text-xs flex justify-center items-center rounded-2xl bg-red-200 py-1 text-red-700">
