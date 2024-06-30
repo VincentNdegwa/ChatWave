@@ -4,14 +4,12 @@ import useCustomAxios from "../../modules/customAxios";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import AlertNotification from "../Components/AlertNotification";
+import { alertType } from "../../types";
 
 type Props = {};
 
 type CodeCountry = { code: string; country: string; flag: string };
-type alertType = {
-  message: string;
-  type: "success" | "error" | "info" | "warning";
-};
+
 
 function Login({}: Props) {
   const [countryCodes, setCountryCodes] = useState<CodeCountry[]>([]);

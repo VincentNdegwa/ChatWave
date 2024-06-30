@@ -3,8 +3,12 @@ import ChatSide from "./pages/chatSide";
 import StartPage from "./pages/startPage";
 import Overlay from "./pages/Components/Overlay";
 import SideBar from "./pages/sidebar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useCustomAxios from "./modules/customAxios";
+import { getUserId } from "./modules/getUserId";
+import Loading from "./pages/Components/Loading";
+import AlertNotification from "./pages/Components/AlertNotification";
+import { alertType } from "./types";
 
 type Props = {
   isChatOpen: boolean;
@@ -26,19 +30,58 @@ function MainLayout({
   overLayHeader,
 }: Props) {
   const axios = useCustomAxios();
+  const [userId, setUserId] = useState<number | string | undefined>(
+    getUserId()
+  );
+  const [loading, setLoading] = useState<boolean>(true);
+  const [alert, setAlert] = useState<alertType>({ message: "", type: "info" });
+  const [alertVisible, setAlertVisible] = useState<boolean>(false);
   useEffect(() => {
+    const uid = getUserId();
+    if (uid) {
+      setUserId(uid);
+    } else {
+      console.log("undefined userid");
+    }
     const fetchData = async () => {
       try {
-        const data = await axios.get("/users");
-        console.log(data);
-      } catch (error) {console.log(error);
+        setLoading(true);
+        axios
+          .get(`/chats/user/${userId}`)
+          .then((res) => {
+            const { error, message, data } = res.data;
+            if (!error) {
+              setLoading(false);
+              console.log(data);
+            } else {
+              setAlert({ message: message, type: "error" });
+              setAlertVisible(true);
+            }
+            console.log(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch (error) {
+        console.log(error);
       }
     };
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userId]);
+
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="flex h-full w-full md:divide-x">
+      {alertVisible && alert.message && (
+        <AlertNotification
+          message={alert.message}
+          type={alert.type}
+          onClose={() => setAlertVisible(false)}
+        />
+      )}
       <div
         className={`w-full ${
           isChatOpen ? "hidden" : "block"
