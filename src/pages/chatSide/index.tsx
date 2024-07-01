@@ -12,7 +12,11 @@ function index({ onItemClick, openProfile, chatData }: Props) {
   return (
     <div className="h-full flex flex-col justify-between gap-2">
       <div className="shadow-lg p-1 h-16 rounded-lg">
-        <ChatHead onItemClick={onItemClick} openProfile={openProfile} />
+        <ChatHead
+          onItemClick={onItemClick}
+          openProfile={openProfile}
+          chatData={chatData}
+        />
       </div>
       <div className="h-5/6">
         <ChatConversation chatData={chatData} />

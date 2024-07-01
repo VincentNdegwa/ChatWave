@@ -44,12 +44,15 @@ function MainLayout({
   const [singleChat, setSingleChat] = useState<any>([]);
   const navigateOpenChat = (chatId: number) => {
     setIsChatOpen(true);
-    const chats = chatsData.find((chatItem) => chatItem.id === chatId);
+    const chats = chatsData.find((chatItem) => chatItem.chat.id === chatId);
+
     if (chats) {
       setSingleChat(chats);
     }
   };
   useEffect(() => {
+    setLoading(true);
+
     const uid = getUserId();
     if (uid) {
       setUserId(uid);
@@ -58,7 +61,6 @@ function MainLayout({
     }
     const fetchData = async () => {
       try {
-        setLoading(true);
         axios
           .get(`/chats/user/${userId}`)
           .then((res) => {

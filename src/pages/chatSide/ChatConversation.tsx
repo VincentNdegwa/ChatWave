@@ -16,7 +16,6 @@ function ChatConversation({ chatData }: Props) {
 
   useEffect(() => {
     scrollToBottom();
-    // console.log(chatData);
   }, [chatData.chat.messages]);
 
   return (
@@ -30,7 +29,10 @@ function ChatConversation({ chatData }: Props) {
               className={`w-3/6 p-2 ${
                 isCurrentUser ? "self-end" : "self-start"
               }`}>
-              <div className="flex gap-x-2">
+              <div
+                className={`flex gap-x-2 w-full ${
+                  isCurrentUser ? "justify-end" : "justify-start"
+                }`}>
                 {!isCurrentUser && (
                   <img
                     src={

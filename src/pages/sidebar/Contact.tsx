@@ -35,14 +35,15 @@ function Contact({ onItemClick, chat }: Props) {
   return (
     <div
       onClick={() => handleNavigate("/chat")}
-      className="flex gap-x-3 p-3 hover:bg-sky-100 ease-in duration-100 rounded-md shadow-lg cursor-pointer">
-      <img
+      className="flex gap-x-3 p-2 hover:bg-sky-50 ease-in duration-100 rounded-md cursor-pointer">
+      <div className="bg-sky-950 h-12 w-12"></div>
+      {/* <img
         src={profile?.user.profile?.profile_pic || "/images/avatar.jpg"}
         alt="profile-pic"
         className="rounded-full h-12 w-12 min-w-0"
-      />
+      /> */}
       <div className="flex justify-between flex-row w-full">
-        <div className="flex flex-col justify-between">
+        <div className="flex flex-col justify-evenly">
           <div className="font-extrabold text-sky-950">
             {profile?.user.profile?.first_name || profile?.user.phone_number}
           </div>
