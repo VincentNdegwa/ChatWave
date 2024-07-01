@@ -45,3 +45,6 @@ body{
   display: none;
   /* color: #0000004d; */
 }
+.text-xxs{
+  font-size: 10px;
+}

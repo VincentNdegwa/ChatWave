@@ -35,19 +35,20 @@ function Contact({ onItemClick, chat }: Props) {
   return (
     <div
       onClick={() => handleNavigate("/chat")}
-      className="flex gap-x-3 p-2 hover:bg-sky-50 ease-in duration-100 rounded-md cursor-pointer">
-      <div className="bg-sky-950 h-12 w-12"></div>
-      {/* <img
-        src={profile?.user.profile?.profile_pic || "/images/avatar.jpg"}
-        alt="profile-pic"
-        className="rounded-full h-12 w-12 min-w-0"
-      /> */}
+      className="flex gap-3 p-2 hover:bg-sky-50 ease-in duration-100 rounded-md cursor-pointer relative">
+      <div className="h-[40px] w-[45px] ">
+        <img
+          src={profile?.user.profile?.profile_pic || "/images/avatar.jpg"}
+          alt="profile-pic"
+          className="rounded-full h-full w-full min-w-0"
+        />
+      </div>
       <div className="flex justify-between flex-row w-full">
         <div className="flex flex-col justify-evenly">
-          <div className="font-extrabold text-sky-950">
+          <div className=" font-medium text-sky-900 text-sm">
             {profile?.user.profile?.first_name || profile?.user.phone_number}
           </div>
-          <div className="text-xs text-sky-600">
+          <div className="text-xxs text-sky-600">
             {renderLastMessage(chat.lastMessage)}
           </div>
         </div>
@@ -58,6 +59,7 @@ function Contact({ onItemClick, chat }: Props) {
           <div className="text-xs text-sky-950">10:20 AM</div>
         </div>
       </div>
+      <span className="absolute bottom-0 w-10/12 border-b-2 border-slate-100"></span>
     </div>
   );
 }

@@ -20,7 +20,7 @@ function ChatConversation({ chatData }: Props) {
 
   return (
     <div className="flex flex-col justify-end w-full h-full">
-      <div className="flex flex-col w-full h-full gap-y-3 overflow-y-scroll scrollbar-custom">
+      <div className="flex flex-col-reverse w-full h-full gap-y-3 overflow-y-scroll scrollbar-custom">
         {chatData.chat.messages?.map((message: Message) => {
           const isCurrentUser = message.sender.id === Number(getUserId());
           return (
