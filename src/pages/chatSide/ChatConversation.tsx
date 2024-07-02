@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { Role, Message } from "../../types";
 import { getUserId } from "../../modules/getUserId";
@@ -14,14 +14,16 @@ function ChatConversation({ chatData }: Props) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const [messages, setMessage] = useState(chatData.chat.messages || []);
   useEffect(() => {
+    setMessage(chatData.chat.messages || []);
     scrollToBottom();
   }, [chatData.chat.messages]);
 
   return (
     <div className="flex flex-col justify-end w-full h-full">
       <div className="flex flex-col-reverse w-full h-full gap-y-3 overflow-y-scroll scrollbar-custom">
-        {chatData.chat.messages?.map((message: Message) => {
+        {messages?.map((message: Message) => {
           const isCurrentUser = message.sender.id === Number(getUserId());
           return (
             <div

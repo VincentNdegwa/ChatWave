@@ -68,6 +68,7 @@ function MainLayout({
             if (!error) {
               setLoading(false);
               setChatsData(data);
+           
             } else {
               setAlert({ message: message, type: "error" });
               setAlertVisible(true);
