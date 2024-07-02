@@ -39,7 +39,7 @@ function ChatHead({ onItemClick, openProfile, chatData }: Props) {
           <div className="text-sky-950 font-extrabold text-lg">
             {profile?.user.profile?.first_name || profile?.user.phone_number}
           </div>
-          <div className="text-xs text-green-700">Online</div>
+          {/* <div className="text-xs text-green-700">Online</div> */}
         </div>
       </div>
       <div className="flex gap-2">

@@ -25,7 +25,7 @@ function SenderBox() {
         <div className="text-2xl text-sky-950 bg-white h-full flex items-center p-3 rounded-md cursor-pointer">
           <FaMicrophone />
         </div>
-        <div className="text-2xl text-white bg-sky-700 h-full flex items-center p-3 rounded-md cursor-pointer">
+        <div className="text-2xl text-white bg-sky-700 hover:bg-sky-600 transition-all ease-out duration-200 h-full w-[50px] flex items-center p-3 rounded-md cursor-pointer">
           <BsFillSendFill />
         </div>
       </div>
