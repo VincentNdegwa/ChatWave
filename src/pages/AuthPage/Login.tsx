@@ -88,6 +88,7 @@ function Login({}: Props) {
           }
           localStorage.setItem("token", res.data.accessToken);
           localStorage.setItem("userId", res.data.userId);
+          localStorage.setItem("user", JSON.stringify(res.data.user));
           navigate("/");
         })
         .catch((error) => {

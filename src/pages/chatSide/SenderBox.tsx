@@ -5,16 +5,15 @@ import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { FaMicrophone } from "react-icons/fa6";
 import { BsFillSendFill } from "react-icons/bs";
 
-type Props = { onSubmit: (msg: string) => void };
-function SenderBox({ onSubmit }: Props) {
+type Props = { messageSend: (msg: string) => void };
+function SenderBox({ messageSend }: Props) {
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
     if (message.trim()) {
-      onSubmit(message);
+      messageSend(message);
       setMessage("");
-      console.log(message);
     }
   };
 

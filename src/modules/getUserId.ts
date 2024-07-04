@@ -1,3 +1,5 @@
+import { Profile, User } from "../types";
+
 export function getUserId(): string | undefined {
   const uid = window.localStorage.getItem("userId");
   if (uid) {
@@ -5,4 +7,21 @@ export function getUserId(): string | undefined {
     return userId;
   }
   return undefined;
+}
+
+export function getUser(): User | null {
+  const jsonUser = window.localStorage.getItem("user");
+  if (jsonUser) {
+    const user: User = JSON.parse(jsonUser);
+    return user;
+  }
+  return null;
+}
+export function getUserProfile(): Profile | null {
+  const jsonUser = window.localStorage.getItem("user");
+  if (jsonUser) {
+    const user: User = JSON.parse(jsonUser);
+    return user.profile;
+  }
+  return null;
 }
