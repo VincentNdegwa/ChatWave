@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import { getChatId, getUser } from "../../modules/getUserId";
+import { getChatId, getUser, getUserId } from "../../modules/getUserId";
 import { Message, Role, User } from "../../types";
 import ChatConversation from "./ChatConversation";
 import ChatHead from "./ChatHead";
@@ -8,6 +8,7 @@ import SenderBox from "./SenderBox";
 import useCustomAxios from "../../modules/customAxios";
 import AlertNotification from "../Components/AlertNotification";
 import { existingUpdateMessage, MessageStatus } from "./type";
+// import { useNavigate } from "react-router-dom";
 
 type Props = {
   onItemClick: () => void;
@@ -17,16 +18,20 @@ type Props = {
 
 function Index({ onItemClick, openProfile, chatData }: Props) {
   const [message, setMessage] = useState<Message>();
-  const [chatId, setChatId] = useState<number>();
+  const [chatId, setChatId] = useState<number | null>(getChatId());
+  const [userId, setUserId] = useState<number | null>(getUserId());
+
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [openAlert, setOpenAlert] = useState<boolean>();
   const [savedMessage, setSavedMessage] = useState<existingUpdateMessage>();
+  // const navigate = useNavigate();
 
   const axios = useCustomAxios();
 
   const messageSend = (text: string) => {
     const user: User | null = getUser();
     if (user != null) {
+      setUserId(user?.id);
       const newMessage: Message = {
         id: Math.floor(Math.random() * 1000),
         text: text,
@@ -74,6 +79,11 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
       }
     }
   };
+
+  useEffect(() => {
+    
+    axios.get(`/chats/user/${userId}/${chatId}`);
+  });
 
   const fetchChatMessage = (chatId: number) => {
     console.log(chatId);

@@ -33,9 +33,7 @@ function MainLayout({
   overLayHeader,
 }: Props) {
   const axios = useCustomAxios();
-  const [userId, setUserId] = useState<number | string | undefined>(
-    getUserId()
-  );
+  const [userId, setUserId] = useState<number | string | null>(getUserId());
   const [loading, setLoading] = useState<boolean>(true);
   const [alert, setAlert] = useState<alertType>({ message: "", type: "info" });
   const [alertVisible, setAlertVisible] = useState<boolean>(false);

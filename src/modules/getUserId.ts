@@ -1,12 +1,12 @@
 import { Profile, User } from "../types";
 
-export function getUserId(): string | undefined {
+export function getUserId(): number | null {
   const uid = window.localStorage.getItem("userId");
   if (uid) {
     const userId = JSON.parse(uid);
     return userId;
   }
-  return undefined;
+  return null;
 }
 
 export function getUser(): User | null {
