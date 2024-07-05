@@ -29,7 +29,7 @@ function ChatConversation({ chatData, message, updateMessage }: Props) {
       setMessages((prevMessages) => {
         const messageExists = prevMessages.some((msg) => msg.id === message.id);
         if (!messageExists) {
-          return [message, ...prevMessages];
+          return [...prevMessages, message];
         }
         return prevMessages;
       });
@@ -55,7 +55,7 @@ function ChatConversation({ chatData, message, updateMessage }: Props) {
 
   return (
     <div className="flex flex-col w-full h-full">
-      <div className="flex flex-col-reverse w-full h-full gap-y-3 overflow-y-scroll scrollbar-custom">
+      <div className="flex flex-col w-full h-full gap-y-3 overflow-y-scroll scrollbar-custom">
         {messages.map((msg: Message) => {
           const isCurrentUser = msg.sender.id === Number(getUserId());
           return (
