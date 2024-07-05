@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { Role, Message } from "../../types";
 import { getUserId } from "../../modules/getUserId";
+import { existingUpdateMessage } from "./type";
 
 type Props = {
   chatData: Role;
   message: Message | undefined;
+  updateMessage: existingUpdateMessage | undefined;
 };
 
-function ChatConversation({ chatData, message }: Props) {
+function ChatConversation({ chatData, message, updateMessage }: Props) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -32,7 +34,20 @@ function ChatConversation({ chatData, message }: Props) {
         return prevMessages;
       });
     }
-  }, [message]);
+
+    if (updateMessage) {
+      setMessages((prevMessages) => {
+        const message = prevMessages.find(
+          (item) => item.id === updateMessage.existing_id
+        );
+        if (message) {
+          message.text = updateMessage.text;
+          message.id = updateMessage.id;
+        }
+        return prevMessages;
+      });
+    }
+  }, [message, updateMessage]);
 
   useEffect(() => {
     scrollToBottom();

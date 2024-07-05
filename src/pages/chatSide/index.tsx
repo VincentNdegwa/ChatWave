@@ -7,6 +7,7 @@ import ChatHead from "./ChatHead";
 import SenderBox from "./SenderBox";
 import useCustomAxios from "../../modules/customAxios";
 import AlertNotification from "../Components/AlertNotification";
+import { existingUpdateMessage, MessageStatus } from "./type";
 
 type Props = {
   onItemClick: () => void;
@@ -19,6 +20,7 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
   const [chatId, setChatId] = useState<number>();
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [openAlert, setOpenAlert] = useState<boolean>();
+  const [savedMessage, setSavedMessage] = useState<existingUpdateMessage>();
 
   const axios = useCustomAxios();
 
@@ -42,9 +44,24 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
         axios
           .post("/messages", data)
           .then((res) => {
+            let msg: existingUpdateMessage | null = null;
             if (res.data.error && res.data.data) {
               setOpenAlert(true);
               setAlertMessage("An Error Occured");
+              msg = {
+                existing_id: newMessage.id,
+                status: MessageStatus.FAILED,
+                ...res.data.data,
+              };
+            } else {
+              msg = {
+                existing_id: newMessage.id,
+                status: MessageStatus.SENT,
+                ...res.data.data,
+              };
+            }
+            if (msg !== null) {
+              setSavedMessage(msg);
             }
           })
           .catch((err) => {
@@ -93,7 +110,11 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
         />
       </div>
       <div className="h-5/6">
-        <ChatConversation chatData={chatData} message={message} />
+        <ChatConversation
+          chatData={chatData}
+          message={message}
+          updateMessage={savedMessage}
+        />
       </div>
       <div className="h-14 w-full rounded-md shadow-lg">
         <SenderBox messageSend={messageSend} />
