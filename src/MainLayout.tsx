@@ -43,6 +43,8 @@ function MainLayout({
   const [chatsData, setChatsData] = useState<RoleList>([]);
   const [singleChat, setSingleChat] = useState<any>([]);
   const navigateOpenChat = (chatId: number) => {
+    window.localStorage.removeItem("chatId");
+    window.localStorage.setItem("chatId", JSON.stringify(chatId));
     setIsChatOpen(true);
     const chats = chatsData.find((chatItem) => chatItem.chat.id === chatId);
 
@@ -90,8 +92,7 @@ function MainLayout({
       }
     };
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [axios, userId]);
 
   if (loading) {
     return <Loading />;

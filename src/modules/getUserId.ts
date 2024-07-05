@@ -25,3 +25,12 @@ export function getUserProfile(): Profile | null {
   }
   return null;
 }
+
+export function getChatId(): number | null {
+  const jsonChatId = window.localStorage.getItem("chatId");
+  if (jsonChatId) {
+    const chatId = JSON.parse(jsonChatId);
+    return chatId;
+  }
+  return null;
+}
