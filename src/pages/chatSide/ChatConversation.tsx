@@ -6,15 +6,15 @@ import { existingUpdateMessage } from "./type";
 
 type Props = {
   chatData: Role;
-  message: Message | undefined;
-  updateMessage: existingUpdateMessage | undefined;
+  message: Message | null;
+  updateMessage: existingUpdateMessage | null;
 };
 
 function ChatConversation({ chatData, message, updateMessage }: Props) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView();
   };
 
   const [messages, setMessages] = useState(chatData.chat.messages || []);

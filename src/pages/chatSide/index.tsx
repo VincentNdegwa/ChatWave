@@ -17,77 +17,90 @@ type Props = {
 };
 
 function Index({ onItemClick, openProfile, chatData }: Props) {
-  const [message, setMessage] = useState<Message>();
+  const [message, setMessage] = useState<Message | null>(null);
   const [chatId, setChatId] = useState<number | null>(getChatId());
   const [userId, setUserId] = useState<number | null>(getUserId());
 
   const [alertMessage, setAlertMessage] = useState<string>("");
-  const [openAlert, setOpenAlert] = useState<boolean>();
-  const [savedMessage, setSavedMessage] = useState<existingUpdateMessage>();
-  // const navigate = useNavigate();
+  const [openAlert, setOpenAlert] = useState<boolean>(false);
+  const [savedMessage, setSavedMessage] =
+    useState<existingUpdateMessage | null>(null);
+  const [savedChatData, setSavedChatData] = useState<Role>(chatData);
 
   const axios = useCustomAxios();
 
   const messageSend = (text: string) => {
     const user: User | null = getUser();
-    if (user != null) {
-      setUserId(user?.id);
+    if (user) {
+      setUserId(user.id);
       const newMessage: Message = {
         id: Math.floor(Math.random() * 1000),
         text: text,
-        sent_at: `${new Date()}`,
+        sent_at: new Date().toISOString(),
         updated_at: null,
         sender: user,
       };
       setMessage(newMessage);
-      try {
-        const data = {
-          text: newMessage?.text,
-          chat_id: chatId,
-          sender_id: newMessage?.sender.id,
-        };
-        axios
-          .post("/messages", data)
-          .then((res) => {
-            let msg: existingUpdateMessage | null = null;
-            if (res.data.error && res.data.data) {
-              setOpenAlert(true);
-              setAlertMessage("An Error Occured");
-              msg = {
-                existing_id: newMessage.id,
-                status: MessageStatus.FAILED,
-                ...res.data.data,
-              };
-            } else {
-              msg = {
-                existing_id: newMessage.id,
-                status: MessageStatus.SENT,
-                ...res.data.data,
-              };
-            }
-            if (msg !== null) {
-              setSavedMessage(msg);
-            }
-          })
-          .catch((err) => {
+
+      const data = {
+        text: newMessage.text,
+        chat_id: chatId,
+        sender_id: newMessage.sender.id,
+      };
+
+      axios
+        .post("/messages", data)
+        .then((res) => {
+          let msg: existingUpdateMessage | null = null;
+          if (res.data.error && res.data.data) {
             setOpenAlert(true);
-            setAlertMessage(err);
-          });
-      } catch (error) {
-        setOpenAlert(true);
-        setAlertMessage("An Error Occured");
-      }
+            setAlertMessage("An Error Occurred");
+            msg = {
+              existing_id: newMessage.id,
+              status: MessageStatus.FAILED,
+              ...res.data.data,
+            };
+          } else {
+            msg = {
+              existing_id: newMessage.id,
+              status: MessageStatus.SENT,
+              ...res.data.data,
+            };
+          }
+          if (msg !== null) {
+            setSavedMessage(msg);
+          }
+        })
+        .catch((err) => {
+          setOpenAlert(true);
+          setAlertMessage(err.message);
+        });
     }
   };
 
   useEffect(() => {
-    
-    axios.get(`/chats/user/${userId}/${chatId}`);
-  });
+    if (userId && chatId) {
+      axios
+        .get(`/chats/user/${userId}/${chatId}`)
+        .then((res) => {
+          if (res.data.error) {
+            alert(res.data.message);
+          } else {
+            setSavedChatData(res.data.data);
+          }
+        })
+        .catch((error) => alert(error.message));
+    }
+  }, [userId, chatId]);
 
+  useEffect(() => {
+    setSavedChatData(chatData);
+  }, [chatData]);
+  
   const fetchChatMessage = (chatId: number) => {
     console.log(chatId);
   };
+
   const closeAlert = () => {
     setOpenAlert(false);
     setAlertMessage("");
@@ -102,6 +115,7 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
       }
     }
   }, [chatId]);
+
   return (
     <div className="h-full flex flex-col justify-between gap-2">
       {openAlert && (
@@ -111,24 +125,29 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
           type="error"
         />
       )}
-
-      <div className="shadow-lg p-1 h-16 rounded-lg">
-        <ChatHead
-          onItemClick={onItemClick}
-          openProfile={openProfile}
-          chatData={chatData}
-        />
-      </div>
-      <div className="h-5/6">
-        <ChatConversation
-          chatData={chatData}
-          message={message}
-          updateMessage={savedMessage}
-        />
-      </div>
-      <div className="h-14 w-full rounded-md shadow-lg">
-        <SenderBox messageSend={messageSend} />
-      </div>
+      {savedChatData?.chat ? (
+        <>
+          <div className="shadow-lg p-1 h-16 rounded-lg">
+            <ChatHead
+              onItemClick={onItemClick}
+              openProfile={openProfile}
+              chatData={savedChatData}
+            />
+          </div>
+          <div className="h-5/6">
+            <ChatConversation
+              chatData={savedChatData}
+              message={message}
+              updateMessage={savedMessage}
+            />
+          </div>
+          <div className="h-14 w-full rounded-md shadow-lg">
+            <SenderBox messageSend={messageSend} />
+          </div>
+        </>
+      ) : (
+        <div>Loading...</div>
+      )}
     </div>
   );
 }
