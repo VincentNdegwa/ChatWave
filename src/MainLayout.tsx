@@ -9,14 +9,14 @@ import useCustomAxios from "./modules/customAxios";
 import { getUserId } from "./modules/getUserId";
 import Loading from "./pages/Components/Loading";
 import AlertNotification from "./pages/Components/AlertNotification";
-import { RoleList, alertType } from "./types";
+import { Participant, RoleList, alertType } from "./types";
 import ErrorPage from "./pages/Components/ErrorPage";
 import { AxiosError } from "axios";
 
 type Props = {
   isChatOpen: boolean;
   setIsChatOpen: (isOpen: boolean) => void;
-  openOverlayProfile: () => void;
+  openOverlayProfile: (participant: Participant) => void;
   isOverLayOpen: boolean;
   setOperLayOpen: (isOpen: boolean) => void;
   component: JSX.Element | undefined;
@@ -127,7 +127,9 @@ function MainLayout({
             element={
               <ChatSide
                 onItemClick={() => setIsChatOpen(!isChatOpen)}
-                openProfile={() => openOverlayProfile()}
+                openProfile={(participant: Participant) =>
+                  openOverlayProfile(participant)
+                }
                 chatData={singleChat}
               />
             }

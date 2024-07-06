@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { getChatId, getUser, getUserId } from "../../modules/getUserId";
-import { Message, Role, User } from "../../types";
+import { Message, Participant, Role, User } from "../../types";
 import ChatConversation from "./ChatConversation";
 import ChatHead from "./ChatHead";
 import SenderBox from "./SenderBox";
@@ -12,7 +12,7 @@ import { existingUpdateMessage, MessageStatus } from "./type";
 
 type Props = {
   onItemClick: () => void;
-  openProfile: () => void;
+  openProfile: (profile: Participant) => void;
   chatData: Role;
 };
 

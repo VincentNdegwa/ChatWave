@@ -1,27 +1,36 @@
 import { MdDeleteSweep } from "react-icons/md";
 import { ImBlocked } from "react-icons/im";
 import { MdReportProblem } from "react-icons/md";
+import { Participant } from "../../types";
 
-type Props = {};
+type Props = {
+  participant: Participant;
+};
 
-function index({}: Props) {
+function index({ participant }: Props) {
   return (
     <div className="flex flex-col items-center gap-2 dark ">
       <img
-        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+        src={participant.user.profile?.profile_pic || "/images/avatar.jpg"}
         alt="profile-pic"
-        className=" rounded-full max-w-[200px] max-h-[200px]  min-w-0 gap-x-3 mt-3"
+        className=" rounded-full w-[200px] h-[200px] gap-x-3 mt-3"
       />
-      <div className="text-lg text-sky-950 font-bold">User name</div>
-      <div className="text-sm text-slate-500">+2547890967</div>
+      <div className="text-lg text-sky-950 font-bold">
+        {participant?.user.profile?.first_name ||
+          participant?.user.phone_number}
+      </div>
+      {participant.user.profile?.first_name && (
+        <div className="text-sm text-slate-500">+2547890967</div>
+      )}
       <div className="flex w-full flex-col bg-sky-100 rounded-md p-2">
-        <div className="text-sm text-sky-600 border-b-2 border-sky-600">
-          About contact
-        </div>
-        <div className="text-md p-2">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda
-          placeat
-        </div>
+        {participant?.user.profile?.about && (
+          <>
+            <div className="text-sm text-sky-600 border-b-2 border-sky-600">
+              About contact
+            </div>
+            <div className="text-md p-2">{participant.user.profile.about}</div>
+          </>
+        )}
         <div className="text-sm text-sky-600 border-b-2 border-sky-600">
           Media
         </div>

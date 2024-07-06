@@ -5,7 +5,7 @@ import { Participant, Role } from "../../types";
 import { getUserId } from "../../modules/getUserId";
 type Props = {
   onItemClick: () => void;
-  openProfile: () => void;
+  openProfile: (profile: Participant) => void;
   chatData: Role;
 };
 function ChatHead({ onItemClick, openProfile, chatData }: Props) {
@@ -33,14 +33,16 @@ function ChatHead({ onItemClick, openProfile, chatData }: Props) {
           alt="profile-pic"
           className=" rounded-full h-14 w-14 min-w-0 gap-x-3"
         />
-        <div
-          className="flex flex-col justify-center hover:bg-gray-50 h-full md:min-w-[200px]"
-          onClick={openProfile}>
-          <div className="text-sky-950 font-extrabold text-lg">
-            {profile?.user.profile?.first_name || profile?.user.phone_number}
+        {profile && (
+          <div
+            className="flex flex-col justify-center hover:bg-gray-50 h-full md:min-w-[200px] cursor-pointer"
+            onClick={() => openProfile(profile)}>
+            <div className="text-sky-950 font-extrabold text-lg">
+              {profile?.user.profile?.first_name || profile?.user.phone_number}
+            </div>
+            {/* <div className="text-xs text-green-700">Online</div> */}
           </div>
-          {/* <div className="text-xs text-green-700">Online</div> */}
-        </div>
+        )}
       </div>
       <div className="flex gap-2">
         <span className="rounded-lg bg-green-700 p-3 text-white cursor-pointer hover:bg-green-400 transition duration-300">

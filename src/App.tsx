@@ -6,6 +6,7 @@ import MainLayout from "./MainLayout";
 import Register from "./pages/AuthPage/Register";
 import ForgotPassword from "./pages/AuthPage/ForgotPassword";
 import OTPVerification from "./pages/AuthPage/OTPVerification";
+import { Participant } from "./types";
 type Props = {};
 
 export default function App({}: Props) {
@@ -14,10 +15,10 @@ export default function App({}: Props) {
   const [component, setComponent] = useState<JSX.Element>();
   const [overLayHeader, setOverLayHeader] = useState<string>("");
 
-  const openOverlayProfile = () => {
+  const openOverlayProfile = (participant: Participant) => {
     setOperLayOpen(true);
     setOverLayHeader("Contact Details");
-    setComponent(<ProfilePage />);
+    setComponent(<ProfilePage participant={participant} />);
   };
 
   return (
@@ -34,7 +35,9 @@ export default function App({}: Props) {
             <MainLayout
               isChatOpen={isChatOpen}
               setIsChatOpen={setIsChatOpen}
-              openOverlayProfile={openOverlayProfile}
+              openOverlayProfile={(participant: Participant) =>
+                openOverlayProfile(participant)
+              }
               isOverLayOpen={isOverLayOpen}
               setOperLayOpen={setOperLayOpen}
               component={component}
