@@ -2,9 +2,11 @@ import { IoMdAddCircle } from "react-icons/io";
 import { IoNotificationsOutline, IoSettingsOutline } from "react-icons/io5";
 import { FaUserCircle } from "react-icons/fa";
 
-type Props = {};
+type Props = {
+  openProfile: () => void;
+};
 
-export default function SearchBar({}: Props) {
+export default function SearchBar({ openProfile }: Props) {
   return (
     <div className="flex flex-col items-center gap-1 bg-gradient-to-r from-sky-500 to-sky-800 rounded-b-lg p-2">
       <div className="flex items-center justify-between w-full shadow-lg p-2">
@@ -13,6 +15,7 @@ export default function SearchBar({}: Props) {
             src="/images/avatar.jpg"
             alt="profile-pic"
             className="h-12 w-12 rounded-full border-2 border-white cursor-pointer"
+            onClick={() => openProfile()}
           />
           <div className="flex flex-col text-white">
             <span className="font-bold text-xl">John Doe</span>
