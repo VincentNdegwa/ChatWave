@@ -35,7 +35,7 @@ function Contact({ onItemClick, chat }: Props) {
   return (
     <div
       onClick={() => handleNavigate("/chat")}
-      className="flex gap-3 p-2 hover:bg-sky-50 ease-in duration-100 rounded-md cursor-pointer relative">
+      className="flex gap-3 p-2 hover:bg-gray-50 ease-in duration-100 rounded-md cursor-pointer relative">
       <div className="h-[40px] w-[45px] ">
         <img
           src={profile?.user.profile?.profile_pic || "/images/avatar.jpg"}

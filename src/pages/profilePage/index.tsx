@@ -22,19 +22,19 @@ function index({ participant }: Props) {
       {participant.user.profile?.first_name && (
         <div className="text-sm text-slate-500">+2547890967</div>
       )}
-      <div className="flex w-full flex-col bg-sky-100 rounded-md p-2">
+      <div className="flex w-full flex-col rounded-md p-2">
         {participant?.user.profile?.about && (
           <>
-            <div className="text-sm text-sky-600 border-b-2 border-sky-600">
+            <div className="text-sm text-sky-600 border-b-2 border-gray-200">
               About contact
             </div>
             <div className="text-md p-2">{participant.user.profile.about}</div>
           </>
         )}
-        <div className="text-sm text-sky-600 border-b-2 border-sky-600">
+        {/* <div className="text-sm text-sky-600 border-b-2 border-gray-200">
           Media
-        </div>
-        <div className="text-sm text-sky-600 border-b-2 border-sky-600">
+        </div> */}
+        <div className="text-sm text-sky-600 border-b-2 border-gray-200">
           Actions
         </div>
         <div className="flex flex-col mt-1">
