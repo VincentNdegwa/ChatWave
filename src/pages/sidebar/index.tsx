@@ -4,6 +4,8 @@ import { RoleList, User } from "../../types";
 import ContactList from "./ContactList";
 import SearchBar from "./SearchBar";
 import UserProfile from "./UserProfile";
+import UserProfileEdit from "./UserProfileEdit";
+
 type Props = {
   onItemClick: (chatId: number) => void;
   chatsData: RoleList;
@@ -13,6 +15,7 @@ function Index({ onItemClick, chatsData }: Props) {
   const [userProf, setUserProf] = useState<User | null>(getUser());
   const [contactOpen, setContactOpen] = useState<boolean>(true);
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
+  const [editOpen, setEditOpen] = useState<boolean>(false);
 
   const openProfile = () => {
     const user = getUser();
@@ -20,11 +23,35 @@ function Index({ onItemClick, chatsData }: Props) {
       setUserProf(user);
       setContactOpen(false);
       setProfileOpen(true);
+      setEditOpen(false);
     }
   };
+
+  const closeProfile = () => {
+    setContactOpen(true);
+    setProfileOpen(false);
+    setEditOpen(false);
+  };
+
+  const openEditForm = () => {
+    setEditOpen(true);
+    setProfileOpen(false);
+    setContactOpen(false);
+  };
+  const closeEditForm = () => {
+    openProfile();
+  };
+
+  const updateUserDetails = (updateUser: User) => {
+    console.log(updateUser);
+  };
+
   return (
-    <div className="w-full h-full">
-      {contactOpen && !profileOpen && (
+    <div className="w-full h-full relative overflow-hidden">
+      <div
+        className={`absolute top-0 left-0 w-full h-full transition-transform duration-500 ${
+          contactOpen ? "translate-x-0" : "-translate-x-full"
+        }`}>
         <div className="h-full flex flex-col gap-y-2">
           <div className="w-full h-fit">
             <SearchBar openProfile={openProfile} />
@@ -33,13 +60,33 @@ function Index({ onItemClick, chatsData }: Props) {
             <ContactList onItemClick={onItemClick} chatsData={chatsData} />
           </div>
         </div>
-      )}
+      </div>
 
-      {!contactOpen && profileOpen && userProf && (
-        <div className="w-full h-full">
-          <UserProfile user={userProf} />
-        </div>
-      )}
+      <div
+        className={`absolute top-0 left-0 w-full h-full transition-transform duration-500 ${
+          profileOpen ? "translate-x-0" : "translate-x-full"
+        }`}>
+        {userProf && (
+          <UserProfile
+            user={userProf}
+            closeProfile={closeProfile}
+            editProfile={openEditForm}
+          />
+        )}
+      </div>
+
+      <div
+        className={`absolute top-0 left-0 w-full h-full transition-transform duration-500 ${
+          editOpen ? "translate-x-0" : "translate-x-full"
+        }`}>
+        {userProf && (
+          <UserProfileEdit
+            user={userProf}
+            onCancel={closeEditForm}
+            onSave={updateUserDetails}
+          />
+        )}
+      </div>
     </div>
   );
 }
