@@ -1,46 +1,91 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { Profile, User } from "../../types";
+import { User, alertType } from "../../types";
 import { IoMdSave, IoMdArrowRoundBack } from "react-icons/io";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import imageDB from "../../modules/FireBaseConifg";
+import { v4 as uuidv4 } from "uuid";
+import { ProfileUpdate } from "./Types/types";
+import Loading from "../Components/Loading";
 
 type Props = {
   user: User;
-  onSave: (updatedUser: User) => void;
   onCancel: () => void;
+  notificationAlert: (alert: alertType) => void;
 };
 
-export default function UserProfileEdit({ user, onSave, onCancel }: Props) {
+export default function UserProfileEdit({
+  user,
+  onCancel,
+  notificationAlert,
+}: Props) {
   const [profilePic, setProfilePic] = useState(user.profile?.profile_pic || "");
+  const [image, setImage] = useState<any>("");
   const [firstName, setFirstName] = useState(user.profile?.first_name || "");
   const [lastName, setLastName] = useState(user.profile?.last_name || "");
   const [about, setAbout] = useState(user.profile?.about || "");
+  const [firebaseLink, setFirebaseLink] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
   const { phone_number } = user;
-
-  const handleSave = () => {
-    const updateProfile: Profile = {
-      id: user.profile ? user.profile.id : 0,
-      first_name: firstName,
-      last_name: lastName,
-      profile_pic: profilePic,
-      about: about,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    const updatedUser: User = {
-      ...user,
-      profile: updateProfile,
-    };
-
-    onSave(updatedUser);
-  };
 
   const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
       const reader = new FileReader();
       reader.onload = () => setProfilePic(reader.result as string);
       reader.readAsDataURL(e.target.files[0]);
     }
   };
+  const uploadImageToFireBase = async (): Promise<string | null> => {
+    try {
+      const imageRef = ref(imageDB, `/files/${uuidv4()}`);
+      await uploadBytes(imageRef, image);
+      const linkUrl = await getDownloadURL(imageRef);
+      notificationAlert({
+        message: "Photo uploaded successfully",
+        type: "success",
+      });
+      return linkUrl;
+    } catch (error) {
+      console.error("Error uploading image and getting URL:", error);
+      notificationAlert({
+        message: "Unable to upload the image",
+        type: "error",
+      });
+      return null;
+    }
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    const profileUrl = await uploadImageToFireBase();
+    if (profileUrl) {
+      setProfilePic(profileUrl);
+      setFirebaseLink(profileUrl);
+    }
+
+    const updatedUser: ProfileUpdate = {
+      user_id: user.id,
+      first_name: firstName,
+      last_name: lastName,
+      profile_pic: firebaseLink,
+      about: about,
+    };
+    updateProfile(updatedUser);
+  };
+
+  const updateProfile = async (profile: ProfileUpdate) => {
+    try {
+      console.log(profile);
+    } catch (error) {
+      notificationAlert({ message: "Something wrong happened", type: "error" });
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex flex-col gap-y-5 items-center text-sky-950 w-full h-full">

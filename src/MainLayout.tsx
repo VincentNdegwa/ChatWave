@@ -92,6 +92,10 @@ function MainLayout({
     fetchData();
   }, [axios, userId]);
 
+  const displayNotification = (alert: alertType) => {
+    setAlertVisible(true);
+    setAlert(alert);
+  };
   if (loading) {
     return <Loading />;
   }
@@ -113,6 +117,7 @@ function MainLayout({
           <SideBar
             onItemClick={(chatId: number) => navigateOpenChat(chatId)}
             chatsData={chatsData}
+            notificationAlert={displayNotification}
           />
         </div>
       </div>

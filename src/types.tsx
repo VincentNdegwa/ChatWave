@@ -56,3 +56,4 @@ export interface Role {
 }
 
 export type RoleList = Role[];
+

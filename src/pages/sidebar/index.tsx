@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getUser } from "../../modules/getUserId";
-import { RoleList, User } from "../../types";
+import { RoleList, User, alertType } from "../../types";
 import ContactList from "./ContactList";
 import SearchBar from "./SearchBar";
 import UserProfile from "./UserProfile";
@@ -9,9 +9,10 @@ import UserProfileEdit from "./UserProfileEdit";
 type Props = {
   onItemClick: (chatId: number) => void;
   chatsData: RoleList;
+  notificationAlert: (alert: alertType) => void;
 };
 
-function Index({ onItemClick, chatsData }: Props) {
+function Index({ onItemClick, chatsData, notificationAlert }: Props) {
   const [userProf, setUserProf] = useState<User | null>(getUser());
   const [contactOpen, setContactOpen] = useState<boolean>(true);
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
@@ -40,10 +41,6 @@ function Index({ onItemClick, chatsData }: Props) {
   };
   const closeEditForm = () => {
     openProfile();
-  };
-
-  const updateUserDetails = (updateUser: User) => {
-    console.log(updateUser);
   };
 
   return (
@@ -83,7 +80,7 @@ function Index({ onItemClick, chatsData }: Props) {
           <UserProfileEdit
             user={userProf}
             onCancel={closeEditForm}
-            onSave={updateUserDetails}
+            notificationAlert={notificationAlert}
           />
         )}
       </div>
