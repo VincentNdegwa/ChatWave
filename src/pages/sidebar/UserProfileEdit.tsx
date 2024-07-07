@@ -6,18 +6,19 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import imageDB from "../../modules/FireBaseConifg";
 import { v4 as uuidv4 } from "uuid";
 import { ProfileUpdate } from "./Types/types";
-import Loading from "../Components/Loading";
 
 type Props = {
   user: User;
   onCancel: () => void;
   notificationAlert: (alert: alertType) => void;
+  handleLoading: (status: boolean) => void;
 };
 
 export default function UserProfileEdit({
   user,
   onCancel,
   notificationAlert,
+  handleLoading,
 }: Props) {
   const [profilePic, setProfilePic] = useState(user.profile?.profile_pic || "");
   const [image, setImage] = useState<any>("");
@@ -25,7 +26,6 @@ export default function UserProfileEdit({
   const [lastName, setLastName] = useState(user.profile?.last_name || "");
   const [about, setAbout] = useState(user.profile?.about || "");
   const [firebaseLink, setFirebaseLink] = useState("");
-  const [loading, setLoading] = useState<boolean>(false);
   const { phone_number } = user;
 
   const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +57,7 @@ export default function UserProfileEdit({
   };
 
   const handleSave = async () => {
-    setLoading(true);
+    handleLoading(true);
     const profileUrl = await uploadImageToFireBase();
     if (profileUrl) {
       setProfilePic(profileUrl);
@@ -80,12 +80,10 @@ export default function UserProfileEdit({
     } catch (error) {
       notificationAlert({ message: "Something wrong happened", type: "error" });
       console.error("Error updating profile:", error);
+    } finally {
+      handleLoading(false);
     }
   };
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <div className="flex flex-col gap-y-5 items-center text-sky-950 w-full h-full">

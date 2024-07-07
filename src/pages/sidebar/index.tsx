@@ -10,9 +10,15 @@ type Props = {
   onItemClick: (chatId: number) => void;
   chatsData: RoleList;
   notificationAlert: (alert: alertType) => void;
+  handleLoading: (statu: boolean) => void;
 };
 
-function Index({ onItemClick, chatsData, notificationAlert }: Props) {
+function Index({
+  onItemClick,
+  chatsData,
+  notificationAlert,
+  handleLoading,
+}: Props) {
   const [userProf, setUserProf] = useState<User | null>(getUser());
   const [contactOpen, setContactOpen] = useState<boolean>(true);
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
@@ -81,6 +87,7 @@ function Index({ onItemClick, chatsData, notificationAlert }: Props) {
             user={userProf}
             onCancel={closeEditForm}
             notificationAlert={notificationAlert}
+            handleLoading={handleLoading}
           />
         )}
       </div>

@@ -96,6 +96,9 @@ function MainLayout({
     setAlertVisible(true);
     setAlert(alert);
   };
+  const handleLoading = (status: boolean) => {
+    setLoading(status);
+  };
   if (loading) {
     return <Loading />;
   }
@@ -118,6 +121,7 @@ function MainLayout({
             onItemClick={(chatId: number) => navigateOpenChat(chatId)}
             chatsData={chatsData}
             notificationAlert={displayNotification}
+            handleLoading={handleLoading}
           />
         </div>
       </div>
