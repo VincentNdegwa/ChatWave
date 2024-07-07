@@ -36,7 +36,7 @@ function Index({ onItemClick, chatsData }: Props) {
       )}
 
       {!contactOpen && profileOpen && userProf && (
-        <div>
+        <div className="w-full h-full">
           <UserProfile user={userProf} />
         </div>
       )}
