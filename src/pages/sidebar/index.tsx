@@ -54,7 +54,7 @@ function Index({ onItemClick, chatsData }: Props) {
         }`}>
         <div className="h-full flex flex-col gap-y-2">
           <div className="w-full h-fit">
-            <SearchBar openProfile={openProfile} />
+            <SearchBar openProfile={openProfile} user={userProf} />
           </div>
           <div className="w-full h-[85vh] mt-0 p-0 overflow-y-scroll scrollbar-none">
             <ContactList onItemClick={onItemClick} chatsData={chatsData} />

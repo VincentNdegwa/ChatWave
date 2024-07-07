@@ -71,7 +71,7 @@ export default function UserProfileEdit({ user, onSave, onCancel }: Props) {
               type="text"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className="mt-2 p-2 border rounded"
+              className="mt-2 p-2 border rounded outline-sky-500"
             />
           </div>
           <div className="flex flex-col mt-3">
@@ -80,16 +80,7 @@ export default function UserProfileEdit({ user, onSave, onCancel }: Props) {
               type="text"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              className="mt-2 p-2 border rounded"
-            />
-          </div>
-          <div className="flex flex-col mt-3">
-            <label className="text-md text-slate-500">Phone Number</label>
-            <input
-              type="text"
-              value={phone_number}
-              readOnly
-              className="mt-2 p-2 border rounded bg-gray-100 cursor-not-allowed"
+              className="mt-2 p-2 border rounded outline-sky-500"
             />
           </div>
           <div className="flex flex-col mt-3">
@@ -98,7 +89,16 @@ export default function UserProfileEdit({ user, onSave, onCancel }: Props) {
               type="text"
               value={about}
               onChange={(e) => setAbout(e.target.value)}
-              className="mt-2 p-2 border rounded"
+              className="mt-2 p-2 border rounded outline-sky-500"
+            />
+          </div>
+          <div className="flex flex-col mt-3">
+            <label className="text-md text-slate-500">Phone Number</label>
+            <input
+              type="text"
+              value={phone_number}
+              readOnly
+              className="mt-2 p-2 border-0 outline-none rounded bg-gray-100 cursor-not-allowed"
             />
           </div>
         </div>
