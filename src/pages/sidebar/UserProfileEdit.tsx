@@ -6,6 +6,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import imageDB from "../../modules/FireBaseConifg";
 import { v4 as uuidv4 } from "uuid";
 import { ProfileUpdate } from "./Types/types";
+import useCustomAxios from "../../modules/customAxios";
 
 type Props = {
   user: User;
@@ -25,11 +26,14 @@ export default function UserProfileEdit({
   const [firstName, setFirstName] = useState(user.profile?.first_name || "");
   const [lastName, setLastName] = useState(user.profile?.last_name || "");
   const [about, setAbout] = useState(user.profile?.about || "");
-  const [firebaseLink, setFirebaseLink] = useState("");
+
+  const [imagechanged, setImageChanged] = useState<boolean>(false);
+  const axios = useCustomAxios();
   const { phone_number } = user;
 
   const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      setImageChanged(true);
       setImage(e.target.files[0]);
       const reader = new FileReader();
       reader.onload = () => setProfilePic(reader.result as string);
@@ -45,6 +49,7 @@ export default function UserProfileEdit({
         message: "Photo uploaded successfully",
         type: "success",
       });
+      setProfilePic(linkUrl);
       return linkUrl;
     } catch (error) {
       console.error("Error uploading image and getting URL:", error);
@@ -58,31 +63,52 @@ export default function UserProfileEdit({
 
   const handleSave = async () => {
     handleLoading(true);
-    const profileUrl = await uploadImageToFireBase();
-    if (profileUrl) {
-      setProfilePic(profileUrl);
-      setFirebaseLink(profileUrl);
+    let profileUrl = profilePic;
+    if (imagechanged) {
+      const link = await uploadImageToFireBase();
+      if (link) {
+        profileUrl = link;
+        setProfilePic(link);
+      }
     }
+    console.log(profileUrl);
 
     const updatedUser: ProfileUpdate = {
       user_id: user.id,
       first_name: firstName,
       last_name: lastName,
-      profile_pic: firebaseLink,
+      profile_pic: profileUrl,
       about: about,
     };
     updateProfile(updatedUser);
   };
 
-  const updateProfile = async (profile: ProfileUpdate) => {
-    try {
-      console.log(profile);
-    } catch (error) {
-      notificationAlert({ message: "Something wrong happened", type: "error" });
-      console.error("Error updating profile:", error);
-    } finally {
-      handleLoading(false);
-    }
+  const updateProfile = (profile: ProfileUpdate) => {
+    handleLoading(true);
+
+    axios
+      .patch("/profiles", profile)
+      .then((response) => {
+        if (response.data.error) {
+          notificationAlert({ message: response.data.message, type: "error" });
+        } else {
+          console.log("Profile updated:", response.data);
+          notificationAlert({
+            message: "Profile updated successfully",
+            type: "success",
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating profile:", error);
+        notificationAlert({
+          message: "Something went wrong while updating the profile",
+          type: "error",
+        });
+      })
+      .finally(() => {
+        handleLoading(false);
+      });
   };
 
   return (
