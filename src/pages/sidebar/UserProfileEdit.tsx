@@ -93,6 +93,12 @@ export default function UserProfileEdit({
           notificationAlert({ message: response.data.message, type: "error" });
         } else {
           console.log("Profile updated:", response.data);
+          const jsonData = window.localStorage.getItem("user");
+          if (jsonData) {
+            const userData: User = JSON.parse(jsonData);
+            const newUser: User = { ...userData, profile: response.data.data };
+            window.localStorage.setItem("user", JSON.stringify(newUser));
+          }
           notificationAlert({
             message: "Profile updated successfully",
             type: "success",

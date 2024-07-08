@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getUser } from "../../modules/getUserId";
 import { RoleList, User, alertType } from "../../types";
 import ContactList from "./ContactList";
@@ -48,6 +48,14 @@ function Index({
   const closeEditForm = () => {
     openProfile();
   };
+
+  useEffect(() => {
+    const jsonUser = window.localStorage.getItem("user");
+    if (jsonUser) {
+      const user = JSON.parse(jsonUser);
+      setUserProf(user);
+    }
+  },[]);
 
   return (
     <div className="w-full h-full relative overflow-hidden">
