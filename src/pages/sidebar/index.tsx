@@ -5,6 +5,8 @@ import ContactList from "./ContactList";
 import SearchBar from "./SearchBar";
 import UserProfile from "./UserProfile";
 import UserProfileEdit from "./UserProfileEdit";
+import useCustomAxios from "../../modules/customAxios";
+import UserChats from "./UserChats";
 
 type Props = {
   onItemClick: (chatId: number) => void;
@@ -23,14 +25,19 @@ function Index({
   const [contactOpen, setContactOpen] = useState<boolean>(true);
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [viewUser, setViewUsers] = useState<boolean>(false);
 
+  const axios = useCustomAxios();
   const openProfile = () => {
+    console.log("closing");
+
     const user = getUser();
     if (user) {
       setUserProf(user);
       setContactOpen(false);
       setProfileOpen(true);
       setEditOpen(false);
+      setViewUsers(false);
     }
   };
 
@@ -38,12 +45,14 @@ function Index({
     setContactOpen(true);
     setProfileOpen(false);
     setEditOpen(false);
+    setViewUsers(false);
   };
 
   const openEditForm = () => {
     setEditOpen(true);
     setProfileOpen(false);
     setContactOpen(false);
+    setViewUsers(false);
   };
   const closeEditForm = () => {
     openProfile();
@@ -55,7 +64,18 @@ function Index({
       const user = JSON.parse(jsonUser);
       setUserProf(user);
     }
-  },[]);
+  }, []);
+
+  const viewChats = () => {
+    setViewUsers(true);
+    setContactOpen(false);
+    setProfileOpen(false);
+    setEditOpen(false);
+    axios
+      .get(`/users/all/${userProf?.id}`)
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className="w-full h-full relative overflow-hidden">
@@ -65,7 +85,11 @@ function Index({
         }`}>
         <div className="h-full flex flex-col gap-y-2">
           <div className="w-full h-fit">
-            <SearchBar openProfile={openProfile} user={userProf} />
+            <SearchBar
+              openProfile={openProfile}
+              user={userProf}
+              viewChats={viewChats}
+            />
           </div>
           <div className="w-full h-[85vh] mt-0 p-0 overflow-y-scroll scrollbar-none">
             <ContactList onItemClick={onItemClick} chatsData={chatsData} />
@@ -98,6 +122,13 @@ function Index({
             handleLoading={handleLoading}
           />
         )}
+      </div>
+
+      <div
+        className={`absolute top-0 left-0 w-full h-full transition-transform duration-500 ${
+          viewUser ? "translate-x-0" : "translate-x-full"
+        }`}>
+        {userProf && <UserChats closeUserChat={openProfile} />}
       </div>
     </div>
   );

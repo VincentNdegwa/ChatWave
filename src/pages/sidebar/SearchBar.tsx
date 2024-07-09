@@ -11,9 +11,10 @@ import { MdLogout } from "react-icons/md";
 type Props = {
   openProfile: () => void;
   user: User | null;
+  viewChats: () => void;
 };
 
-export default function SearchBar({ openProfile, user }: Props) {
+export default function SearchBar({ openProfile, user, viewChats }: Props) {
   const [optionMenu, setOptionMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLDivElement | null>(null);
@@ -52,6 +53,10 @@ export default function SearchBar({ openProfile, user }: Props) {
     });
   };
 
+  const startNewChat = () => {
+    setOptionMenu(false);
+    viewChats();
+  };
   return (
     <div className="flex flex-col items-center gap-1 bg-gradient-to-r from-sky-500 to-sky-800 rounded-b-lg p-2">
       <div className="flex items-center justify-between w-full shadow-lg p-2">
@@ -84,7 +89,7 @@ export default function SearchBar({ openProfile, user }: Props) {
               <ul className="flex flex-col">
                 <li
                   className="hover:bg-sky-700 p-2 text-[12px] cursor-pointer flex items-center gap-x-3"
-                  onClick={() => setOptionMenu(false)}>
+                  onClick={() => startNewChat()}>
                   <IoMdAddCircle />
                   <div>New chat</div>
                 </li>

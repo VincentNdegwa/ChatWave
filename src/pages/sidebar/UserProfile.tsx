@@ -12,7 +12,7 @@ function UserProfile({ user, closeProfile, editProfile }: Props) {
   const { phone_number } = user;
 
   return (
-    <div className="flex flex-col gap-y-5 items-center text-sky-950 w-full h-full">
+    <div className="lflex flex-col gap-y-5 items-center text-sky-950 w-full h-ful">
       <div className="flex gap-x-3 items-center bg-sky-900 w-full h-fit p-2 text-white">
         <div
           onClick={closeProfile}
