@@ -86,7 +86,7 @@ function MainLayout({
           setError("Something went wrong");
         }
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
     fetchData();
