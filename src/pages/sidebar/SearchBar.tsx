@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoNotificationsOutline, IoSettingsOutline } from "react-icons/io5";
 import { FaUserCircle } from "react-icons/fa";
 import { CiMenuKebab } from "react-icons/ci";
-
 import { User } from "../../types";
+import useCustomAxios from "../../modules/customAxios";
 
 type Props = {
   openProfile: () => void;
@@ -13,9 +13,34 @@ type Props = {
 
 export default function SearchBar({ openProfile, user }: Props) {
   const [optionMenu, setOptionMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const axios = useCustomAxios();
 
   const toggleMenu = () => {
     setOptionMenu(!optionMenu);
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      setOptionMenu(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const logoutTheUser = () => {
+    axios.post("/auth/logout").catch((error) => {
+      if (error.response && error.response.status === 401) {
+        window.localStorage.removeItem("token");
+        window.localStorage.removeItem("user");
+        window.localStorage.removeItem("userId");
+      }
+    });
   };
 
   return (
@@ -36,20 +61,26 @@ export default function SearchBar({ openProfile, user }: Props) {
           </div>
         </div>
         <div className="flex items-center gap-4 text-white text-2xl relative">
-          <IoNotificationsOutline className="cursor-pointer rounded-full w-6 h-6 hover:bg-sky-900 p-1  hover:text-yellow-300" />
-          <IoSettingsOutline className="cursor-pointer rounded-full w-6 h-6 hover:bg-sky-900 p-1  hover:text-yellow-300" />
-          <IoMdAddCircle className="cursor-pointer rounded-full w-6 h-6 hover:bg-sky-900 p-1  hover:text-yellow-300" />
+          <IoNotificationsOutline className="cursor-pointer rounded-full w-6 h-6 hover:bg-sky-900 p-1 hover:text-yellow-300" />
+          <IoSettingsOutline className="cursor-pointer rounded-full w-6 h-6 hover:bg-sky-900 p-1 hover:text-yellow-300" />
+          <IoMdAddCircle className="cursor-pointer rounded-full w-6 h-6 hover:bg-sky-900 p-1 hover:text-yellow-300" />
           <CiMenuKebab
-            className="cursor-pointer rounded-full w-6 h-6 hover:bg-sky-900 p-1  hover:text-yellow-300"
+            className="cursor-pointer rounded-full w-6 h-6 hover:bg-sky-900 p-1 hover:text-yellow-300"
             onClick={toggleMenu}
           />
           {optionMenu && (
-            <div className="absolute top-full right-0 mt-2 w-48 py-1 bg-sky-600 shadow-lg rounded-sm z-10">
+            <div
+              className="absolute top-full right-0 mt-2 w-48 py-1 bg-sky-600 shadow-lg rounded-sm z-10"
+              ref={menuRef}>
               <ul className="flex flex-col">
-                <li className="hover:bg-sky-700 p-2 text-[12px] cursor-pointer">
+                <li
+                  className="hover:bg-sky-700 p-2 text-[12px] cursor-pointer"
+                  onClick={() => setOptionMenu(false)}>
                   New chat
                 </li>
-                <li className="hover:bg-sky-700 p-2 text-[12px] cursor-pointer">
+                <li
+                  className="hover:bg-sky-700 p-2 text-[12px] cursor-pointer"
+                  onClick={() => logoutTheUser()}>
                   Logout
                 </li>
               </ul>
