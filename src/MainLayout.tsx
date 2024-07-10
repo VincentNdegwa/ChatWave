@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import ChatSide from "./pages/chatSide";
 import StartPage from "./pages/startPage";
 import Overlay from "./pages/Components/Overlay";
@@ -40,6 +40,7 @@ function MainLayout({
   const [error, setError] = useState<string | null>(null);
   const [chatsData, setChatsData] = useState<RoleList>([]);
   const [singleChat, setSingleChat] = useState<any>([]);
+  const navigate = useNavigate();
   const navigateOpenChat = (chatId: number) => {
     window.localStorage.removeItem("chatId");
     window.localStorage.setItem("chatId", JSON.stringify(chatId));
@@ -101,7 +102,15 @@ function MainLayout({
   };
 
   const createChat = (user: User) => {
-    console.log(user);
+    const data = chatsData.find((item) =>
+      item.chat.participants.some((x) => x.user.id === user.id)
+    );
+    if (data) {
+      navigate('/chat');
+      setSingleChat(data);
+    }
+    console.log(data);
+    //  console.log(chatsData);
   };
   if (loading) {
     return <Loading />;
