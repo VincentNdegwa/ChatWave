@@ -57,6 +57,7 @@ export default function SearchBar({ openProfile, user, viewChats }: Props) {
     setOptionMenu(false);
     viewChats();
   };
+
   return (
     <div className="flex flex-col items-center gap-1 bg-gradient-to-r from-sky-500 to-sky-800 rounded-b-lg p-2">
       <div className="flex items-center justify-between w-full shadow-lg p-2">

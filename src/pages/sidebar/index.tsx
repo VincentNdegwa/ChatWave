@@ -29,8 +29,6 @@ function Index({
 
   const axios = useCustomAxios();
   const openProfile = () => {
-    console.log("closing");
-
     const user = getUser();
     if (user) {
       setUserProf(user);
@@ -40,8 +38,7 @@ function Index({
       setViewUsers(false);
     }
   };
-
-  const closeProfile = () => {
+  const closeAllSlides = () => {
     setContactOpen(true);
     setProfileOpen(false);
     setEditOpen(false);
@@ -104,7 +101,7 @@ function Index({
         {userProf && (
           <UserProfile
             user={userProf}
-            closeProfile={closeProfile}
+            closeProfile={closeAllSlides}
             editProfile={openEditForm}
           />
         )}
@@ -128,7 +125,7 @@ function Index({
         className={`absolute top-0 left-0 w-full h-full transition-transform duration-500 ${
           viewUser ? "translate-x-0" : "translate-x-full"
         }`}>
-        {userProf && <UserChats closeUserChat={openProfile} />}
+        {userProf && <UserChats closeUserChat={closeAllSlides} />}
       </div>
     </div>
   );
