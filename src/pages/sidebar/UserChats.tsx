@@ -7,9 +7,10 @@ import { User } from "../../types";
 import BlankLoading from "../Components/BlankLoading";
 type Props = {
   closeUserChat: () => void;
+  createChat: (user: User) => void;
 };
 
-function UserChats({ closeUserChat }: Props) {
+function UserChats({ closeUserChat, createChat }: Props) {
   const axios = useCustomAxios();
   const [userId, setUserId] = useState<number | null>(null);
   const [users, setUser] = useState<User[] | null>(null);
@@ -42,7 +43,7 @@ function UserChats({ closeUserChat }: Props) {
   }, [axios, userId]);
 
   const startChat = (user: User) => {
-    console.log(user);
+    createChat(user);
   };
   if (!users) {
     return (

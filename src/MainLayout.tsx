@@ -9,7 +9,7 @@ import useCustomAxios from "./modules/customAxios";
 import { getUserId } from "./modules/getUserId";
 import Loading from "./pages/Components/Loading";
 import AlertNotification from "./pages/Components/AlertNotification";
-import { Participant, RoleList, alertType } from "./types";
+import { Participant, RoleList, User, alertType } from "./types";
 import ErrorPage from "./pages/Components/ErrorPage";
 import { AxiosError } from "axios";
 
@@ -99,6 +99,10 @@ function MainLayout({
   const handleLoading = (status: boolean) => {
     setLoading(status);
   };
+
+  const createChat = (user: User) => {
+    console.log(user);
+  };
   if (loading) {
     return <Loading />;
   }
@@ -122,6 +126,7 @@ function MainLayout({
             chatsData={chatsData}
             notificationAlert={displayNotification}
             handleLoading={handleLoading}
+            createChat={createChat}
           />
         </div>
       </div>

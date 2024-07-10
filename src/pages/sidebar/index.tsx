@@ -5,7 +5,7 @@ import ContactList from "./ContactList";
 import SearchBar from "./SearchBar";
 import UserProfile from "./UserProfile";
 import UserProfileEdit from "./UserProfileEdit";
-import useCustomAxios from "../../modules/customAxios";
+// import useCustomAxios from "../../modules/customAxios";
 import UserChats from "./UserChats";
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
   chatsData: RoleList;
   notificationAlert: (alert: alertType) => void;
   handleLoading: (statu: boolean) => void;
+  createChat: (user: User) => void;
 };
 
 function Index({
@@ -20,6 +21,7 @@ function Index({
   chatsData,
   notificationAlert,
   handleLoading,
+  createChat,
 }: Props) {
   const [userProf, setUserProf] = useState<User | null>(getUser());
   const [contactOpen, setContactOpen] = useState<boolean>(true);
@@ -27,7 +29,6 @@ function Index({
   const [editOpen, setEditOpen] = useState<boolean>(false);
   const [viewUser, setViewUsers] = useState<boolean>(false);
 
-  const axios = useCustomAxios();
   const openProfile = () => {
     const user = getUser();
     if (user) {
@@ -68,10 +69,6 @@ function Index({
     setContactOpen(false);
     setProfileOpen(false);
     setEditOpen(false);
-    axios
-      .get(`/users/all/${userProf?.id}`)
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err));
   };
 
   return (
@@ -125,7 +122,9 @@ function Index({
         className={`absolute top-0 left-0 w-full h-full transition-transform duration-500 ${
           viewUser ? "translate-x-0" : "translate-x-full"
         }`}>
-        {userProf && <UserChats closeUserChat={closeAllSlides} />}
+        {userProf && (
+          <UserChats closeUserChat={closeAllSlides} createChat={createChat} />
+        )}
       </div>
     </div>
   );
