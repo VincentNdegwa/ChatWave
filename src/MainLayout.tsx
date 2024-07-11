@@ -9,7 +9,7 @@ import useCustomAxios from "./modules/customAxios";
 import { getUserId } from "./modules/getUserId";
 import Loading from "./pages/Components/Loading";
 import AlertNotification from "./pages/Components/AlertNotification";
-import { Participant, RoleList, User, alertType } from "./types";
+import { Participant, Role, RoleList, User, alertType } from "./types";
 import ErrorPage from "./pages/Components/ErrorPage";
 import { AxiosError } from "axios";
 
@@ -93,6 +93,10 @@ function MainLayout({
     fetchData();
   }, [axios, userId]);
 
+  useEffect(() => {
+    setSingleChat(singleChat);
+  }, [singleChat]);
+
   const displayNotification = (alert: alertType) => {
     setAlertVisible(true);
     setAlert(alert);
@@ -106,8 +110,20 @@ function MainLayout({
       item.chat.participants.some((x) => x.user.id === user.id)
     );
     if (data) {
-      navigate('/chat');
+      navigate("/chat");
       setSingleChat(data);
+    } else {
+      const newRole: Role = {
+        id: 763478,
+        role: "string",
+        chat: {
+          id: 378647,
+          created_at: `${new Date()}`,
+          participants: [],
+          lastMessage: null,
+          messages: null,
+        },
+      };
     }
     console.log(data);
     //  console.log(chatsData);

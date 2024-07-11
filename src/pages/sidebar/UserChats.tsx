@@ -44,6 +44,7 @@ function UserChats({ closeUserChat, createChat }: Props) {
 
   const startChat = (user: User) => {
     createChat(user);
+    closeNewChat();
   };
   if (!users) {
     return (
