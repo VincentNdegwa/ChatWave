@@ -54,6 +54,7 @@ export default function SearchBar({ openProfile, user, viewChats }: Props) {
   };
 
   const startNewChat = () => {
+    window.localStorage.removeItem("chatId");
     setOptionMenu(false);
     viewChats();
   };

@@ -118,14 +118,15 @@ function MainLayout({
         role: "string",
         chat: {
           id: 378647,
-          created_at: `${new Date()}`,
-          participants: [],
+          created_at: new Date().toISOString(),
+          participants: [{ id: user.id, role: "user", user: user }],
           lastMessage: null,
-          messages: null,
+          messages: [],
         },
       };
+      setSingleChat(newRole);
     }
-    console.log(data);
+    console.log(singleChat);
     //  console.log(chatsData);
   };
   if (loading) {
