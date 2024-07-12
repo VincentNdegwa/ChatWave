@@ -47,7 +47,8 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
           } else {
             setSavedChatData(res.data.data);
             setChatId(res.data.data.id);
-            addMessage(text, user);
+            window.localStorage.setItem("chatId", res.data.data.id);
+            addMessage(text, user, res.data.data.id);
           }
         })
         .catch((err) => {
@@ -56,15 +57,15 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
           console.log(err);
         });
     } else {
-      if (user) {
+      if (user && chatId) {
         setUserId(user.id);
 
-        addMessage(text, user);
+        addMessage(text, user, chatId);
       }
     }
   };
 
-  const addMessage = (text: string, user: User) => {
+  const addMessage = (text: string, user: User, chat_id: number) => {
     const newMessage: Message = {
       id: Math.floor(Math.random() * 1000),
       text: text,
@@ -76,9 +77,10 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
 
     const data = {
       text: newMessage.text,
-      chat_id: chatId,
+      chat_id: chat_id,
       sender_id: newMessage.sender.id,
     };
+
     axios
       .post("/messages", data)
       .then((res) => {
@@ -114,7 +116,8 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
         .get(`/chats/user/${userId}/${chatId}`)
         .then((res) => {
           if (res.data.error) {
-            alert(res.data.message);
+            setOpenAlert(true);
+            setAlertMessage(`${res.data.message}`);
           } else {
             setSavedChatData(res.data.data);
           }
