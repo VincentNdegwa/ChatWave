@@ -31,50 +31,55 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
 
   const messageSend = (text: string) => {
     const user: User | null = getUser();
-    if (user) {
-      setUserId(user.id);
-      const newMessage: Message = {
-        id: Math.floor(Math.random() * 1000),
-        text: text,
-        sent_at: new Date().toISOString(),
-        updated_at: null,
-        sender: user,
-      };
-      setMessage(newMessage);
+    const currentChatId: number | null = getChatId();
+    if (!currentChatId) {
+      console.log("create new chat");
+    } else {
+      if (user) {
+        setUserId(user.id);
+        const newMessage: Message = {
+          id: Math.floor(Math.random() * 1000),
+          text: text,
+          sent_at: new Date().toISOString(),
+          updated_at: null,
+          sender: user,
+        };
+        setMessage(newMessage);
 
-      const data = {
-        text: newMessage.text,
-        chat_id: chatId,
-        sender_id: newMessage.sender.id,
-      };
+        const data = {
+          text: newMessage.text,
+          chat_id: chatId,
+          sender_id: newMessage.sender.id,
+        };
 
-      axios
-        .post("/messages", data)
-        .then((res) => {
-          let msg: existingUpdateMessage | null = null;
-          if (res.data.error && res.data.data) {
+        axios
+          .post("/messages", data)
+          .then((res) => {
+            let msg: existingUpdateMessage | null = null;
+            if (res.data.error && res.data.data) {
+              setOpenAlert(true);
+              setAlertMessage("An Error Occurred");
+              msg = {
+                existing_id: newMessage.id,
+                status: MessageStatus.FAILED,
+                ...res.data.data,
+              };
+            } else {
+              msg = {
+                existing_id: newMessage.id,
+                status: MessageStatus.SENT,
+                ...res.data.data,
+              };
+            }
+            if (msg !== null) {
+              setSavedMessage(msg);
+            }
+          })
+          .catch((err) => {
             setOpenAlert(true);
-            setAlertMessage("An Error Occurred");
-            msg = {
-              existing_id: newMessage.id,
-              status: MessageStatus.FAILED,
-              ...res.data.data,
-            };
-          } else {
-            msg = {
-              existing_id: newMessage.id,
-              status: MessageStatus.SENT,
-              ...res.data.data,
-            };
-          }
-          if (msg !== null) {
-            setSavedMessage(msg);
-          }
-        })
-        .catch((err) => {
-          setOpenAlert(true);
-          setAlertMessage(err.message);
-        });
+            setAlertMessage(err.message);
+          });
+      }
     }
   };
 

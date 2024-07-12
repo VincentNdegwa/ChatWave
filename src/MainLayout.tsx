@@ -109,10 +109,12 @@ function MainLayout({
     const data = chatsData.find((item) =>
       item.chat.participants.some((x) => x.user.id === user.id)
     );
+    navigate("/chat");
     if (data) {
-      navigate("/chat");
       setSingleChat(data);
+      window.localStorage.setItem("chatId", JSON.stringify(data.chat.id));
     } else {
+      window.localStorage.removeItem("chatId");
       const newRole: Role = {
         id: 763478,
         role: "string",
