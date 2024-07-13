@@ -12,6 +12,7 @@ type Props = {
 function Contact({ onItemClick, chat }: Props) {
   const navigate = useNavigate();
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [viewMenu, setViewMenu] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleNavigate = (path: string) => {
@@ -38,7 +39,8 @@ function Contact({ onItemClick, chat }: Props) {
 
   const openChatOption = (ev: React.MouseEvent) => {
     ev.stopPropagation();
-    setIsDropdownVisible(!isDropdownVisible);
+    setIsDropdownVisible(true);
+    setViewMenu(true);
   };
 
   const handleClickOutside = (ev: MouseEvent) => {
@@ -80,40 +82,38 @@ function Contact({ onItemClick, chat }: Props) {
           </div>
         </div>
         <div className="flex flex-col items-end justify-between">
-          <div
-            onClick={(ev) => openChatOption(ev)}
-            className="drop-down text-sm text-slate-600 relative">
-            <FaAngleDown />
-            {isDropdownVisible && (
-              <div
-                ref={dropdownRef}
-                className="absolute top-6 right-0 bg-white border rounded shadow-md z-10">
-                <ul>
-                  <li
-                    onClick={() => {
-                      setIsDropdownVisible(false);
-                      // Handle option click
-                    }}
-                    className="p-2 hover:bg-gray-200 cursor-pointer">
-                    Option 1
-                  </li>
-                  <li
-                    onClick={() => {
-                      setIsDropdownVisible(false);
-                      // Handle option click
-                    }}
-                    className="p-2 hover:bg-gray-200 cursor-pointer">
-                    Option 2
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
           <div className="text-xs text-sky-950">
             {(chat.lastMessage?.sent_at &&
               new Date(chat.lastMessage?.sent_at).toLocaleDateString()) ||
               ""}
           </div>
+            <div className="drop-down text-sm text-slate-600 relative">
+            {isDropdownVisible && <FaAngleDown onClick={(ev) => openChatOption(ev)} /> }  
+              {viewMenu && isDropdownVisible && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute top-6 right-0 bg-white border rounded shadow-md z-10">
+                  <ul>
+                    <li
+                      onClick={() => {
+                        setViewMenu(false);
+                        // Handle option click
+                      }}
+                      className="p-2 hover:bg-gray-200 cursor-pointer">
+                      Option 1
+                    </li>
+                    <li
+                      onClick={() => {
+                        setViewMenu(false);
+                        // Handle option click
+                      }}
+                      className="p-2 hover:bg-gray-200 cursor-pointer">
+                      Option 2
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
         </div>
       </div>
       <span className="absolute right-0 bottom-0 w-10/12 border-b-2 border-slate-100"></span>
