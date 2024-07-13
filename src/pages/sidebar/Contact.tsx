@@ -1,6 +1,8 @@
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Chat, Participant, LastMessage } from "../../types";
 import { getUserId } from "../../modules/getUserId";
+import { FaAngleDown } from "react-icons/fa6";
 
 type Props = {
   onItemClick: (chatId: number) => void;
@@ -9,6 +11,8 @@ type Props = {
 
 function Contact({ onItemClick, chat }: Props) {
   const navigate = useNavigate();
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -32,9 +36,32 @@ function Contact({ onItemClick, chat }: Props) {
 
   const profile = getUserProfile(chat.participants);
 
+  const openChatOption = (ev: React.MouseEvent) => {
+    ev.stopPropagation();
+    setIsDropdownVisible(!isDropdownVisible);
+  };
+
+  const handleClickOutside = (ev: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(ev.target as Node)
+    ) {
+      setIsDropdownVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div
       onClick={() => handleNavigate("/chat")}
+      onMouseEnter={() => setIsDropdownVisible(true)}
+      onMouseLeave={() => setIsDropdownVisible(false)}
       className="flex gap-3 p-2 hover:bg-gray-50 ease-in duration-100 rounded-md cursor-pointer relative">
       <div className="h-[40px] w-[45px] ">
         <img
@@ -53,13 +80,43 @@ function Contact({ onItemClick, chat }: Props) {
           </div>
         </div>
         <div className="flex flex-col items-end justify-between">
-          <span className="h-4 w-4 text-xs flex justify-center items-center rounded-2xl bg-red-200 py-1 text-red-700">
-            1
-          </span>
-          <div className="text-xs text-sky-950">10:20 AM</div>
+          <div
+            onClick={(ev) => openChatOption(ev)}
+            className="drop-down text-sm text-slate-600 relative">
+            <FaAngleDown />
+            {isDropdownVisible && (
+              <div
+                ref={dropdownRef}
+                className="absolute top-6 right-0 bg-white border rounded shadow-md z-10">
+                <ul>
+                  <li
+                    onClick={() => {
+                      setIsDropdownVisible(false);
+                      // Handle option click
+                    }}
+                    className="p-2 hover:bg-gray-200 cursor-pointer">
+                    Option 1
+                  </li>
+                  <li
+                    onClick={() => {
+                      setIsDropdownVisible(false);
+                      // Handle option click
+                    }}
+                    className="p-2 hover:bg-gray-200 cursor-pointer">
+                    Option 2
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+          <div className="text-xs text-sky-950">
+            {(chat.lastMessage?.sent_at &&
+              new Date(chat.lastMessage?.sent_at).toLocaleDateString()) ||
+              ""}
+          </div>
         </div>
       </div>
-      <span className="absolute bottom-0 w-10/12 border-b-2 border-slate-100"></span>
+      <span className="absolute right-0 bottom-0 w-10/12 border-b-2 border-slate-100"></span>
     </div>
   );
 }
