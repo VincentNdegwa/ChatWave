@@ -8,6 +8,10 @@ type Props = {
   onItemClick: (chatId: number) => void;
   chat: Chat;
 };
+enum OptionType {
+  DeleteOption = "Delete",
+  UnreadOption = "Unread",
+}
 
 function Contact({ onItemClick, chat }: Props) {
   const navigate = useNavigate();
@@ -39,8 +43,7 @@ function Contact({ onItemClick, chat }: Props) {
 
   const openChatOption = (ev: React.MouseEvent) => {
     ev.stopPropagation();
-    setIsDropdownVisible(true);
-    setViewMenu(true);
+    setViewMenu(!viewMenu);
   };
 
   const handleClickOutside = (ev: MouseEvent) => {
@@ -49,6 +52,7 @@ function Contact({ onItemClick, chat }: Props) {
       !dropdownRef.current.contains(ev.target as Node)
     ) {
       setIsDropdownVisible(false);
+      setViewMenu(false);
     }
   };
 
@@ -58,6 +62,14 @@ function Contact({ onItemClick, chat }: Props) {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
+  const handleOptionClick = (click: {
+    message: OptionType;
+    ev: React.MouseEvent<HTMLElement>;
+  }) => {
+    click.ev.stopPropagation();
+    setViewMenu(false);
+  };
 
   return (
     <div
@@ -87,33 +99,42 @@ function Contact({ onItemClick, chat }: Props) {
               new Date(chat.lastMessage?.sent_at).toLocaleDateString()) ||
               ""}
           </div>
-            <div className="drop-down text-sm text-slate-600 relative">
-            {isDropdownVisible && <FaAngleDown onClick={(ev) => openChatOption(ev)} /> }  
-              {viewMenu && isDropdownVisible && (
-                <div
-                  ref={dropdownRef}
-                  className="absolute top-6 right-0 bg-white border rounded shadow-md z-10">
-                  <ul>
-                    <li
-                      onClick={() => {
-                        setViewMenu(false);
-                        // Handle option click
-                      }}
-                      className="p-2 hover:bg-gray-200 cursor-pointer">
-                      Option 1
-                    </li>
-                    <li
-                      onClick={() => {
-                        setViewMenu(false);
-                        // Handle option click
-                      }}
-                      className="p-2 hover:bg-gray-200 cursor-pointer">
-                      Option 2
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </div>
+          <div className="drop-down text-sm text-slate-600 relative">
+            <FaAngleDown
+              opacity={isDropdownVisible ? 1 : 0}
+              onClick={(ev) => openChatOption(ev)}
+            />
+            {viewMenu && (
+              <div
+                ref={dropdownRef}
+                className="absolute top-1 right-0 bg-white border rounded shadow-md z-10">
+                <ul>
+                  <li
+                    onClick={(ev) => {
+                      handleOptionClick({
+                        message: OptionType.DeleteOption,
+                        ev,
+                      });
+                    }}
+                    className="p-2 hover:bg-gray-200 cursor-pointer">
+                    Delete
+                  </li>
+                  <li
+                    onClick={(ev) => {
+                      handleOptionClick({
+                        message: OptionType.UnreadOption,
+                        ev,
+                      });
+
+                      setViewMenu(false);
+                    }}
+                    className="p-2 hover:bg-gray-200 cursor-pointer">
+                    Unread
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <span className="absolute right-0 bottom-0 w-10/12 border-b-2 border-slate-100"></span>
