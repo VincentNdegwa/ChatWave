@@ -7,7 +7,7 @@ import { BsFillSendFill } from "react-icons/bs";
 
 type Props = { messageSend: (msg: string) => void };
 function SenderBox({ messageSend }: Props) {
-  const [message, setMessage] = useState<string>();
+  const [message, setMessage] = useState<string>('');
 
   const handleSubmit = (e: any) => {
     e.preventDefault();

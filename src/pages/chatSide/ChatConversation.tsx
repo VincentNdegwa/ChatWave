@@ -3,6 +3,7 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { Role, Message } from "../../types";
 import { getUserId } from "../../modules/getUserId";
 import { existingUpdateMessage } from "./type";
+import socketConfigs from "../../modules/socketConfigs";
 
 type Props = {
   chatData: Role;
@@ -12,18 +13,44 @@ type Props = {
 
 function ChatConversation({ chatData, message, updateMessage }: Props) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
+  const [messages, setMessages] = useState(chatData.chat.messages || []);
+  const [userId, setUserId] = useState(getUserId());
+  const [socket, setSocket] = useState(new socketConfigs().getSocket());
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView();
   };
-
-  const [messages, setMessages] = useState(chatData.chat.messages || []);
 
   useEffect(() => {
     setMessages(chatData.chat.messages || []);
     scrollToBottom();
   }, [chatData.chat.messages]);
+  useEffect(() => {
+    const skt = new socketConfigs();
+    const uid = getUserId();
+    setSocket(skt.getSocket());
+    setUserId(uid);
+    if (uid) {
+      skt.joinRoom("join", userId);
+    }
+  }, [userId]);
 
+  useEffect(() => {
+    socket.on("messageReceived", (newMessage) => {
+      const latesMessage = newMessage.data;
+      setMessages((prev) => {
+        const textExist = prev.some((msg) => {
+          if (msg.id === latesMessage.id || msg.id === 1.0) {
+            return true;
+          }
+          return false;
+        });
+        if (!textExist) {
+          return [...prev, latesMessage];
+        }
+        return prev;
+      });
+    });
+  }, [socket]);
   useEffect(() => {
     if (message) {
       setMessages((prevMessages) => {

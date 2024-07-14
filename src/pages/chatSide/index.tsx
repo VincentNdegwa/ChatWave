@@ -8,6 +8,7 @@ import SenderBox from "./SenderBox";
 import useCustomAxios from "../../modules/customAxios";
 import AlertNotification from "../Components/AlertNotification";
 import { existingUpdateMessage, MessageStatus } from "./type";
+import socketConfigs from "../../modules/socketConfigs";
 // import { useNavigate } from "react-router-dom";
 
 type Props = {
@@ -28,6 +29,7 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
   const [savedChatData, setSavedChatData] = useState<Role>(chatData);
 
   const axios = useCustomAxios();
+  const socket = new socketConfigs();
 
   const messageSend = (text: string) => {
     const user: User | null = getUser();
@@ -65,9 +67,15 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
     }
   };
 
+  useEffect(() => {
+    if (userId) {
+      socket.joinRoom("join", userId);
+    }
+  });
+
   const addMessage = (text: string, user: User, chat_id: number) => {
     const newMessage: Message = {
-      id: Math.floor(Math.random() * 1000),
+      id: 1.0,
       text: text,
       sent_at: new Date().toISOString(),
       updated_at: null,
@@ -79,36 +87,72 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
       text: newMessage.text,
       chat_id: chat_id,
       sender_id: newMessage.sender.id,
+      receiver_id: savedChatData.chat.participants.find(
+        (x) => x.user.id != newMessage.sender.id
+      )?.user.id,
     };
-
-    axios
-      .post("/messages", data)
-      .then((res) => {
-        let msg: existingUpdateMessage | null = null;
-        if (res.data.error && res.data.data) {
-          setOpenAlert(true);
-          setAlertMessage("An Error Occurred");
-          msg = {
-            existing_id: newMessage.id,
-            status: MessageStatus.FAILED,
-            ...res.data.data,
-          };
-        } else {
-          msg = {
-            existing_id: newMessage.id,
-            status: MessageStatus.SENT,
-            ...res.data.data,
-          };
-        }
-        if (msg !== null) {
-          setSavedMessage(msg);
-        }
-      })
-      .catch((err) => {
-        setOpenAlert(true);
-        setAlertMessage(err.message);
-      });
+    const skt = socket.getSocket();
+    skt.emit("newMessage", data);
+    // axios
+    //   .post("/messages", data)
+    //   .then((res) => {
+    //     let msg: existingUpdateMessage | null = null;
+    //     if (res.data.error && res.data.data) {
+    //       setOpenAlert(true);
+    //       setAlertMessage("An Error Occurred");
+    //       msg = {
+    //         existing_id: newMessage.id,
+    //         status: MessageStatus.FAILED,
+    //         ...res.data.data,
+    //       };
+    //     } else {
+    //       msg = {
+    //         existing_id: newMessage.id,
+    //         status: MessageStatus.SENT,
+    //         ...res.data.data,
+    //       };
+    //     }
+    //     if (msg !== null) {
+    //       setSavedMessage(msg);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     setOpenAlert(true);
+    //     setAlertMessage(err.message);
+    //   });
   };
+
+  useEffect(() => {
+    const skt = socket.getSocket();
+    skt.on("messageReceived", (newMessage) => {
+      // console.log("Received message:", newMessage);
+
+      let msg = null;
+      if (!newMessage || newMessage.error) {
+        setOpenAlert(true);
+        setAlertMessage(newMessage ? newMessage.message : "Unknown error");
+        msg = {
+          existing_id: newMessage.id,
+          status: MessageStatus.FAILED,
+          ...newMessage.data,
+        };
+      } else {
+        msg = {
+          existing_id: newMessage.id,
+          status: MessageStatus.SENT,
+          ...newMessage.data,
+        };
+      }
+
+      if (msg) {
+        setSavedMessage(msg);
+      }
+    });
+
+    return () => {
+      skt.off("messageReceived");
+    };
+  }, []);
 
   useEffect(() => {
     if (userId && chatId) {
@@ -129,7 +173,7 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
   useEffect(() => {
     setSavedChatData(chatData);
   }, [chatData]);
-  
+
   const fetchChatMessage = (chatId: number) => {
     console.log(chatId);
   };
