@@ -12,6 +12,7 @@ import AlertNotification from "./pages/Components/AlertNotification";
 import { Participant, Role, RoleList, User, alertType } from "./types";
 import ErrorPage from "./pages/Components/ErrorPage";
 import { AxiosError } from "axios";
+import socketConfigs from "./modules/socketConfigs";
 
 type Props = {
   isChatOpen: boolean;
@@ -46,12 +47,18 @@ function MainLayout({
     window.localStorage.setItem("chatId", JSON.stringify(chatId));
     setIsChatOpen(true);
     const chats = chatsData.find((chatItem) => chatItem.chat.id === chatId);
-
     if (chats) {
       setSingleChat(chats);
     }
   };
-
+  useEffect(() => {
+    const socketConfig = new socketConfigs();
+    const uid = getUserId();
+    if (uid != null) {
+      const socket = socketConfig.getSocket();
+      socket.emit("join", uid);
+    }
+  }, []);
   useEffect(() => {
     setLoading(true);
 
