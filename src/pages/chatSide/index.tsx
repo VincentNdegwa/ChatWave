@@ -16,14 +16,11 @@ type Props = {
 };
 
 function Index({ onItemClick, openProfile, chatData }: Props) {
-  // const [message, setMessage] = useState<Message | null>(null);
   const [chatId, setChatId] = useState<number | null>(getChatId());
   const [userId, setUserId] = useState<number | null>(getUserId());
 
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [openAlert, setOpenAlert] = useState<boolean>(false);
-  // const [savedMessage, setSavedMessage] =
-  // useState<existingUpdateMessage | null>(null);
   const [savedChatData, setSavedChatData] = useState<Role>(chatData);
 
   const axios = useCustomAxios();
