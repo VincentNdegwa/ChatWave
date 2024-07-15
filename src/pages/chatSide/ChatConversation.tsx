@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { Role, Message } from "../../types";
-import { getUserId } from "../../modules/getUserId";
+import { getChatId, getUserId } from "../../modules/getUserId";
 import socketConfigs from "../../modules/socketConfigs";
+import useCustomAxios from "../../modules/customAxios";
 
 type Props = {
   chatData: Role;
@@ -16,6 +17,7 @@ function ChatConversation({ chatData }: Props) {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView();
   };
+  const axios = useCustomAxios();
 
   useEffect(() => {
     setMessages(chatData.chat.messages || []);
@@ -32,8 +34,22 @@ function ChatConversation({ chatData }: Props) {
   }, [userId]);
 
   useEffect(() => {
+    const chatId = getChatId();
+    if (userId && chatId) {
+      axios
+        .get(`/chats/user/${userId}/${chatId}`)
+        .then((res) => {
+          if (!res.data.error) {
+            setMessages(res.data.data.chat.messages);
+          }
+        })
+        .catch((error) => alert(error.message));
+    }
+  }, [axios, userId]);
+
+  useEffect(() => {
     socket.on("messageReceived", (newMessage) => {
-      console.log(newMessage);
+      // console.log(newMessage);
 
       const latesMessage = newMessage.data;
       setMessages((prev) => {
