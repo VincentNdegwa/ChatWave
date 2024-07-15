@@ -108,9 +108,6 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
     setSavedChatData(chatData);
   }, [chatData]);
 
-  const fetchChatMessage = (chatId: number) => {
-    console.log(chatId);
-  };
 
   const closeAlert = () => {
     setOpenAlert(false);
@@ -121,9 +118,6 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
     const JSONChatId = getChatId();
     if (JSONChatId) {
       setChatId(JSONChatId);
-      if (chatId) {
-        fetchChatMessage(chatId);
-      }
     }
   }, [chatId]);
 

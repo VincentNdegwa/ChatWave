@@ -33,6 +33,14 @@ export interface Message {
   updated_at: string | null;
   sender: User;
 }
+export interface newMessage {
+  id: number;
+  text: string;
+  sent_at: string;
+  updated_at: string | null;
+  sender: User;
+  chat: Chat;
+}
 
 export interface LastMessage {
   id: number;
