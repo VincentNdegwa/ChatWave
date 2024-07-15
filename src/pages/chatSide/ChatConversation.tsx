@@ -2,16 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { Role, Message } from "../../types";
 import { getUserId } from "../../modules/getUserId";
-import { existingUpdateMessage } from "./type";
 import socketConfigs from "../../modules/socketConfigs";
 
 type Props = {
   chatData: Role;
-  message: Message | null;
-  updateMessage: existingUpdateMessage | null;
 };
 
-function ChatConversation({ chatData, message, updateMessage }: Props) {
+function ChatConversation({ chatData }: Props) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState(chatData.chat.messages || []);
   const [userId, setUserId] = useState(getUserId());
@@ -36,10 +33,12 @@ function ChatConversation({ chatData, message, updateMessage }: Props) {
 
   useEffect(() => {
     socket.on("messageReceived", (newMessage) => {
+      console.log(newMessage);
+
       const latesMessage = newMessage.data;
       setMessages((prev) => {
         const textExist = prev.some((msg) => {
-          if (msg.id === latesMessage.id || msg.id === 1.0) {
+          if (msg.id === latesMessage.id) {
             return true;
           }
           return false;
@@ -51,30 +50,6 @@ function ChatConversation({ chatData, message, updateMessage }: Props) {
       });
     });
   }, [socket]);
-  useEffect(() => {
-    if (message) {
-      setMessages((prevMessages) => {
-        const messageExists = prevMessages.some((msg) => msg.id === message.id);
-        if (!messageExists) {
-          return [...prevMessages, message];
-        }
-        return prevMessages;
-      });
-    }
-
-    if (updateMessage) {
-      setMessages((prevMessages) => {
-        const message = prevMessages.find(
-          (item) => item.id === updateMessage.existing_id
-        );
-        if (message) {
-          message.text = updateMessage.text;
-          message.id = updateMessage.id;
-        }
-        return prevMessages;
-      });
-    }
-  }, [message, updateMessage]);
 
   useEffect(() => {
     scrollToBottom();

@@ -7,9 +7,7 @@ import ChatHead from "./ChatHead";
 import SenderBox from "./SenderBox";
 import useCustomAxios from "../../modules/customAxios";
 import AlertNotification from "../Components/AlertNotification";
-import { existingUpdateMessage, MessageStatus } from "./type";
 import socketConfigs from "../../modules/socketConfigs";
-// import { useNavigate } from "react-router-dom";
 
 type Props = {
   onItemClick: () => void;
@@ -18,14 +16,14 @@ type Props = {
 };
 
 function Index({ onItemClick, openProfile, chatData }: Props) {
-  const [message, setMessage] = useState<Message | null>(null);
+  // const [message, setMessage] = useState<Message | null>(null);
   const [chatId, setChatId] = useState<number | null>(getChatId());
   const [userId, setUserId] = useState<number | null>(getUserId());
 
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [openAlert, setOpenAlert] = useState<boolean>(false);
-  const [savedMessage, setSavedMessage] =
-    useState<existingUpdateMessage | null>(null);
+  // const [savedMessage, setSavedMessage] =
+  // useState<existingUpdateMessage | null>(null);
   const [savedChatData, setSavedChatData] = useState<Role>(chatData);
 
   const axios = useCustomAxios();
@@ -45,7 +43,6 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
           if (res.data.error) {
             setOpenAlert(true);
             setAlertMessage(`${res.data.message}`);
-            // alert(res.data.message);
           } else {
             setSavedChatData(res.data.data);
             setChatId(res.data.data.id);
@@ -81,7 +78,6 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
       updated_at: null,
       sender: user,
     };
-    setMessage(newMessage);
 
     const data = {
       text: newMessage.text,
@@ -93,66 +89,7 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
     };
     const skt = socket.getSocket();
     skt.emit("newMessage", data);
-    // axios
-    //   .post("/messages", data)
-    //   .then((res) => {
-    //     let msg: existingUpdateMessage | null = null;
-    //     if (res.data.error && res.data.data) {
-    //       setOpenAlert(true);
-    //       setAlertMessage("An Error Occurred");
-    //       msg = {
-    //         existing_id: newMessage.id,
-    //         status: MessageStatus.FAILED,
-    //         ...res.data.data,
-    //       };
-    //     } else {
-    //       msg = {
-    //         existing_id: newMessage.id,
-    //         status: MessageStatus.SENT,
-    //         ...res.data.data,
-    //       };
-    //     }
-    //     if (msg !== null) {
-    //       setSavedMessage(msg);
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     setOpenAlert(true);
-    //     setAlertMessage(err.message);
-    //   });
   };
-
-  useEffect(() => {
-    const skt = socket.getSocket();
-    skt.on("messageReceived", (newMessage) => {
-      // console.log("Received message:", newMessage);
-
-      let msg = null;
-      if (!newMessage || newMessage.error) {
-        setOpenAlert(true);
-        setAlertMessage(newMessage ? newMessage.message : "Unknown error");
-        msg = {
-          existing_id: newMessage.id,
-          status: MessageStatus.FAILED,
-          ...newMessage.data,
-        };
-      } else {
-        msg = {
-          existing_id: newMessage.id,
-          status: MessageStatus.SENT,
-          ...newMessage.data,
-        };
-      }
-
-      if (msg) {
-        setSavedMessage(msg);
-      }
-    });
-
-    return () => {
-      skt.off("messageReceived");
-    };
-  }, []);
 
   useEffect(() => {
     if (userId && chatId) {
@@ -212,11 +149,7 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
             />
           </div>
           <div className="h-5/6">
-            <ChatConversation
-              chatData={savedChatData}
-              message={message}
-              updateMessage={savedMessage}
-            />
+            <ChatConversation chatData={savedChatData} />
           </div>
           <div className="h-14 w-full rounded-md shadow-lg">
             <SenderBox messageSend={messageSend} />
