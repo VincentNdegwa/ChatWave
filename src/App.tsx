@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ProfilePage from "./pages/profilePage";
 import Login from "./pages/AuthPage/Login";
@@ -7,6 +8,9 @@ import Register from "./pages/AuthPage/Register";
 import ForgotPassword from "./pages/AuthPage/ForgotPassword";
 import OTPVerification from "./pages/AuthPage/OTPVerification";
 import { Participant } from "./types";
+import socketConfigs from "./modules/socketConfigs.ts";
+import { getUserId } from "./modules/getUserId.ts";
+
 type Props = {};
 
 export default function App({}: Props) {
@@ -20,7 +24,21 @@ export default function App({}: Props) {
     setOverLayHeader("Contact Details");
     setComponent(<ProfilePage participant={participant} />);
   };
+  useEffect(() => {
+    const socket = new socketConfigs().getSocket();
+    const userId = getUserId();
+    socket.emit("join", userId);
 
+    socket.on("call-user", (data) => {
+      console.log(data);
+    });
+
+    return () => {
+      socket.off("call-user", (data) => {
+        console.log(data);
+      });
+    };
+  }, []);
   return (
     <Router>
       <Routes>

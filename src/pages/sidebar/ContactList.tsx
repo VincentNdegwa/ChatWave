@@ -27,7 +27,7 @@ function ContactList({ onItemClick, chatsData }: Props) {
 
   useEffect(() => {
     if (userId) {
-      socket.joinRoom("join", userId);
+      // socket.joinRoom("join", userId);
     }
   });
 

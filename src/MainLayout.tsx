@@ -20,7 +20,7 @@ import {
 import ErrorPage from "./pages/Components/ErrorPage";
 import { AxiosError } from "axios";
 import socketConfigs from "./modules/socketConfigs";
-import VideoPage from "./pages/VideoPage/Index";
+import VideoPage from "./pages/CallPage/Index";
 type Props = {
   isChatOpen: boolean;
   setIsChatOpen: (isOpen: boolean) => void;
