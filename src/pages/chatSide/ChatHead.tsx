@@ -1,14 +1,19 @@
 import { MdCall } from "react-icons/md";
 import { FaVideo } from "react-icons/fa6";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { Participant, Role } from "../../types";
+import { Participant, Role, callMode } from "../../types";
 import { getUserId } from "../../modules/getUserId";
 type Props = {
   onItemClick: () => void;
   openProfile: (profile: Participant) => void;
   chatData: Role;
+  handleCall: (callType: {
+    mode: callMode;
+    sender_id: number | null;
+    receiver_id: number | undefined;
+  }) => void;
 };
-function ChatHead({ onItemClick, openProfile, chatData }: Props) {
+function ChatHead({ onItemClick, openProfile, chatData, handleCall }: Props) {
   const getUserProfile = (participants: Participant[]) => {
     const currentUserId = getUserId();
     const currentUserIdNumber =
@@ -45,10 +50,26 @@ function ChatHead({ onItemClick, openProfile, chatData }: Props) {
         )}
       </div>
       <div className="flex gap-2">
-        <span className="rounded-lg bg-green-700 p-3 text-white cursor-pointer hover:bg-green-400 transition duration-300">
+        <span
+          onClick={() =>
+            handleCall({
+              mode: callMode.VIDEO,
+              sender_id: getUserId(),
+              receiver_id: profile?.user.id,
+            })
+          }
+          className="rounded-lg bg-green-700 p-3 text-white cursor-pointer hover:bg-green-400 transition duration-300">
           <FaVideo />
         </span>
-        <span className="rounded-lg bg-sky-700 p-3 text-white cursor-pointer hover:bg-sky-400 transition duration-300">
+        <span
+          onClick={() =>
+            handleCall({
+              mode: callMode.VOICE,
+              sender_id: getUserId(),
+              receiver_id: profile?.user.id,
+            })
+          }
+          className="rounded-lg bg-sky-700 p-3 text-white cursor-pointer hover:bg-sky-400 transition duration-300">
           <MdCall />
         </span>
       </div>

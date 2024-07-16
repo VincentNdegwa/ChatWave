@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { getChatId, getUser, getUserId } from "../../modules/getUserId";
-import { Message, Participant, Role, User } from "../../types";
+import { Message, Participant, Role, User, callMode } from "../../types";
 import ChatConversation from "./ChatConversation";
 import ChatHead from "./ChatHead";
 import SenderBox from "./SenderBox";
@@ -13,9 +13,14 @@ type Props = {
   onItemClick: () => void;
   openProfile: (profile: Participant) => void;
   chatData: Role;
+  handleCall: (callType: {
+    mode: callMode;
+    sender_id: number | null;
+    receiver_id: number | undefined;
+  }) => void;
 };
 
-function Index({ onItemClick, openProfile, chatData }: Props) {
+function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
   const [chatId, setChatId] = useState<number | null>(getChatId());
   const [userId, setUserId] = useState<number | null>(getUserId());
 
@@ -108,7 +113,6 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
     setSavedChatData(chatData);
   }, [chatData]);
 
-
   const closeAlert = () => {
     setOpenAlert(false);
     setAlertMessage("");
@@ -137,6 +141,7 @@ function Index({ onItemClick, openProfile, chatData }: Props) {
               onItemClick={onItemClick}
               openProfile={openProfile}
               chatData={savedChatData}
+              handleCall={handleCall}
             />
           </div>
           <div className="h-5/6">

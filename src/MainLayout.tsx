@@ -9,11 +9,18 @@ import useCustomAxios from "./modules/customAxios";
 import { getUserId } from "./modules/getUserId";
 import Loading from "./pages/Components/Loading";
 import AlertNotification from "./pages/Components/AlertNotification";
-import { Participant, Role, RoleList, User, alertType } from "./types";
+import {
+  Participant,
+  Role,
+  RoleList,
+  User,
+  alertType,
+  callMode,
+} from "./types";
 import ErrorPage from "./pages/Components/ErrorPage";
 import { AxiosError } from "axios";
 import socketConfigs from "./modules/socketConfigs";
-
+import VideoPage from "./pages/VideoPage/Index";
 type Props = {
   isChatOpen: boolean;
   setIsChatOpen: (isOpen: boolean) => void;
@@ -41,6 +48,17 @@ function MainLayout({
   const [error, setError] = useState<string | null>(null);
   const [chatsData, setChatsData] = useState<RoleList>([]);
   const [singleChat, setSingleChat] = useState<any>([]);
+  const [startCall, setStartCall] = useState<{
+    start: boolean;
+    mode: callMode;
+    sender_id: number | null;
+    receiver_id: number | undefined;
+  }>({
+    start: false,
+    mode: callMode.VOICE,
+    sender_id: null,
+    receiver_id: undefined,
+  });
   const navigate = useNavigate();
   const navigateOpenChat = (chatId: number) => {
     window.localStorage.removeItem("chatId");
@@ -65,8 +83,6 @@ function MainLayout({
     const uid = getUserId();
     if (uid) {
       setUserId(uid);
-    } else {
-      console.log("undefined userid");
     }
     const fetchData = async () => {
       try {
@@ -93,8 +109,6 @@ function MainLayout({
         } else {
           setError("Something went wrong");
         }
-      } finally {
-        // setLoading(false);
       }
     };
     fetchData();
@@ -138,10 +152,26 @@ function MainLayout({
     console.log(singleChat);
     //  console.log(chatsData);
   };
+  const handleCall = (callType: {
+    mode: callMode;
+    sender_id: number | null;
+    receiver_id: number | undefined;
+  }) => {
+    setStartCall({
+      start: true,
+      mode: callType.mode,
+      sender_id: callType.sender_id,
+      receiver_id: callType.receiver_id,
+    });
+  };
   if (loading) {
     return <Loading />;
   }
   if (error) return <ErrorPage message={error} />;
+
+  if (startCall.start) {
+    return <VideoPage mode={startCall} />;
+  }
   return (
     <div className="flex h-full w-full md:divide-x">
       {alertVisible && alert.message && (
@@ -180,6 +210,7 @@ function MainLayout({
                   openOverlayProfile(participant)
                 }
                 chatData={singleChat}
+                handleCall={handleCall}
               />
             }
           />

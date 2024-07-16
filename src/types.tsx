@@ -65,3 +65,7 @@ export interface Role {
 
 export type RoleList = Role[];
 
+export enum callMode {
+  VIDEO = "video",
+  VOICE = "voice",
+}
