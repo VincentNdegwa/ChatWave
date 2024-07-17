@@ -33,11 +33,13 @@ function ContactList({ onItemClick, chatsData }: Props) {
 
   useEffect(() => {
     const skt = socket.getSocket();
-    skt.on("messageReceived", (data) => {
-      if (!data.error) {
-        setLatestMessage(data.data);
-      }
-    });
+    if (skt) {
+      skt.on("messageReceived", (data) => {
+        if (!data.error) {
+          setLatestMessage(data.data);
+        }
+      });
+    }
   });
   useEffect(() => {
     if (latestMessage) {
@@ -60,15 +62,16 @@ function ContactList({ onItemClick, chatsData }: Props) {
   }, [latestMessage]);
   return (
     <div className="w-full flex flex-col gap-1">
-      {contactData.map((chatItem) => {
-        return (
-          <Contact
-            onItemClick={onItemClick}
-            key={chatItem.chat.id}
-            chat={chatItem.chat}
-          />
-        );
-      })}
+      {contactData &&
+        contactData.map((chatItem) => {
+          return (
+            <Contact
+              onItemClick={onItemClick}
+              key={chatItem.chat.id}
+              chat={chatItem.chat}
+            />
+          );
+        })}
     </div>
   );
 }

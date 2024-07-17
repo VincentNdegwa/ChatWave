@@ -7,7 +7,7 @@ import MainLayout from "./MainLayout";
 import Register from "./pages/AuthPage/Register";
 import ForgotPassword from "./pages/AuthPage/ForgotPassword";
 import OTPVerification from "./pages/AuthPage/OTPVerification";
-import { Participant } from "./types";
+import { Participant, callerData } from "./types";
 import socketConfigs from "./modules/socketConfigs.ts";
 import { getUserId } from "./modules/getUserId.ts";
 
@@ -18,6 +18,7 @@ export default function App({}: Props) {
   const [isOverLayOpen, setOperLayOpen] = useState<boolean>(false);
   const [component, setComponent] = useState<JSX.Element>();
   const [overLayHeader, setOverLayHeader] = useState<string>("");
+  const [newCall, SetNewCall] = useState<callerData>();
 
   const openOverlayProfile = (participant: Participant) => {
     setOperLayOpen(true);
@@ -30,15 +31,15 @@ export default function App({}: Props) {
     socket.emit("join", userId);
 
     socket.on("call-user", (data) => {
-      console.log(data);
+      SetNewCall(data);
     });
 
-    return () => {
-      socket.off("call-user", (data) => {
-        console.log(data);
-      });
-    };
-  }, []);
+    // return () => {
+    //   socket.off("call-user", (data) => {
+    //     console.log(data);
+    //   });
+    // };
+  }, [newCall]);
   return (
     <Router>
       <Routes>
@@ -60,6 +61,7 @@ export default function App({}: Props) {
               setOperLayOpen={setOperLayOpen}
               component={component}
               overLayHeader={overLayHeader}
+              newCall={newCall}
             />
           }
         />

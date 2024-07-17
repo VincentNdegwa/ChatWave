@@ -16,11 +16,12 @@ import {
   User,
   alertType,
   callMode,
+  callerData,
 } from "./types";
 import ErrorPage from "./pages/Components/ErrorPage";
 import { AxiosError } from "axios";
 import socketConfigs from "./modules/socketConfigs";
-import VideoPage from "./pages/CallPage/Index";
+import CallPage from "./pages/CallPage/Index";
 type Props = {
   isChatOpen: boolean;
   setIsChatOpen: (isOpen: boolean) => void;
@@ -29,6 +30,7 @@ type Props = {
   setOperLayOpen: (isOpen: boolean) => void;
   component: JSX.Element | undefined;
   overLayHeader: string;
+  newCall: callerData | undefined;
 };
 
 function MainLayout({
@@ -39,6 +41,7 @@ function MainLayout({
   setOperLayOpen,
   component,
   overLayHeader,
+  newCall,
 }: Props) {
   const axios = useCustomAxios();
   const [userId, setUserId] = useState<number | string | null>(getUserId());
@@ -48,17 +51,13 @@ function MainLayout({
   const [error, setError] = useState<string | null>(null);
   const [chatsData, setChatsData] = useState<RoleList>([]);
   const [singleChat, setSingleChat] = useState<any>([]);
-  const [startCall, setStartCall] = useState<{
-    start: boolean;
-    mode: callMode;
-    sender_id: number | null;
-    receiver_id: number | undefined;
-  }>({
+  const [startCall, setStartCall] = useState<callerData>({
     start: false,
     mode: callMode.VOICE,
     sender_id: null,
     receiver_id: undefined,
   });
+  const [incommingCall, SetIncommingCall] = useState<boolean>(false);
   const navigate = useNavigate();
   const navigateOpenChat = (chatId: number) => {
     window.localStorage.removeItem("chatId");
@@ -74,9 +73,18 @@ function MainLayout({
     const uid = getUserId();
     if (uid != null) {
       const socket = socketConfig.getSocket();
-      socket.emit("join", uid);
+      if (socket) {
+        socket.emit("join", uid);
+      }
     }
   }, []);
+
+  useEffect(() => {
+    if (newCall && newCall.start) {
+      SetIncommingCall(true);
+    }
+  }, [newCall, incommingCall]);
+
   useEffect(() => {
     setLoading(true);
 
@@ -170,7 +178,10 @@ function MainLayout({
   if (error) return <ErrorPage message={error} />;
 
   if (startCall.start) {
-    return <VideoPage mode={startCall} />;
+    return <CallPage mode={startCall} incommingCall={incommingCall} />;
+  }
+  if (newCall) {
+    return <CallPage mode={newCall} incommingCall={incommingCall} />;
   }
   return (
     <div className="flex h-full w-full md:divide-x">

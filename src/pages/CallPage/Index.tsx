@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FaMicrophone,
   FaMicrophoneSlash,
@@ -8,75 +8,102 @@ import {
   FaPhoneSlash,
 } from "react-icons/fa";
 import socketConfigs from "../../modules/socketConfigs";
-import { callMode } from "../../types";
+import { callMode, callerData } from "../../types";
+import { Peer } from "peerjs";
 
 type Props = {
-  mode: {
-    start: boolean;
-    mode: callMode;
-    sender_id: number | null;
-    receiver_id: number | undefined;
-  };
+  mode: callerData;
+  incommingCall: boolean;
 };
 
-const Index: React.FC<Props> = ({ mode }) => {
+function Index({ mode, incommingCall }: Props) {
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const socket = new socketConfigs().getSocket();
+  const [peer, setPeer] = useState<Peer | null>(null);
 
   useEffect(() => {
     if (mode.start) {
       setupConnection();
-      if (mode.mode === callMode.VIDEO) {
-        startVideoCall();
-      } else if (mode.mode === callMode.VOICE) {
-        startVoiceCall();
-      }
     }
   }, [mode]);
 
-  // useEffect(() => {
-  //   socket.on("call-user", (data) => {
-  //     console.log(data);
-  //   });
-  //   socket.on("call-ongoing", (data) => {
-  //     console.log(data);
-  //   });
-  // }, []);
+  useEffect(() => {
+    if (incommingCall) {
+      console.log("start incomming call");
+    }
+  }, [incommingCall]);
+
+  useEffect(() => {
+    if (peer) {
+      peer.on("call", (call) => {
+        window.navigator.mediaDevices
+          .getUserMedia({ video: true, audio: true })
+          .then((stream) => {
+            // setMediaConnection(call);
+            call.answer(stream);
+            call.on("stream", (remoteStream: any) => {
+              if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = remoteStream;
+              }
+            });
+          })
+          .catch((error) => {
+            console.error("Error answering call:", error);
+          });
+      });
+    }
+  }, [peer]);
 
   const setupConnection = () => {
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: true,
-        video: mode.mode === callMode.VIDEO,
-      })
-      .then((stream) => {
-        localVideoRef.current!.srcObject = stream;
-        socket.emit("join", mode.sender_id);
+    const newPeer = new Peer();
+    setPeer(newPeer);
 
-        if (mode.mode === callMode.VIDEO) {
-          socket.emit("call-user", {
-            receiver_id: mode.receiver_id,
-            signalData: stream,
-          });
-        } else if (mode.mode === callMode.VOICE) {
-          // Handle voice call setup
+    newPeer.on("open", (id: string) => {
+      console.log(`My peer ID is: ${id}`);
+    });
+
+    newPeer.on("error", (err: any) => {
+      console.error("PeerJS error:", err);
+    });
+
+    window.navigator.mediaDevices
+      .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
+      .then((stream) => {
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = stream;
+          socket.emit("call-user", mode);
         }
+        if (mode.receiver_id) {
+          const call = newPeer.call(mode.receiver_id.toString(), stream);
+          // setMediaConnection(call);
+
+          call.on("stream", (remoteStream: any) => {
+            if (remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = remoteStream;
+            }
+          });
+
+          call.on("close", () => {
+            if (remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = null;
+            }
+            // setMediaConnection(null);
+          });
+
+          call.on("error", (err) => {
+            console.error("PeerJS call error:", err);
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error setting up connection:", error);
       });
   };
 
-  const startVideoCall = () => {
-    // socket.on("call-accepted", (signalData: any) => {
-    // Handle call acceptance
-    // });
-    // socket.emit("call-user", { to: mode.receiver_id, signalData: null });
-  };
-
-  const startVoiceCall = () => {
-    // Implement voice call start logic
-  };
-
-
+  // const startVoiceCall = () => {
+  //   // Implement voice call start logic
+  // };
 
   return (
     <div className="absolute top-0 left-0 w-full h-full bg-sky-100 flex flex-col items-center justify-center p-4">
@@ -126,6 +153,6 @@ const Index: React.FC<Props> = ({ mode }) => {
       </div>
     </div>
   );
-};
+}
 
 export default Index;

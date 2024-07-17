@@ -69,3 +69,9 @@ export enum callMode {
   VIDEO = "video",
   VOICE = "voice",
 }
+export interface callerData {
+  start: boolean;
+  mode: callMode;
+  sender_id: number | null;
+  receiver_id: number | undefined;
+}

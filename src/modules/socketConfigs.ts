@@ -4,17 +4,25 @@ import { io } from "socket.io-client";
 class socketConfigs {
   private socket;
   constructor() {
-    this.socket = io("http://localhost:3000");
+    const BackendURL = import.meta.env.VITE_BackendURL;
+
+    if (BackendURL) {
+      this.socket = io(BackendURL);
+    }
   }
 
   public joinRoom(room: string, data: any) {
-    this.socket.emit(room, data);
+    if (this.socket) {
+      this.socket.emit(room, data);
+    }
   }
   //   public exitRoom(room: string, data: any) {
   //     this.socket.emit(room, data);
   //   }
   public getSocket() {
-    return this.socket;
+    if (this.socket) {
+      return this.socket;
+    }
   }
 }
 export default socketConfigs;

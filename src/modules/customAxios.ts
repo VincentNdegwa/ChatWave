@@ -1,8 +1,10 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { useNavigate } from "react-router-dom";
+const BackendURL = import.meta.env.VITE_BackendURL;
+console.log(BackendURL);
 
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: BackendURL,
 });
 
 const useCustomAxios = () => {
@@ -11,10 +13,12 @@ const useCustomAxios = () => {
   api.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
       const token = localStorage.getItem("token");
+
       if (token) {
         config.headers = config.headers ?? {};
         config.headers["Authorization"] = `Bearer ${token}`;
       }
+
       return config;
     },
     (error: AxiosError) => {
@@ -39,3 +43,5 @@ const useCustomAxios = () => {
 };
 
 export default useCustomAxios;
+// adding product they reshuffle
+// 
