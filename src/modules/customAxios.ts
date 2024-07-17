@@ -1,7 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { useNavigate } from "react-router-dom";
 const BackendURL = import.meta.env.VITE_BackendURL;
-console.log(BackendURL);
 
 const api = axios.create({
   baseURL: BackendURL,

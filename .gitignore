@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+localhost.crt
+localhost.key
+openssl.cnf

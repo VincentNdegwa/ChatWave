@@ -10,4 +10,11 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["js-big-decimal"],
   },
+  server: {
+    https: {
+      key: "./localhost.key",
+      cert: "./localhost.crt",
+    },
+    host: "192.168.100.2",
+  },
 });
