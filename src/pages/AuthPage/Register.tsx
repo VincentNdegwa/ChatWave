@@ -1,23 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
+import { registrationDetails } from "./types";
 
 type Props = {};
 
-type CodeCountry = { code: string; country: string; flag: string };
+type CodeCountry = {
+  code: string;
+  country: string;
+  flag: string;
+};
 
-function Register({}: Props) {
+const Register: React.FC<Props> = () => {
   const [countryCodes, setCountryCodes] = useState<CodeCountry[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-  const [selectedCountry, setSelectedCountry] = useState<CodeCountry | null>({
+  const [selectedCountry, setSelectedCountry] = useState<CodeCountry>({
     code: "+254",
     country: "KE",
     flag: "https://flagcdn.com/w320/ke.png",
   });
+  const [regDetails, setRegDetails] = useState<registrationDetails>({
+    phone: "",
+    password: "",
+    conf_password: "",
+  });
 
   useEffect(() => {
-    fetch("https://restcountries.com/v3.1/all")
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchCountryCodes = async () => {
+      try {
+        const response = await fetch("https://restcountries.com/v3.1/all");
+        const data = await response.json();
         const codes = data
           .filter((country: any) => country.idd && country.idd.root)
           .map((country: any) => {
@@ -32,12 +43,44 @@ function Register({}: Props) {
             };
           });
         setCountryCodes(codes);
-      });
+      } catch (error) {
+        console.error("Error fetching country codes:", error);
+      }
+    };
+
+    fetchCountryCodes();
   }, []);
 
-  const handleCountryClick = (country: any) => {
+  const handleCountryClick = (country: CodeCountry) => {
     setSelectedCountry(country);
     setDropdownOpen(false);
+  };
+
+  const submitForm = () => {
+    let data: { phone_number: string; password: string };
+    if (!regDetails.phone.trim()) {
+      alert("Please enter your phone number");
+      return;
+    }
+    if (!regDetails.password.trim()) {
+      alert("Please enter your password");
+      return;
+    }
+    if (!regDetails.conf_password.trim()) {
+      alert("Please enter your confirmation password");
+      return;
+    }
+
+    if (regDetails.password !== regDetails.conf_password) {
+      alert("Passwords do not match");
+      return;
+    }
+    // eslint-disable-next-line prefer-const
+    data = {
+      phone_number: regDetails.phone,
+      password: regDetails.password,
+    };
+    console.log(data);
   };
 
   return (
@@ -97,14 +140,18 @@ function Register({}: Props) {
                   type="text"
                   id="code"
                   value={selectedCountry?.code}
-                  className="w-1/6 focus:outline-non h-full outline-none bottom-0"
+                  className="w-1/6 focus:outline-none h-full outline-none bottom-0"
                   readOnly
                 />
                 <input
-                  className=" h-full leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-gray-100 w-5/6"
+                  className="h-full leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-gray-100 w-5/6"
                   id="phone"
                   type="tel"
-                  placeholder="Enter your phone number"
+                  value={regDetails.phone}
+                  placeholder="712345678"
+                  onChange={(e) =>
+                    setRegDetails({ ...regDetails, phone: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -119,7 +166,11 @@ function Register({}: Props) {
               className="shadow appearance-none border rounded h-full w-full py-3 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500"
               id="password"
               type="password"
+              value={regDetails.password}
               placeholder="Enter your password"
+              onChange={(e) =>
+                setRegDetails({ ...regDetails, password: e.target.value })
+              }
             />
           </div>
           <div className="mb-6">
@@ -132,11 +183,16 @@ function Register({}: Props) {
               className="shadow appearance-none border rounded h-full w-full py-3 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500"
               id="confirmPassword"
               type="password"
+              value={regDetails.conf_password}
+              onChange={(e) =>
+                setRegDetails({ ...regDetails, conf_password: e.target.value })
+              }
               placeholder="Confirm your password"
             />
           </div>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-y-2 ">
             <button
+              onClick={() => submitForm()}
               className="bg-sky-900 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button">
               Register
@@ -153,6 +209,6 @@ function Register({}: Props) {
       </div>
     </div>
   );
-}
+};
 
 export default Register;
