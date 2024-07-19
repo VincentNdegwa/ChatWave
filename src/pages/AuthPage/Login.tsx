@@ -120,7 +120,7 @@ function Login({}: Props) {
             onClose={() => setAlertVisible(false)} // Hide the alert after it's closed
           />
         )}
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative">
+      <div className="bg-white p-8 md:rounded-lg md:shadow-lg w-full max-w-md relative">
         {phoneIsValid && (
           <button
             onClick={() => setPhoneIsValid(false)}

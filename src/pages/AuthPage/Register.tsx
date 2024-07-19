@@ -106,7 +106,7 @@ const Register: React.FC<Props> = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+      <div className="bg-white p-8 md:rounded-lg md:shadow-lg w-full max-w-md">
         <img
           src="/images/Logo.jpg"
           alt="Logo"
