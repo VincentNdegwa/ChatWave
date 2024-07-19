@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { registrationDetails } from "./types";
+import useCustomAxios from "../../modules/customAxios";
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
@@ -23,6 +25,8 @@ const Register: React.FC<Props> = () => {
     password: "",
     conf_password: "",
   });
+  const axios = useCustomAxios();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCountryCodes = async () => {
@@ -77,9 +81,26 @@ const Register: React.FC<Props> = () => {
     }
     // eslint-disable-next-line prefer-const
     data = {
-      phone_number: regDetails.phone,
+      phone_number: selectedCountry.code + regDetails.phone,
       password: regDetails.password,
     };
+    axios.post("/auth/register", data).then((res) => {
+      if (res.data.error) {
+        alert(res.data.message);
+      } else {
+        console.log(res.data.message);
+        axios.post("/auth/login", data).then((res) => {
+          if (res.data.error) {
+            alert("failed to login, please login manualy");
+          } else {
+            localStorage.setItem("token", res.data.accessToken);
+            localStorage.setItem("userId", res.data.userId);
+            localStorage.setItem("user", JSON.stringify(res.data.user));
+            navigate("/");
+          }
+        });
+      }
+    });
     console.log(data);
   };
 
