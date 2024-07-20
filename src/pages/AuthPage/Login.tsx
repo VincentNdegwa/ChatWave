@@ -20,7 +20,7 @@ function Login({}: Props) {
     flag: "https://flagcdn.com/w320/ke.png",
   });
   const [alert, setAlert] = useState<alertType>({ message: "", type: "info" });
-  const [alertVisible, setAlertVisible] = useState<boolean>(false); // New state for alert visibility
+  const [alertVisible, setAlertVisible] = useState<boolean>(false);
   const [loginPhone, setLoginPhone] = useState<string>("");
   const [phoneIsValid, setPhoneIsValid] = useState<boolean>(false);
   const [loginPassword, setLoginPassword] = useState<string>("");
