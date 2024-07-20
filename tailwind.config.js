@@ -18,6 +18,7 @@ export default {
           900: "#0c4a6e",
           950: "#082f49",
         },
+        // white: "#0d121d",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],

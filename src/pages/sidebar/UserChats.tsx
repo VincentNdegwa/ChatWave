@@ -40,7 +40,7 @@ function UserChats({ closeUserChat, createChat }: Props) {
         .catch((err) => console.log(err))
         .finally(() => setLoading(false));
     }
-  }, [axios, userId]);
+  }, [userId, axios]);
 
   const startChat = (user: User) => {
     createChat(user);
@@ -86,7 +86,7 @@ function UserChats({ closeUserChat, createChat }: Props) {
                   <div className="flex min-w-0 gap-x-4">
                     <img
                       alt=""
-                      src={person.profile?.profile_pic || "/images/avatar.png"}
+                      src={person.profile?.profile_pic || "/images/avatar.jpg"}
                       className="h-12 w-12 flex-none rounded-full bg-gray-50"
                     />
                     <div className="min-w-0 flex-auto">

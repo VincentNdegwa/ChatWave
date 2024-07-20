@@ -126,7 +126,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
   }, [chatId]);
 
   return (
-    <div className="h-full flex flex-col justify-between gap-2">
+    <div className="h-full flex flex-col gap-0">
       {openAlert && (
         <AlertNotification
           message={alertMessage}

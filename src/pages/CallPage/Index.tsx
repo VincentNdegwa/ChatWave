@@ -21,63 +21,48 @@ function Index({ mode, incommingCall }: Props) {
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const socket = new socketConfigs().getSocket();
   const [peer, setPeer] = useState<Peer | null>(null);
+  const [peerId, setPeerId] = useState<string>();
+  const [localStream, setLocalStream] = useState<MediaStream>();
 
   useEffect(() => {
-    if (mode.start) {
-      setupConnection();
+    if (mode.start && !incommingCall) {
+      setupOutgoingConnection();
     }
   }, [mode]);
 
   useEffect(() => {
     if (incommingCall) {
+      // setupIncommingConnection();
+
+      const nPeer = new Peer();
+      nPeer.on("open", (id: string) => {
+        if (mode.sender_id != undefined) {
+          console.log("ansewering peer id: " + id);
+          socket.emit("answer-call", {
+            to: mode.sender_id?.toString(),
+            peerId: id,
+          });
+        }
+      });
+      nPeer.on("call", (call) => {
+        console.log("call received");
+      });
+
       console.log("start incomming call");
     }
   }, [incommingCall]);
 
+  socket.on("call-accepted", (data) => {
+    setPeerId(data.peerId);
+  });
+
   useEffect(() => {
-    if (peer) {
-      peer.on("call", (call) => {
-        window.navigator.mediaDevices
-          .getUserMedia({ video: true, audio: true })
-          .then((stream) => {
-            // setMediaConnection(call);
-            call.answer(stream);
-            call.on("stream", (remoteStream: any) => {
-              if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = remoteStream;
-              }
-            });
-          })
-          .catch((error) => {
-            console.error("Error answering call:", error);
-          });
-      });
-    }
-  }, [peer]);
-
-  const setupConnection = () => {
-    const newPeer = new Peer();
-    setPeer(newPeer);
-
-    newPeer.on("open", (id: string) => {
-      console.log(`My peer ID is: ${id}`);
-    });
-
-    newPeer.on("error", (err: any) => {
-      console.error("PeerJS error:", err);
-    });
-
-    window.navigator.mediaDevices
-      .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
-      .then((stream) => {
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-          socket.emit("call-user", mode);
-        }
-        if (mode.receiver_id) {
-          const call = newPeer.call(mode.receiver_id.toString(), stream);
-          // setMediaConnection(call);
-
+    if (peerId != undefined) {
+      console.log("call answered " + peerId);
+      if (peer != null) {
+        console.log("found the peer");
+        if (localStream) {
+          const call = peer.call(peerId, localStream);
           call.on("stream", (remoteStream: any) => {
             if (remoteVideoRef.current) {
               remoteVideoRef.current.srcObject = remoteStream;
@@ -88,17 +73,42 @@ function Index({ mode, incommingCall }: Props) {
             if (remoteVideoRef.current) {
               remoteVideoRef.current.srcObject = null;
             }
-            // setMediaConnection(null);
           });
 
           call.on("error", (err) => {
             console.error("PeerJS call error:", err);
           });
         }
-      })
-      .catch((error) => {
-        console.error("Error setting up connection:", error);
+      }
+    }
+  }, [peerId]);
+  const setupOutgoingConnection = () => {
+    if (mode.sender_id && !incommingCall) {
+      const newPeer = new Peer();
+      setPeer(newPeer);
+
+      newPeer.on("open", (id: string) => {
+        console.log(`My peer ID is: ${id}`);
       });
+
+      newPeer.on("error", (err: any) => {
+        console.error("PeerJS error:", err);
+      });
+
+      window.navigator.mediaDevices
+        .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
+        .then((stream) => {
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = stream;
+            setLocalStream(stream);
+            socket.emit("join", mode.sender_id);
+            socket.emit("call-user", mode);
+          }
+        })
+        .catch((error) => {
+          console.error("Error setting up connection:", error);
+        });
+    }
   };
 
   // const startVoiceCall = () => {
@@ -107,18 +117,19 @@ function Index({ mode, incommingCall }: Props) {
 
   return (
     <div className="absolute top-0 left-0 w-full h-full bg-sky-100 flex flex-col items-center justify-center p-4">
-      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg flex flex-col items-center">
+      <div className="bg-white shadow-lg rounded-lg p-6 w-full flex flex-col items-center">
         {mode.mode === callMode.VIDEO && (
-          <div className="w-full h-64 bg-sky-900 rounded-lg mb-4 relative">
+          // <div className="w-full h-64 bg-sky-900 rounded-lg mb-4 relative">
+          <div className="relative">
             <video
               ref={localVideoRef}
               autoPlay
-              muted
+              // muted
               className="w-full h-full rounded-lg"></video>
             <video
               ref={remoteVideoRef}
               autoPlay
-              className="w-full h-full rounded-lg absolute top-0 left-0"></video>
+              className=" w-40 h-40 border border-1 rounded-lg absolute top-0 left-0"></video>
           </div>
         )}
         {mode.mode === callMode.VOICE && (

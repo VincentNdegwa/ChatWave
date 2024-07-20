@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { registrationDetails } from "./types";
+import useCustomAxios from "../../modules/customAxios";
+import { useNavigate } from "react-router-dom";
+import { alertType } from "../../types";
+import AlertNotification from "../Components/AlertNotification";
 
 type Props = {};
 
@@ -23,6 +27,14 @@ const Register: React.FC<Props> = () => {
     password: "",
     conf_password: "",
   });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [alert, setAlert] = useState<alertType>({
+    message: "",
+    type: "info",
+  });
+  const [alertVisible, setAlertVisible] = useState<boolean>(false);
+  const axios = useCustomAxios();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCountryCodes = async () => {
@@ -56,36 +68,74 @@ const Register: React.FC<Props> = () => {
     setDropdownOpen(false);
   };
 
-  const submitForm = () => {
-    let data: { phone_number: string; password: string };
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
     if (!regDetails.phone.trim()) {
-      alert("Please enter your phone number");
-      return;
+      newErrors.phone = "Please enter your phone number";
     }
     if (!regDetails.password.trim()) {
-      alert("Please enter your password");
-      return;
+      newErrors.password = "Please enter your password";
     }
     if (!regDetails.conf_password.trim()) {
-      alert("Please enter your confirmation password");
-      return;
+      newErrors.conf_password = "Please enter your confirmation password";
     }
-
     if (regDetails.password !== regDetails.conf_password) {
-      alert("Passwords do not match");
+      newErrors.conf_password = "Passwords do not match";
+    }
+    return newErrors;
+  };
+
+  const submitForm = async () => {
+    const formErrors = validateForm();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
       return;
     }
-    // eslint-disable-next-line prefer-const
-    data = {
-      phone_number: regDetails.phone,
+    setErrors({});
+
+    const data = {
+      phone_number: selectedCountry.code + regDetails.phone,
       password: regDetails.password,
     };
-    console.log(data);
+
+    try {
+      const res = await axios.post("/auth/register", data);
+      if (res.data.error) {
+        setAlertVisible(true);
+        setAlert({ message: res.data.message, type: "error" });
+      } else {
+        const loginRes = await axios.post("/auth/login", data);
+        if (loginRes.data.error) {
+          setAlertVisible(true);
+          setAlert({ message: loginRes.data.message, type: "error" });
+        } else {
+          setAlertVisible(true);
+          setAlert({ message: "Logged in successfully", type: "success" });
+          localStorage.setItem("token", loginRes.data.accessToken);
+          localStorage.setItem("userId", loginRes.data.userId);
+          localStorage.setItem("user", JSON.stringify(loginRes.data.user));
+          navigate("/");
+        }
+      }
+    } catch (error) {
+      setAlertVisible(true);
+      setAlert({
+        message: "An error occurred during registration",
+        type: "error",
+      });
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+      {alertVisible && alert.message.trim() && (
+        <AlertNotification
+          message={alert.message}
+          type={alert.type}
+          onClose={() => setAlertVisible(false)}
+        />
+      )}
+      <div className="bg-white p-8 md:rounded-lg md:shadow-lg w-full max-w-md">
         <img
           src="/images/Logo.jpg"
           alt="Logo"
@@ -144,7 +194,9 @@ const Register: React.FC<Props> = () => {
                   readOnly
                 />
                 <input
-                  className="h-full leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-gray-100 w-5/6"
+                  className={`h-full leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-gray-100 w-5/6 ${
+                    errors.phone ? "border-red-500" : ""
+                  }`}
                   id="phone"
                   type="tel"
                   value={regDetails.phone}
@@ -155,6 +207,9 @@ const Register: React.FC<Props> = () => {
                 />
               </div>
             </div>
+            {errors.phone && (
+              <p className="text-red-500 text-xs italic">{errors.phone}</p>
+            )}
           </div>
           <div className="mb-6">
             <label
@@ -163,7 +218,9 @@ const Register: React.FC<Props> = () => {
               Password
             </label>
             <input
-              className="shadow appearance-none border rounded h-full w-full py-3 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500"
+              className={`shadow appearance-none border rounded h-full w-full py-3 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500 ${
+                errors.password ? "border-red-500" : ""
+              }`}
               id="password"
               type="password"
               value={regDetails.password}
@@ -172,6 +229,9 @@ const Register: React.FC<Props> = () => {
                 setRegDetails({ ...regDetails, password: e.target.value })
               }
             />
+            {errors.password && (
+              <p className="text-red-500 text-xs italic">{errors.password}</p>
+            )}
           </div>
           <div className="mb-6">
             <label
@@ -180,7 +240,9 @@ const Register: React.FC<Props> = () => {
               Confirm Password
             </label>
             <input
-              className="shadow appearance-none border rounded h-full w-full py-3 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500"
+              className={`shadow appearance-none border rounded h-full w-full py-3 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500 ${
+                errors.conf_password ? "border-red-500" : ""
+              }`}
               id="confirmPassword"
               type="password"
               value={regDetails.conf_password}
@@ -189,10 +251,15 @@ const Register: React.FC<Props> = () => {
               }
               placeholder="Confirm your password"
             />
+            {errors.conf_password && (
+              <p className="text-red-500 text-xs italic">
+                {errors.conf_password}
+              </p>
+            )}
           </div>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-y-2 ">
             <button
-              onClick={() => submitForm()}
+              onClick={submitForm}
               className="bg-sky-900 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button">
               Register
