@@ -157,7 +157,7 @@ function MainLayout({
       };
       setSingleChat(newRole);
     }
-    console.log(singleChat);
+    setIsChatOpen(true);
     //  console.log(chatsData);
   };
   const handleCall = (callType: {
