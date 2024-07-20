@@ -46,6 +46,7 @@ function Index({ mode, incommingCall }: Props) {
       });
       nPeer.on("call", (call) => {
         console.log("call received");
+        call.answer(localStream);
       });
 
       console.log("start incomming call");
