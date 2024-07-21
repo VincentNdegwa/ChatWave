@@ -45,8 +45,17 @@ function Index({ mode, incommingCall }: Props) {
         }
       });
       nPeer.on("call", (call) => {
-        console.log("call received");
-        call.answer(localStream);
+        navigator.mediaDevices
+          .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
+          .then((stream) => {
+            call.answer(stream);
+            call.on("stream", (remoteStream) => {
+              if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = remoteStream;
+                console.log("call received");
+              }
+            });
+          });
       });
 
       console.log("start incomming call");
