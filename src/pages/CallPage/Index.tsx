@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
-import { FaMicrophone, FaVideo, FaPhoneSlash } from "react-icons/fa";
+import { FaMicrophone, FaVideo } from "react-icons/fa";
 import socketConfigs from "../../modules/socketConfigs";
 import { callMode, callerData } from "../../types";
 import { Peer } from "peerjs";
+import { MdOutlineCallEnd } from "react-icons/md";
 
 type Props = {
   mode: callerData;
@@ -41,7 +42,7 @@ function Index({ mode, incommingCall }: Props) {
         navigator.mediaDevices
           .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
           .then((stream) => {
-            call.answer(stream);
+            call.answer(stream || localStream);
             call.on("stream", (remoteStream) => {
               if (remoteVideoRef.current) {
                 remoteVideoRef.current.srcObject = remoteStream;
@@ -140,16 +141,17 @@ function Index({ mode, incommingCall }: Props) {
             <FaMicrophone size={32} className="text-white" />
           </div>
         )}
-        <div className="flex space-x-4 absolute bottom-4 z-30">
-          <button className="bg-red-600 text-white p-4 rounded-full shadow-lg hover:bg-red-500">
-            <FaPhoneSlash size={24} />
-          </button>
-          <button className="bg-sky-700 text-white p-4 rounded-full shadow-lg hover:bg-sky-600">
+        <div className="flex space-x-3 md:space-x-5 absolute bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
+          <button className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300">
             <FaVideo size={24} />
           </button>
-          <button className="bg-sky-700 text-white p-4 rounded-full shadow-lg hover:bg-sky-600">
+          <button className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300">
             <FaMicrophone size={24} />
           </button>
+          <div className="cursor-pointer h-fit bg-red-700 flex items-center gap-x-2  text-white p-2 rounded-sm shadow-lg hover:bg-red-500 transition-all duration-300">
+            <MdOutlineCallEnd size={24} />
+            Leave
+          </div>
         </div>
       </div>
     </div>
