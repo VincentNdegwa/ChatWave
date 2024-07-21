@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
-import {
-  FaMicrophone,
-  // FaMicrophoneSlash,
-  FaVideo,
-  FaPhoneSlash,
-} from "react-icons/fa";
+import { FaMicrophone, FaVideo, FaPhoneSlash } from "react-icons/fa";
 import socketConfigs from "../../modules/socketConfigs";
 import { callMode, callerData } from "../../types";
 import { Peer } from "peerjs";
@@ -32,96 +27,102 @@ function Index({ mode, incommingCall }: Props) {
 
   useEffect(() => {
     if (incommingCall) {
-      setupIncomingConnection();
+      const nPeer = new Peer();
+      nPeer.on("open", (id: string) => {
+        if (mode.sender_id != undefined) {
+          console.log("ansewering peer id: " + id);
+          socket.emit("answer-call", {
+            to: mode.sender_id?.toString(),
+            peerId: id,
+          });
+        }
+      });
+      nPeer.on("call", (call) => {
+        navigator.mediaDevices
+          .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
+          .then((stream) => {
+            call.answer(stream);
+            call.on("stream", (remoteStream) => {
+              if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = remoteStream;
+                console.log("call received");
+              }
+            });
+          });
+      });
+
+      console.log("start incomming call");
     }
   }, [incommingCall]);
-
-  useEffect(() => {
-    if (peerId) {
-      handleCall(peerId);
-    }
-  }, [peerId]);
-
-  const setupOutgoingConnection = () => {
-    const newPeer = new Peer();
-    setPeer(newPeer);
-
-    newPeer.on("open", (id: string) => {
-      console.log(`My peer ID is: ${id}`);
-      window.navigator.mediaDevices
-        .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
-        .then((stream) => {
-          setLocalStream(stream);
-          if (localVideoRef.current) {
-            localVideoRef.current.srcObject = stream;
-          }
-          socket.emit("join", mode.sender_id);
-          socket.emit("call-user", mode);
-        })
-        .catch(console.error);
-    });
-
-    newPeer.on("error", console.error);
-  };
-
-  const setupIncomingConnection = () => {
-    const nPeer = new Peer();
-    setPeer(nPeer);
-
-    nPeer.on("open", (id: string) => {
-      socket.emit("answer-call", {
-        to: mode.sender_id,
-        peerId: id,
-      });
-    });
-
-    nPeer.on("call", (call) => {
-      window.navigator.mediaDevices
-        .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
-        .then((stream) => {
-          call.answer(stream);
-          call.on("stream", (remoteStream) => {
-            if (remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject = remoteStream;
-            }
-          });
-        });
-    });
-  };
-
-  const handleCall = (peerId: string) => {
-    if (peer && localStream) {
-      const call = peer.call(peerId, localStream);
-      call.on("stream", (remoteStream) => {
-        if (remoteVideoRef.current) {
-          remoteVideoRef.current.srcObject = remoteStream;
-        }
-      });
-
-      call.on("close", () => {
-        if (remoteVideoRef.current) {
-          remoteVideoRef.current.srcObject = null;
-        }
-      });
-
-      call.on("error", console.error);
-    }
-  };
 
   socket.on("call-accepted", (data) => {
     setPeerId(data.peerId);
   });
 
+  useEffect(() => {
+    if (peerId != undefined) {
+      console.log("call answered " + peerId);
+      if (peer != null) {
+        console.log("found the peer");
+        if (localStream) {
+          const call = peer.call(peerId, localStream);
+          call.on("stream", (remoteStream: any) => {
+            if (remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = remoteStream;
+            }
+          });
+
+          call.on("close", () => {
+            if (remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = null;
+            }
+          });
+
+          call.on("error", (err) => {
+            console.error("PeerJS call error:", err);
+          });
+        }
+      }
+    }
+  }, [peerId]);
+  const setupOutgoingConnection = () => {
+    if (mode.sender_id && !incommingCall) {
+      const newPeer = new Peer();
+      setPeer(newPeer);
+
+      newPeer.on("open", (id: string) => {
+        console.log(`My peer ID is: ${id}`);
+      });
+
+      newPeer.on("error", (err: any) => {
+        console.error("PeerJS error:", err);
+      });
+
+      window.navigator.mediaDevices
+        .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
+        .then((stream) => {
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = stream;
+            setLocalStream(stream);
+            socket.emit("join", mode.sender_id);
+            socket.emit("call-user", mode);
+          }
+        })
+        .catch((error) => {
+          console.error("Error setting up connection:", error);
+        });
+    }
+  };
+
   return (
     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center p-1">
-      <div className=" bg-slate-900 w-4/6 h-full flex flex-col items-center relative">
+      <div className=" bg-slate-900 w-full md:w-4/6 h-full flex flex-col items-center relative">
         {mode.mode === callMode.VIDEO && (
           <div className="bg-slate-900">
             <div className="rounded-lg absolute top-0 left-0 w-40 h-40 z-20">
               <video
                 ref={remoteVideoRef}
                 autoPlay
-                muted
                 disablePictureInPicture
                 className="object-cover w-full h-full"></video>
             </div>
@@ -129,7 +130,6 @@ function Index({ mode, incommingCall }: Props) {
               <video
                 ref={localVideoRef}
                 autoPlay
-                muted
                 disablePictureInPicture
                 className="object-cover w-full h-full"></video>
             </div>
