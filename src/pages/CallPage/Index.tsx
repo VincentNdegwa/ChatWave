@@ -32,8 +32,6 @@ function Index({ mode, incommingCall }: Props) {
 
   useEffect(() => {
     if (incommingCall) {
-      // setupIncommingConnection();
-
       const nPeer = new Peer();
       nPeer.on("open", (id: string) => {
         if (mode.sender_id != undefined) {
@@ -121,10 +119,6 @@ function Index({ mode, incommingCall }: Props) {
     }
   };
 
-  // const startVoiceCall = () => {
-  //   // Implement voice call start logic
-  // };
-
   return (
     <div className="absolute top-0 left-0 w-full h-full bg-sky-100 flex flex-col items-center justify-center p-4">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full flex flex-col items-center">
@@ -132,12 +126,12 @@ function Index({ mode, incommingCall }: Props) {
           // <div className="w-full h-64 bg-sky-900 rounded-lg mb-4 relative">
           <div className="relative">
             <video
-              ref={localVideoRef}
+              ref={remoteVideoRef}
               autoPlay
-              // muted
+              muted
               className="w-full h-full rounded-lg"></video>
             <video
-              ref={remoteVideoRef}
+              ref={localVideoRef}
               autoPlay
               className=" w-40 h-40 border border-1 rounded-lg absolute top-0 left-0"></video>
           </div>
