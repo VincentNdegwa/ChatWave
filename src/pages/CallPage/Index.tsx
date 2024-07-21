@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaMicrophone, FaVideo } from "react-icons/fa";
 import socketConfigs from "../../modules/socketConfigs";
 import { callMode, callerData } from "../../types";
-import { Peer } from "peerjs";
+import { MediaConnection, Peer } from "peerjs";
 import { MdOutlineCallEnd } from "react-icons/md";
 
 type Props = {
@@ -19,6 +19,7 @@ function Index({ mode, incommingCall }: Props) {
   const [peer, setPeer] = useState<Peer | null>(null);
   const [peerId, setPeerId] = useState<string>();
   const [localStream, setLocalStream] = useState<MediaStream>();
+  const [initCall, setInitCall] = useState<MediaConnection>();
 
   useEffect(() => {
     if (mode.start && !incommingCall) {
@@ -43,12 +44,7 @@ function Index({ mode, incommingCall }: Props) {
           .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
           .then((stream) => {
             call.answer(stream || localStream);
-            call.on("stream", (remoteStream) => {
-              if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = remoteStream;
-                console.log("call received");
-              }
-            });
+            setInitCall(call);
           });
       });
 
@@ -56,6 +52,12 @@ function Index({ mode, incommingCall }: Props) {
     }
   }, [incommingCall]);
 
+  initCall?.on("stream", (remStream) => {
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = remStream;
+      console.log("Setting up the remote stream");
+    }
+  });
   socket.on("call-accepted", (data) => {
     setPeerId(data.peerId);
   });
@@ -64,9 +66,9 @@ function Index({ mode, incommingCall }: Props) {
     if (peerId != undefined) {
       console.log("call answered " + peerId);
       if (peer != null) {
-        console.log("found the peer");
         if (localStream) {
           const call = peer.call(peerId, localStream);
+          console.log(`calling peerId: ${peerId}`);
           call.on("stream", (remoteStream: any) => {
             if (remoteVideoRef.current) {
               remoteVideoRef.current.srcObject = remoteStream;
@@ -116,7 +118,7 @@ function Index({ mode, incommingCall }: Props) {
   };
 
   return (
-    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center p-1">
+    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center md:p-1">
       <div className=" bg-slate-900 w-full md:w-4/6 h-full flex flex-col items-center relative">
         {mode.mode === callMode.VIDEO && (
           <div className="bg-slate-900">
