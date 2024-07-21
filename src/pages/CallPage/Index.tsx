@@ -19,7 +19,8 @@ function Index({ mode, incommingCall }: Props) {
   const [peer, setPeer] = useState<Peer | null>(null);
   const [peerId, setPeerId] = useState<string>();
   const [localStream, setLocalStream] = useState<MediaStream>();
-  const [initCall, setInitCall] = useState<MediaConnection>();
+  const [inCall, setInCall] = useState<MediaConnection>();
+  const [remoteStreamIsSet, setRemoteStreamIsSet] = useState<boolean>(false);
 
   useEffect(() => {
     if (mode.start && !incommingCall) {
@@ -43,8 +44,9 @@ function Index({ mode, incommingCall }: Props) {
         navigator.mediaDevices
           .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
           .then((stream) => {
+            setLocalStream(stream);
             call.answer(stream || localStream);
-            setInitCall(call);
+            setInCall(call);
           });
       });
 
@@ -52,9 +54,10 @@ function Index({ mode, incommingCall }: Props) {
     }
   }, [incommingCall]);
 
-  initCall?.on("stream", (remStream) => {
+  inCall?.on("stream", (remStream) => {
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remStream;
+      setRemoteStreamIsSet(true);
       console.log("Setting up the remote stream");
     }
   });
@@ -72,6 +75,7 @@ function Index({ mode, incommingCall }: Props) {
           call.on("stream", (remoteStream: any) => {
             if (remoteVideoRef.current) {
               remoteVideoRef.current.srcObject = remoteStream;
+              setRemoteStreamIsSet(true);
             }
           });
 
@@ -121,22 +125,32 @@ function Index({ mode, incommingCall }: Props) {
     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center md:p-1">
       <div className=" bg-slate-900 w-full md:w-4/6 h-full flex flex-col items-center relative">
         {mode.mode === callMode.VIDEO && (
-          <div className="bg-slate-900">
-            <div className="rounded-lg absolute top-0 left-0 w-40 h-40 z-20">
-              <video
-                ref={remoteVideoRef}
-                autoPlay
-                disablePictureInPicture
-                className="object-cover w-full h-full"></video>
-            </div>
-            <div className="absolute top-0 right-0 w-full h-full rounded-2xl z-10">
+          <>
+            <div
+              className={
+                remoteStreamIsSet
+                  ? "absolute top-0 left-0 w-40 h-40 z-20"
+                  : "absolute top-0 right-0 w-full h-full rounded-2xl z-10"
+              }>
               <video
                 ref={localVideoRef}
                 autoPlay
                 disablePictureInPicture
                 className="object-cover w-full h-full"></video>
             </div>
-          </div>
+            <div
+              className={
+                remoteStreamIsSet
+                  ? "absolute top-0 right-0 w-full h-full rounded-2xl z-10"
+                  : "absolute top-0 left-0 w-40 h-40 z-20"
+              }>
+              <video
+                ref={remoteVideoRef}
+                autoPlay
+                disablePictureInPicture
+                className="object-cover w-full h-full"></video>
+            </div>
+          </>
         )}
         {mode.mode === callMode.VOICE && (
           <div className="w-32 h-32 bg-sky-900 rounded-full flex items-center justify-center mb-4">
