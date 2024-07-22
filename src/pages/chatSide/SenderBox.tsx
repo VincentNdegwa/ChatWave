@@ -21,7 +21,7 @@ function SenderBox({ messageSend }: Props) {
     <form
       className="w-full h-full flex justify-between items-center"
       onSubmit={handleSubmit}>
-      <div className="flex relative items-center h-full w-5/6 gap-x-0 p-0">
+      <div className="flex relative items-center h-full w-4/6 sm:w-5/6 gap-x-0 p-0">
         <div className="text-2xl text-sky-950 bg-white h-full flex items-center p-3 rounded-md cursor-pointer">
           <MdAttachFile />
         </div>
@@ -38,13 +38,13 @@ function SenderBox({ messageSend }: Props) {
           </div>
         </div>
       </div>
-      <div className="flex w-1/6 h-full items-center gap-x-0 justify-between">
+      <div className="flex w-2/6 sm:w-1/6 h-full items-center gap-x-0 justify-between sm:justify-normal">
         <div className="text-2xl text-sky-950 bg-white h-full flex items-center p-3 rounded-md cursor-pointer">
           <FaMicrophone />
         </div>
         <button
           type="submit"
-          className="text-2xl text-white bg-sky-700 hover:bg-sky-600 transition-all ease-out duration-200 h-full w-[50px] flex items-center p-3 rounded-md cursor-pointer">
+          className="text-2xl text-white bg-sky-700 hover:bg-sky-600 transition-all ease-out duration-200 h-[50px] w-[50px] flex items-center p-3 rounded-md cursor-pointer">
           <BsFillSendFill />
         </button>
       </div>

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { getChatId, getUser, getUserId } from "../../modules/getUserId";
 import { Message, Participant, Role, User, callMode } from "../../types";
@@ -23,7 +22,6 @@ type Props = {
 function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
   const [chatId, setChatId] = useState<number | null>(getChatId());
   const [userId, setUserId] = useState<number | null>(getUserId());
-
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [savedChatData, setSavedChatData] = useState<Role>(chatData);
@@ -60,7 +58,6 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
     } else {
       if (user && chatId) {
         setUserId(user.id);
-
         addMessage(text, user, chatId);
       }
     }
@@ -107,7 +104,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
         })
         .catch((error) => alert(error.message));
     }
-  }, [userId, chatId]);
+  }, [userId, chatId, axios]);
 
   useEffect(() => {
     setSavedChatData(chatData);
@@ -126,7 +123,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
   }, [chatId]);
 
   return (
-    <div className="h-full flex flex-col gap-0">
+    <div className="h-screen w-full flex flex-col">
       {openAlert && (
         <AlertNotification
           message={alertMessage}
@@ -136,7 +133,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
       )}
       {savedChatData?.chat ? (
         <>
-          <div className="shadow-lg p-1 h-16 rounded-lg">
+          <div className="shadow-lg p-1 h-16 rounded-lg sticky top-0 bg-white z-10">
             <ChatHead
               onItemClick={onItemClick}
               openProfile={openProfile}
@@ -144,10 +141,10 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
               handleCall={handleCall}
             />
           </div>
-          <div className="h-5/6">
+          <div className="flex-1 overflow-auto">
             <ChatConversation chatData={savedChatData} />
           </div>
-          <div className="h-14 w-full rounded-md shadow-lg">
+          <div className="h-14 w-full rounded-md shadow-lg sticky bottom-0 bg-white z-10">
             <SenderBox messageSend={messageSend} />
           </div>
         </>

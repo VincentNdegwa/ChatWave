@@ -184,7 +184,7 @@ function MainLayout({
     return <CallPage mode={newCall} incommingCall={incommingCall} />;
   }
   return (
-    <div className="flex h-full w-full md:divide-x">
+    <div className="flex h-dvh w-full md:divide-x">
       {alertVisible && alert.message && (
         <AlertNotification
           message={alert.message}

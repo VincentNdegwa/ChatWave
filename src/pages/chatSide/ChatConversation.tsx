@@ -72,57 +72,55 @@ function ChatConversation({ chatData }: Props) {
   }, [messages]);
 
   return (
-    <div className="flex flex-col w-full h-full">
-      <div className="flex flex-col w-full h-full gap-y-3 overflow-y-scroll scrollbar-custom">
-        {messages.map((msg: Message) => {
-          const isCurrentUser = msg.sender.id === Number(getUserId());
-          return (
+    // <div className="flex flex-col w-full h-full">
+    <div className="flex flex-col w-full h-full gap-y-3 overflow-y-scroll scrollbar-custom">
+      {messages.map((msg: Message) => {
+        const isCurrentUser = msg.sender.id === Number(getUserId());
+        return (
+          <div
+            key={msg.id}
+            className={`w-3/6 p-2 ${
+              isCurrentUser ? "self-end" : "self-start"
+            }`}>
             <div
-              key={msg.id}
-              className={`w-3/6 p-2 ${
-                isCurrentUser ? "self-end" : "self-start"
+              className={`flex gap-x-2 w-full ${
+                isCurrentUser ? "justify-end" : "justify-start"
               }`}>
-              <div
-                className={`flex gap-x-2 w-full ${
-                  isCurrentUser ? "justify-end" : "justify-start"
-                }`}>
-                {!isCurrentUser && (
-                  <img
-                    src={
-                      msg.sender.profile?.profile_pic || "/images/avatar.jpg"
-                    }
-                    alt="profile-pic"
-                    className="rounded-full h-10 w-10 self-end"
-                  />
-                )}
-                <div className="text-sm flex flex-col">
-                  <div
-                    className={`p-2 ${
-                      isCurrentUser
-                        ? "bg-sky-100 text-sky-950"
-                        : "bg-sky-700 text-white"
-                    } rounded-t-lg ${
-                      isCurrentUser ? "rounded-bl-lg" : "rounded-br-lg"
-                    }`}>
-                    {msg.text}
+              {!isCurrentUser && (
+                <img
+                  src={msg.sender.profile?.profile_pic || "/images/avatar.jpg"}
+                  alt="profile-pic"
+                  className="rounded-full h-10 w-10 self-end"
+                />
+              )}
+              <div className="text-sm flex flex-col">
+                <div
+                  className={`p-2 ${
+                    isCurrentUser
+                      ? "bg-sky-100 text-sky-950"
+                      : "bg-sky-700 text-white"
+                  } rounded-t-lg ${
+                    isCurrentUser ? "rounded-bl-lg" : "rounded-br-lg"
+                  }`}>
+                  {msg.text}
+                </div>
+                <div
+                  className={`mt-2 ${
+                    isCurrentUser ? "self-end flex gap-x-1" : ""
+                  }`}>
+                  <div className="text-xs">
+                    {new Date(msg.sent_at).toLocaleTimeString()}
                   </div>
-                  <div
-                    className={`mt-2 ${
-                      isCurrentUser ? "self-end flex gap-x-1" : ""
-                    }`}>
-                    <div className="text-xs">
-                      {new Date(msg.sent_at).toLocaleTimeString()}
-                    </div>
-                    {isCurrentUser && <IoCheckmarkDoneOutline />}
-                  </div>
+                  {isCurrentUser && <IoCheckmarkDoneOutline />}
                 </div>
               </div>
             </div>
-          );
-        })}
-        <div ref={messagesEndRef} />
-      </div>
+          </div>
+        );
+      })}
+      <div ref={messagesEndRef} />
     </div>
+    // </div>
   );
 }
 
