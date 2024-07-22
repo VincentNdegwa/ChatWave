@@ -45,7 +45,7 @@ function Index({ mode, incommingCall }: Props) {
           .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
           .then((stream) => {
             setLocalStream(stream);
-            call.answer(stream || localStream);
+            call.answer(stream);
             setInCall(call);
           });
       });
@@ -93,7 +93,7 @@ function Index({ mode, incommingCall }: Props) {
     }
   }, [peerId]);
   const setupOutgoingConnection = () => {
-    if (mode.sender_id && !incommingCall) {
+    if (mode.sender_id && incommingCall == false) {
       const newPeer = new Peer();
       setPeer(newPeer);
 
@@ -135,6 +135,7 @@ function Index({ mode, incommingCall }: Props) {
               <video
                 ref={localVideoRef}
                 autoPlay
+                muted
                 disablePictureInPicture
                 className="object-cover w-full h-full"></video>
             </div>
@@ -147,6 +148,7 @@ function Index({ mode, incommingCall }: Props) {
               <video
                 ref={remoteVideoRef}
                 autoPlay
+                muted
                 disablePictureInPicture
                 className="object-cover w-full h-full"></video>
             </div>
