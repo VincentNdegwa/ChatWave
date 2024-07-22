@@ -33,6 +33,8 @@ function Index({ mode, incommingCall }: Props) {
 
   useEffect(() => {
     if (incommingCall) {
+      console.log("incomming call from: ", mode.sender_id);
+
       const nPeer = new Peer();
       nPeer.on("open", (id: string) => {
         if (mode.sender_id != undefined) {
@@ -62,7 +64,9 @@ function Index({ mode, incommingCall }: Props) {
       console.log("Setting up the remote stream");
     }
   });
+
   socket.on("call-accepted", (data) => {
+    console.log("call accepted");
     setPeerId(data.peerId);
   });
 
@@ -96,6 +100,7 @@ function Index({ mode, incommingCall }: Props) {
 
   const setupOutgoingConnection = () => {
     if (mode.sender_id && !incommingCall) {
+      socket.emit("join", mode.sender_id);
       const newPeer = new Peer();
       setPeer(newPeer);
 
@@ -114,7 +119,6 @@ function Index({ mode, incommingCall }: Props) {
             setLocalStream(stream);
             localStreamRef.current = stream;
             localVideoRef.current.srcObject = localStreamRef.current;
-            socket.emit("join", mode.sender_id);
             socket.emit("call-user", mode);
           }
         })
