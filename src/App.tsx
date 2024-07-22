@@ -33,12 +33,6 @@ export default function App({}: Props) {
     socket.on("call-user", (data) => {
       SetNewCall(data);
     });
-
-    // return () => {
-    //   socket.off("call-user", (data) => {
-    //     console.log(data);
-    //   });
-    // };
   }, [newCall]);
   return (
     <Router>

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-
 import { useEffect, useRef, useState } from "react";
-import { FaMicrophone, FaMicrophoneSlash, FaVideo } from "react-icons/fa";
+import { FaMicrophone, FaVideo } from "react-icons/fa";
 import socketConfigs from "../../modules/socketConfigs";
 import { callMode, callerData } from "../../types";
 import { MediaConnection, Peer } from "peerjs";
@@ -20,10 +19,9 @@ function Index({ mode, incommingCall }: Props) {
   const [peer, setPeer] = useState<Peer | null>(null);
   const [peerId, setPeerId] = useState<string>();
   const [localStream, setLocalStream] = useState<MediaStream>();
-  const localStreamRef = useRef<MediaStream | null>(null); // Add a ref for local stream
   const [inCall, setInCall] = useState<MediaConnection>();
   const [remoteStreamIsSet, setRemoteStreamIsSet] = useState<boolean>(false);
-  const [muted, setMuted] = useState<boolean>(false);
+  // const [muted, setMuted] = useState<boolean>(false);
 
   useEffect(() => {
     if (mode.start && !incommingCall) {
@@ -36,22 +34,24 @@ function Index({ mode, incommingCall }: Props) {
       const nPeer = new Peer();
       nPeer.on("open", (id: string) => {
         if (mode.sender_id != undefined) {
-          console.log("answering peer id: " + id);
+          console.log("ansewering peer id: " + id);
           socket.emit("answer-call", {
             to: mode.sender_id?.toString(),
             peerId: id,
           });
         }
       });
-      nPeer.on("call", async (call) => {
-        const str = await getLocalStream();
-        setLocalStream(str);
-        localStreamRef.current = str;
-        call.answer(localStreamRef.current);
-        setInCall(call);
+      nPeer.on("call", (call) => {
+        navigator.mediaDevices
+          .getUserMedia({ audio: true, video: mode.mode === callMode.VIDEO })
+          .then((stream) => {
+            setLocalStream(stream);
+            call.answer(stream);
+            setInCall(call);
+          });
       });
 
-      console.log("start incoming call");
+      console.log("start incomming call");
     }
   }, [incommingCall]);
 
@@ -93,9 +93,8 @@ function Index({ mode, incommingCall }: Props) {
       }
     }
   }, [peerId]);
-
   const setupOutgoingConnection = () => {
-    if (mode.sender_id && !incommingCall) {
+    if (mode.sender_id && incommingCall == false) {
       const newPeer = new Peer();
       setPeer(newPeer);
 
@@ -112,8 +111,7 @@ function Index({ mode, incommingCall }: Props) {
         .then((stream) => {
           if (localVideoRef.current) {
             setLocalStream(stream);
-            localStreamRef.current = stream;
-            localVideoRef.current.srcObject = localStreamRef.current;
+            localVideoRef.current.srcObject = stream;
             socket.emit("join", mode.sender_id);
             socket.emit("call-user", mode);
           }
@@ -124,35 +122,9 @@ function Index({ mode, incommingCall }: Props) {
     }
   };
 
-  const toggleMute = () => {
-    if (localStreamRef.current) {
-      localStreamRef.current.getAudioTracks().forEach((track) => {
-        track.enabled = !track.enabled;
-      });
-      setLocalStream(localStreamRef.current);
-      setMuted(!muted);
-    }
-  };
-
-  const getLocalStream = async (): Promise<MediaStream> => {
-    console.log("getting media stream");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: mode.mode === callMode.VIDEO,
-      });
-      setLocalStream(stream);
-      localStreamRef.current = stream;
-      return stream;
-    } catch (err) {
-      console.error("Error getting media stream:", err);
-      throw err;
-    }
-  };
-
   return (
     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center md:p-1">
-      <div className="bg-slate-900 w-full md:w-4/6 h-full flex flex-col items-center relative">
+      <div className=" bg-slate-900 w-full md:w-4/6 h-full flex flex-col items-center relative">
         {mode.mode === callMode.VIDEO && (
           <>
             <div
@@ -177,6 +149,7 @@ function Index({ mode, incommingCall }: Props) {
               <video
                 ref={remoteVideoRef}
                 autoPlay
+                muted
                 disablePictureInPicture
                 className="object-cover w-full h-full"></video>
             </div>
@@ -191,16 +164,10 @@ function Index({ mode, incommingCall }: Props) {
           <button className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300">
             <FaVideo size={24} />
           </button>
-          <button
-            className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300"
-            onClick={toggleMute}>
-            {muted ? (
-              <FaMicrophoneSlash size={24} />
-            ) : (
-              <FaMicrophone size={24} />
-            )}
+          <button className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300">
+            <FaMicrophone size={24} />
           </button>
-          <div className="cursor-pointer h-fit bg-red-700 flex items-center gap-x-2 text-white p-2 rounded-sm shadow-lg hover:bg-red-500 transition-all duration-300">
+          <div className="cursor-pointer h-fit bg-red-700 flex items-center gap-x-2  text-white p-2 rounded-sm shadow-lg hover:bg-red-500 transition-all duration-300">
             <MdOutlineCallEnd size={24} />
             Leave
           </div>
