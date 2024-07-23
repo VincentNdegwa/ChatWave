@@ -82,7 +82,7 @@ function MainLayout({
   useEffect(() => {
     const handleMessageReceived = (message: any) => {
       const newMessage = message.data;
-      console.log(newMessage);
+      // console.log(newMessage);
 
       const chatIndex = chatsData.findIndex(
         (chat) => chat.chat.id === newMessage.chat.id

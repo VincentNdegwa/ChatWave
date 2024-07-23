@@ -12,7 +12,7 @@ function ContactList({ onItemClick, chatsData }: Props) {
 
   useEffect(() => {
     setContactData(chatsData);
-    console.log(chatsData);
+    // console.log(chatsData);
   }, [chatsData]);
 
   return (

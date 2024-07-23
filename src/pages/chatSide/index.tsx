@@ -48,7 +48,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
           } else {
             setSavedChatData(res.data.data);
             setChatId(res.data.data.id);
-            window.localStorage.setItem("chatId", res.data.data.id);
+            window.localStorage.setItem("currentChatId", res.data.data.id);
             addMessage(text, user, res.data.data.id);
           }
         })
@@ -58,10 +58,10 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
           console.log(err);
         });
     } else {
-      if (user && chatId) {
+      if (user && currentChatId) {
         setUserId(user.id);
 
-        addMessage(text, user, chatId);
+        addMessage(text, user, currentChatId);
       }
     }
   };
@@ -89,6 +89,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
         (x) => x.user.id != newMessage.sender.id
       )?.user.id,
     };
+
     const skt = socket.getSocket();
     skt.emit("newMessage", data);
   };

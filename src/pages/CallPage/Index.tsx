@@ -51,9 +51,18 @@ function Index({ mode, incommingCall }: Props) {
         localStreamRef.current = str;
         call.answer(localStreamRef.current);
         setInCall(call);
+
+        // if it does not work remove the code below
+        call.on("stream", (remStream) => {
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = remStream;
+            setRemoteStreamIsSet(true);
+            console.log("Setting up the remote stream");
+          }
+        });
       });
 
-      console.log("start incoming call");
+      // console.log("start incoming call");
     }
   }, [incommingCall]);
 
