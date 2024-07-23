@@ -23,15 +23,14 @@ function ChatConversation({ chatData }: Props) {
     setMessages(chatData.chat.messages || []);
     scrollToBottom();
   }, [chatData.chat.messages]);
+
   useEffect(() => {
-    const skt = new socketConfigs();
     const uid = getUserId();
-    setSocket(skt.getSocket());
     setUserId(uid);
-    if (uid) {
-      skt.joinRoom("join", userId);
-    }
-  }, [userId]);
+    const skt = new socketConfigs().getSocket();
+    setSocket(skt);
+    skt.emit("join", uid);
+  }, []);
 
   useEffect(() => {
     const chatId = getChatId();
@@ -48,28 +47,10 @@ function ChatConversation({ chatData }: Props) {
   }, [axios, userId]);
 
   useEffect(() => {
-    socket.on("messageReceived", (newMessage) => {
-      // console.log(newMessage);
-
-      const latesMessage = newMessage.data;
-      setMessages((prev) => {
-        const textExist = prev.some((msg) => {
-          if (msg.id === latesMessage.id) {
-            return true;
-          }
-          return false;
-        });
-        if (!textExist) {
-          return [...prev, latesMessage];
-        }
-        return prev;
-      });
-    });
-  }, [socket]);
-
-  useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  
+  socket.on("nothing", () => {});
 
   return (
     // <div className="flex flex-col w-full h-full">

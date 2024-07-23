@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { getChatId, getUser, getUserId } from "../../modules/getUserId";
 import { Message, Participant, Role, User, callMode } from "../../types";
@@ -22,6 +23,7 @@ type Props = {
 function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
   const [chatId, setChatId] = useState<number | null>(getChatId());
   const [userId, setUserId] = useState<number | null>(getUserId());
+
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [savedChatData, setSavedChatData] = useState<Role>(chatData);
@@ -31,7 +33,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
 
   const messageSend = (text: string) => {
     const user: User | null = getUser();
-    const currentChatId: number | null = getChatId();
+    const currentChatId: number = Number(window.localStorage.getItem("chatId"));
     if (!currentChatId && user) {
       const participant = {
         user_id: userId,
@@ -58,6 +60,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
     } else {
       if (user && chatId) {
         setUserId(user.id);
+
         addMessage(text, user, chatId);
       }
     }
@@ -67,7 +70,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
     if (userId) {
       socket.joinRoom("join", userId);
     }
-  });
+  }, [userId]);
 
   const addMessage = (text: string, user: User, chat_id: number) => {
     const newMessage: Message = {
@@ -104,7 +107,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
         })
         .catch((error) => alert(error.message));
     }
-  }, [userId, chatId, axios]);
+  }, [userId, chatId]);
 
   useEffect(() => {
     setSavedChatData(chatData);

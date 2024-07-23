@@ -10,6 +10,7 @@ import { getUserId } from "./modules/getUserId";
 import Loading from "./pages/Components/Loading";
 import AlertNotification from "./pages/Components/AlertNotification";
 import {
+  Chat,
   Participant,
   Role,
   RoleList,
@@ -57,6 +58,7 @@ function MainLayout({
     sender_id: null,
     receiver_id: undefined,
   });
+  const [socket, setSocket] = useState(new socketConfigs().getSocket());
   const [incommingCall, SetIncommingCall] = useState<boolean>(false);
   const navigate = useNavigate();
   const navigateOpenChat = (chatId: number) => {
@@ -69,15 +71,46 @@ function MainLayout({
     }
   };
   useEffect(() => {
-    const socketConfig = new socketConfigs();
+    const skt = new socketConfigs().getSocket();
+    setSocket(skt);
     const uid = getUserId();
-    if (uid != null) {
-      const socket = socketConfig.getSocket();
-      if (socket) {
-        socket.emit("join", uid);
-      }
+    if (uid) {
+      skt.emit("join", getUserId());
     }
   }, []);
+
+  useEffect(() => {
+    const handleMessageReceived = (message: any) => {
+      const newMessage = message.data;
+      console.log(newMessage);
+
+      const chatIndex = chatsData.findIndex(
+        (chat) => chat.chat.id === newMessage.chat.id
+      );
+
+      if (chatIndex !== -1) {
+        const newChat: Chat = { ...chatsData[chatIndex].chat };
+        newChat.lastMessage = { ...newMessage };
+        newChat.messages = [...newChat.messages, { ...newMessage }];
+
+        const updatedChats = [...chatsData];
+
+        updatedChats.splice(chatIndex, 1);
+        updatedChats.unshift({
+          ...chatsData[chatIndex],
+          chat: newChat,
+        });
+
+        setChatsData([...updatedChats]);
+      }
+    };
+
+    socket.on("messageReceived", handleMessageReceived);
+
+    return () => {
+      socket.off("messageReceived", handleMessageReceived);
+    };
+  }, [chatsData, socket]);
 
   useEffect(() => {
     if (newCall && newCall.start) {
@@ -124,7 +157,14 @@ function MainLayout({
 
   useEffect(() => {
     setSingleChat(singleChat);
-  }, [singleChat]);
+    const chatId = Number(window.localStorage.getItem("chatId"));
+    if (chatId) {
+      const chats = chatsData.find((chatItem) => chatItem.chat.id === chatId);
+      if (chats) {
+        setSingleChat(chats);
+      }
+    }
+  }, [singleChat, chatsData]);
 
   const displayNotification = (alert: alertType) => {
     setAlertVisible(true);
@@ -172,6 +212,7 @@ function MainLayout({
       receiver_id: callType.receiver_id,
     });
   };
+
   if (loading) {
     return <Loading />;
   }

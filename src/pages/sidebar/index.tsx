@@ -28,6 +28,7 @@ function Index({
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
   const [editOpen, setEditOpen] = useState<boolean>(false);
   const [viewUser, setViewUsers] = useState<boolean>(false);
+  const [conversations, setConversations] = useState<RoleList>(chatsData);
 
   const openProfile = () => {
     const user = getUser();
@@ -55,6 +56,10 @@ function Index({
   const closeEditForm = () => {
     openProfile();
   };
+
+  useEffect(() => {
+    setConversations(chatsData);
+  }, [chatsData]);
 
   useEffect(() => {
     const jsonUser = window.localStorage.getItem("user");
@@ -86,7 +91,7 @@ function Index({
             />
           </div>
           <div className="w-full h-[85vh] mt-0 p-0 overflow-y-scroll scrollbar-none">
-            <ContactList onItemClick={onItemClick} chatsData={chatsData} />
+            <ContactList onItemClick={onItemClick} chatsData={conversations} />
           </div>
         </div>
       </div>
