@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ProfilePage from "./pages/profilePage";
 import Login from "./pages/AuthPage/Login";
@@ -7,9 +7,7 @@ import MainLayout from "./MainLayout";
 import Register from "./pages/AuthPage/Register";
 import ForgotPassword from "./pages/AuthPage/ForgotPassword";
 import OTPVerification from "./pages/AuthPage/OTPVerification";
-import { Participant, callerData } from "./types";
-import socketConfigs from "./modules/socketConfigs.ts";
-import { getUserId } from "./modules/getUserId.ts";
+import { Participant } from "./types";
 
 type Props = {};
 
@@ -18,22 +16,13 @@ export default function App({}: Props) {
   const [isOverLayOpen, setOperLayOpen] = useState<boolean>(false);
   const [component, setComponent] = useState<JSX.Element>();
   const [overLayHeader, setOverLayHeader] = useState<string>("");
-  const [newCall, SetNewCall] = useState<callerData>();
 
   const openOverlayProfile = (participant: Participant) => {
     setOperLayOpen(true);
     setOverLayHeader("Contact Details");
     setComponent(<ProfilePage participant={participant} />);
   };
-  useEffect(() => {
-    const socket = new socketConfigs().getSocket();
-    const userId = getUserId();
-    socket.emit("join", userId);
 
-    socket.on("call-user", (data) => {
-      SetNewCall(data);
-    });
-  }, [newCall]);
   return (
     <Router>
       <Routes>
@@ -55,7 +44,6 @@ export default function App({}: Props) {
               setOperLayOpen={setOperLayOpen}
               component={component}
               overLayHeader={overLayHeader}
-              newCall={newCall}
             />
           }
         />

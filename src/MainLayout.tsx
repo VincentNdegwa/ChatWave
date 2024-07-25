@@ -31,7 +31,6 @@ type Props = {
   setOperLayOpen: (isOpen: boolean) => void;
   component: JSX.Element | undefined;
   overLayHeader: string;
-  newCall: callerData | undefined;
 };
 
 function MainLayout({
@@ -42,7 +41,6 @@ function MainLayout({
   setOperLayOpen,
   component,
   overLayHeader,
-  newCall,
 }: Props) {
   const axios = useCustomAxios();
   const [userId, setUserId] = useState<number | string | null>(getUserId());
@@ -52,12 +50,15 @@ function MainLayout({
   const [error, setError] = useState<string | null>(null);
   const [chatsData, setChatsData] = useState<RoleList>([]);
   const [singleChat, setSingleChat] = useState<any>([]);
+  const [newCall, SetNewCall] = useState<callerData>();
+
   const [startCall, setStartCall] = useState<callerData>({
     start: false,
     mode: callMode.VOICE,
     sender_id: null,
     receiver_id: undefined,
   });
+
   const [socket, setSocket] = useState(new socketConfigs().getSocket());
   const [incommingCall, SetIncommingCall] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -70,6 +71,17 @@ function MainLayout({
       setSingleChat(chats);
     }
   };
+
+  useEffect(() => {
+    const socket = new socketConfigs().getSocket();
+    const userId = getUserId();
+    socket.emit("join", userId);
+
+    socket.on("call-user", (data) => {
+      SetNewCall(data);
+    });
+  }, [newCall]);
+  
   useEffect(() => {
     const skt = new socketConfigs().getSocket();
     setSocket(skt);
