@@ -8,6 +8,8 @@ import SenderBox from "./SenderBox";
 import useCustomAxios from "../../modules/customAxios";
 import AlertNotification from "../Components/AlertNotification";
 import socketConfigs from "../../modules/socketConfigs";
+import { MessageStatus, PendingMessage } from "./type";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
   onItemClick: () => void;
@@ -27,7 +29,9 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [savedChatData, setSavedChatData] = useState<Role>(chatData);
-
+  const [pendingMessages, setPendingMessages] = useState<PendingMessage[] | []>(
+    []
+  );
   const axios = useCustomAxios();
   const socket = new socketConfigs();
 
@@ -89,6 +93,15 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
         (x) => x.user.id != newMessage.sender.id
       )?.user.id,
     };
+    setPendingMessages((prev) => {
+      const pMessage: PendingMessage = {
+        id: uuidv4(),
+        text: newMessage.text,
+        date: new Date().toISOString(),
+        status: MessageStatus.SENDING,
+      };
+      return [...prev, pMessage];
+    });
 
     const skt = socket.getSocket();
     skt.emit("newMessage", data);
@@ -146,7 +159,10 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
             />
           </div>
           <div className="flex-1 overflow-auto">
-            <ChatConversation chatData={savedChatData} />
+            <ChatConversation
+              chatData={savedChatData}
+              pendingMessages={pendingMessages}
+            />
           </div>
           <div className="h-14 w-full rounded-md shadow-lg sticky bottom-0 bg-white z-10">
             <SenderBox messageSend={messageSend} />

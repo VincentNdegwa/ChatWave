@@ -15,3 +15,10 @@ export type existingUpdateMessage = {
   updated_at: string | null;
   sender: User;
 };
+
+export type PendingMessage = {
+  text: string;
+  id: string;
+  date: string;
+  status: MessageStatus;
+};
