@@ -94,7 +94,7 @@ function MainLayout({
   useEffect(() => {
     const handleMessageReceived = (message: any) => {
       const newMessage = message.data;
-      // console.log(newMessage);
+      console.log(message);
 
       const chatIndex = chatsData.findIndex(
         (chat) => chat.chat.id === newMessage.chat.id
@@ -139,22 +139,26 @@ function MainLayout({
     }
     const fetchData = async () => {
       try {
-        axios
-          .get(`/chats/user/${userId}`)
-          .then((res) => {
-            const { error, message, data } = res.data;
-            if (!error) {
-              setLoading(false);
-              setChatsData(data);
-            } else {
-              setAlert({ message: message, type: "error" });
-              setAlertVisible(true);
-            }
-          })
-          .catch((err) => {
-            const errorMessage = err.response.data.message;
-            setError(errorMessage);
-          });
+        if (userId) {
+          axios
+            .get(`/chats/user/${userId}`)
+            .then((res) => {
+              const { error, message, data } = res.data;
+              if (!error) {
+                setLoading(false);
+                setChatsData(data);
+              } else {
+                setAlert({ message: message, type: "error" });
+                setAlertVisible(true);
+              }
+            })
+            .catch((err) => {
+              const errorMessage = err.response.data.message;
+              setError(errorMessage);
+            });
+        } else {
+          console.log("failed to get UserId");
+        }
       } catch (error: unknown) {
         if (error instanceof AxiosError && error.response) {
           const errorMessage = error.response.data.message;

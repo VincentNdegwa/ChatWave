@@ -85,6 +85,17 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
       sender: user,
     };
 
+    const pMessage: PendingMessage = {
+      id: uuidv4(),
+      text: newMessage.text,
+      date: new Date().toISOString(),
+      status: MessageStatus.SENDING,
+    };
+
+    setPendingMessages((prev) => {
+      return [...prev, pMessage];
+    });
+
     const data = {
       text: newMessage.text,
       chat_id: chat_id,
@@ -92,16 +103,8 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
       receiver_id: savedChatData.chat.participants.find(
         (x) => x.user.id != newMessage.sender.id
       )?.user.id,
+      message_id: pMessage.id,
     };
-    setPendingMessages((prev) => {
-      const pMessage: PendingMessage = {
-        id: uuidv4(),
-        text: newMessage.text,
-        date: new Date().toISOString(),
-        status: MessageStatus.SENDING,
-      };
-      return [...prev, pMessage];
-    });
 
     const skt = socket.getSocket();
     skt.emit("newMessage", data);
