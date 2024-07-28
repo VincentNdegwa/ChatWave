@@ -29,9 +29,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [savedChatData, setSavedChatData] = useState<Role>(chatData);
-  const [pendingMessages, setPendingMessages] = useState<PendingMessage[] | []>(
-    []
-  );
+  const [pendingMessages, setPendingMessages] = useState<Message[] | []>([]);
   const axios = useCustomAxios();
   const socket = new socketConfigs();
 
@@ -78,22 +76,31 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
 
   const addMessage = (text: string, user: User, chat_id: number) => {
     const newMessage: Message = {
-      id: 1.0,
+      id: uuidv4(),
       text: text,
       sent_at: new Date().toISOString(),
       updated_at: null,
       sender: user,
+      message_id: null,
+      status: MessageStatus.SENDING,
     };
 
+    setSavedChatData((prev) => {
+      return {
+        ...prev,
+        chat: { ...prev.chat, messages: [...prev.chat.messages, newMessage] },
+      };
+    });
+
     const pMessage: PendingMessage = {
-      id: uuidv4(),
+      id: newMessage.id.toString(),
       text: newMessage.text,
       date: new Date().toISOString(),
       status: MessageStatus.SENDING,
     };
 
     setPendingMessages((prev) => {
-      return [...prev, pMessage];
+      return [...prev, newMessage];
     });
 
     const data = {
@@ -128,6 +135,28 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
 
   useEffect(() => {
     setSavedChatData(chatData);
+    pendingMessages.map((x) => {
+      if (
+        x.id ===
+        savedChatData.chat.messages.find((y) => y.message_id === x.id)
+          ?.message_id
+      ) {
+        setSavedChatData((prev) => {
+          return {
+            ...prev,
+            chat: {
+              ...prev.chat,
+              messages: prev.chat.messages.map((y) => {
+                if (y.message_id === x.id) {
+                  return { ...y, status: MessageStatus.SENT };
+                }
+                return y;
+              }),
+            },
+          };
+        });
+      }
+    });
   }, [chatData]);
 
   const closeAlert = () => {
@@ -162,10 +191,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
             />
           </div>
           <div className="flex-1 overflow-auto">
-            <ChatConversation
-              chatData={savedChatData}
-              pendingMessages={pendingMessages}
-            />
+            <ChatConversation chatData={savedChatData} />
           </div>
           <div className="h-14 w-full rounded-md shadow-lg sticky bottom-0 bg-white z-10">
             <SenderBox messageSend={messageSend} />

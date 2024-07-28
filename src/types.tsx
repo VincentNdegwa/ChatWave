@@ -1,3 +1,5 @@
+import { MessageStatus } from "./pages/chatSide/type";
+
 export type alertType = {
   message: string;
   type: "success" | "error" | "info" | "warning";
@@ -27,26 +29,30 @@ export interface Participant {
 }
 
 export interface Message {
-  id: number;
+  id: number | string;
   text: string;
   sent_at: string;
   updated_at: string | null;
   sender: User;
+  status: MessageStatus;
+  message_id: string | null;
 }
 export interface newMessage {
-  id: number;
+  id: number | string;
   text: string;
   sent_at: string;
   updated_at: string | null;
   sender: User;
   chat: Chat;
+  status: MessageStatus;
 }
 
 export interface LastMessage {
-  id: number;
+  id: number | string;
   text: string;
   sent_at: string;
   updated_at: string | null;
+  status: MessageStatus;
 }
 
 export interface Chat {
