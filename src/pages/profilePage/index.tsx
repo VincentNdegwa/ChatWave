@@ -20,7 +20,9 @@ function index({ participant }: Props) {
           participant?.user.phone_number}
       </div>
       {participant.user.profile?.first_name && (
-        <div className="text-sm text-slate-500">+2547890967</div>
+        <div className="text-sm text-slate-500">
+          {participant.user.phone_number}
+        </div>
       )}
       <div className="flex w-full flex-col rounded-md p-2">
         {participant?.user.profile?.about && (

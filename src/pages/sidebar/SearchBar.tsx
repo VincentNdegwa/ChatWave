@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from "react";
 import { IoMdAddCircle } from "react-icons/io";
-import { IoNotificationsOutline, IoSettingsOutline } from "react-icons/io5";
+import { IoNotificationsOutline } from "react-icons/io5";
 import { FaUserCircle } from "react-icons/fa";
 import { CiMenuKebab } from "react-icons/ci";
 import { User } from "../../types";
 import useCustomAxios from "../../modules/customAxios";
 import { MdLogout } from "react-icons/md";
+import { IoIosContact } from "react-icons/io";
 
 type Props = {
   openProfile: () => void;
@@ -97,9 +98,9 @@ export default function SearchBar({ openProfile, user, viewChats }: Props) {
                 </li>
                 <li
                   className="hover:bg-sky-700 p-2 text-[12px] cursor-pointer flex items-center gap-x-3"
-                  onClick={() => setOptionMenu(false)}>
-                  <IoSettingsOutline />
-                  <div>Settings</div>
+                  onClick={() => openProfile()}>
+                  <IoIosContact />
+                  <div>Profile</div>
                 </li>
                 <li
                   className="hover:bg-sky-700 p-2 text-[12px] cursor-pointer flex items-center gap-x-3"

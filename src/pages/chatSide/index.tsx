@@ -193,7 +193,7 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
           <div className="flex-1 overflow-auto">
             <ChatConversation chatData={savedChatData} />
           </div>
-          <div className="h-14 w-full rounded-md shadow-lg sticky bottom-0 bg-white z-10">
+          <div className="h-fit w-full rounded-md shadow-lg sticky bottom-0 bg-white z-10">
             <SenderBox messageSend={messageSend} />
           </div>
         </>
