@@ -152,7 +152,7 @@ function MainLayout({
               }
             })
             .catch((err) => {
-              const errorMessage = err.response.data.message;
+              const errorMessage = err;
               setError(errorMessage);
             });
         } else {
