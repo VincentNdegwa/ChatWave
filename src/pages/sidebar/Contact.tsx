@@ -40,6 +40,16 @@ function Contact({ onItemClick, chat }: Props) {
     );
   };
 
+
+  const getMyProfile = (participants: Participant[]) => {
+    const currentUserId = userId;
+    const currentUserIdNumber =
+      currentUserId !== undefined ? Number(currentUserId) : undefined;
+    return participants.find(
+      (participant) => participant.user.id === currentUserIdNumber
+    );
+  };
+
   const renderLastMessage = (
     lastMessage: LastMessage | null
   ): React.ReactNode => {
@@ -83,11 +93,10 @@ function Contact({ onItemClick, chat }: Props) {
   };
 
   const handleAction = (action: string) => {
-    console.log(profile);
-
-    if (action == "delete") {
+    const myProfile: Participant | undefined = getMyProfile(chat.participants);
+    if (action == "delete" && myProfile) {
       axios
-        .delete(`chats/user/${profile?.id}/${profile?.user.id}`)
+        .delete(`chats/user/${myProfile.id}/${myProfile.user.id}`)
         .then((res) => {
           console.log(res.data);
         })

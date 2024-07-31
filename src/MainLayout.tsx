@@ -81,7 +81,16 @@ function MainLayout({
       SetNewCall(data);
     });
   }, [newCall]);
-  
+
+  useEffect(() => {
+    const uid = getUserId();
+    if (uid) {
+      setUserId(uid);
+    } else {
+      navigate("/login");
+    }
+  }, [navigate]);
+
   useEffect(() => {
     const skt = new socketConfigs().getSocket();
     setSocket(skt);
@@ -131,11 +140,6 @@ function MainLayout({
 
   useEffect(() => {
     setLoading(true);
-
-    const uid = getUserId();
-    if (uid) {
-      setUserId(uid);
-    }
     const fetchData = async () => {
       try {
         if (userId) {

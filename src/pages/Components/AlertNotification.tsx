@@ -12,8 +12,8 @@ const AlertNotification = ({ message, type, onClose }: AlertProps) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false);
-      onClose(); // Hide the alert after timeout
-    }, 10000);
+      onClose();
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [message, onClose]);
@@ -42,7 +42,7 @@ const AlertNotification = ({ message, type, onClose }: AlertProps) => {
   }
 
   return (
-    <div className={`${baseClasses} ${alertClasses} absolute bottom-0 right-0`}>
+    <div className={`${baseClasses} ${alertClasses} absolute top-0 right-0`}>
       {message}
     </div>
   );
