@@ -30,7 +30,7 @@ function SenderBox({ messageSend }: Props) {
         onEmojiClick={handleEmojiClick}
         width="100%"
         open={pickEmoji}
-        // lazyLoadEmojis={true}
+        lazyLoadEmojis={true}
       />
       {/* </div> */}
       <form
