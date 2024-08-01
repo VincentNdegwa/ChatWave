@@ -64,7 +64,7 @@ export interface Chat {
 }
 
 export interface Role {
-  id: number;
+  id: number | string;
   role: string;
   chat: Chat;
 }

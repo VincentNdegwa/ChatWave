@@ -20,9 +20,16 @@ type Props = {
     sender_id: number | null;
     receiver_id: number | undefined;
   }) => void;
+  addNewRole: (role: Role) => void;
 };
 
-function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
+function Index({
+  onItemClick,
+  openProfile,
+  chatData,
+  handleCall,
+  addNewRole,
+}: Props) {
   const [chatId, setChatId] = useState<number | null>(getChatId());
   const [userId, setUserId] = useState<number | null>(getUserId());
 
@@ -48,10 +55,27 @@ function Index({ onItemClick, openProfile, chatData, handleCall }: Props) {
             setOpenAlert(true);
             setAlertMessage(`${res.data.message}`);
           } else {
-            setSavedChatData(res.data.data);
-            setChatId(res.data.data.id);
-            window.localStorage.setItem("currentChatId", res.data.data.id);
-            addMessage(text, user, res.data.data.id);
+            const part: Participant[] = res.data.data.participants;
+            const chatId = res.data.chatId;
+            setChatId(chatId);
+            window.localStorage.setItem("chatId", chatId);
+            const currentPart = part.find((x) => x.user.id === userId);
+            if (currentPart) {
+              const newRole: Role = {
+                id: currentPart?.id,
+                role: currentPart?.role,
+                chat: {
+                  id: chatId,
+                  created_at: res.data.data.created_at,
+                  participants: part,
+                  messages: [],
+                  lastMessage: null,
+                },
+              };
+              setSavedChatData(newRole);
+              addNewRole(newRole);
+              addMessage(text, user, chatId);
+            }
           }
         })
         .catch((err) => {

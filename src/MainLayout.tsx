@@ -6,7 +6,7 @@ import Overlay from "./pages/Components/Overlay";
 import SideBar from "./pages/sidebar";
 import { useEffect, useState } from "react";
 import useCustomAxios from "./modules/customAxios";
-import { getUserId } from "./modules/getUserId";
+import { getUser, getUserId } from "./modules/getUserId";
 import Loading from "./pages/Components/Loading";
 import AlertNotification from "./pages/Components/AlertNotification";
 import {
@@ -44,6 +44,7 @@ function MainLayout({
 }: Props) {
   const axios = useCustomAxios();
   const [userId, setUserId] = useState<number | string | null>(getUserId());
+  const [currentUser, setCurrentUser] = useState<User | null>(getUser());
   const [loading, setLoading] = useState<boolean>(true);
   const [alert, setAlert] = useState<alertType>({ message: "", type: "info" });
   const [alertVisible, setAlertVisible] = useState<boolean>(false);
@@ -84,8 +85,10 @@ function MainLayout({
 
   useEffect(() => {
     const uid = getUserId();
-    if (uid) {
+    const us = getUser();
+    if (uid && us) {
       setUserId(uid);
+      setCurrentUser(us);
     } else {
       navigate("/login");
     }
@@ -131,6 +134,10 @@ function MainLayout({
       socket.off("messageReceived", handleMessageReceived);
     };
   }, [chatsData, socket]);
+
+  const addNewRole = (role: Role) => {
+    setChatsData((prev) => [role, ...prev]);
+  };
 
   useEffect(() => {
     if (newCall && newCall.start) {
@@ -203,18 +210,23 @@ function MainLayout({
       window.localStorage.setItem("chatId", JSON.stringify(data.chat.id));
     } else {
       window.localStorage.removeItem("chatId");
-      const newRole: Role = {
-        id: 763478,
-        role: "string",
-        chat: {
-          id: 378647,
-          created_at: new Date().toISOString(),
-          participants: [{ id: user.id, role: "user", user: user }],
-          lastMessage: null,
-          messages: [],
-        },
-      };
-      setSingleChat(newRole);
+      if (currentUser) {
+        const newRole: Role = {
+          id: 100,
+          role: "string",
+          chat: {
+            id: 100,
+            created_at: new Date().toISOString(),
+            participants: [
+              { id: user.id, role: "user", user: user },
+              { id: Number(userId), role: "user", user: currentUser },
+            ],
+            lastMessage: null,
+            messages: [],
+          },
+        };
+        setSingleChat(newRole);
+      }
     }
     setIsChatOpen(true);
     //  console.log(chatsData);
@@ -282,6 +294,7 @@ function MainLayout({
                 }
                 chatData={singleChat}
                 handleCall={handleCall}
+                addNewRole={addNewRole}
               />
             }
           />
