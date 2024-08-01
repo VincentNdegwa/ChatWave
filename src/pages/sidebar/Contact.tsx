@@ -128,8 +128,9 @@ function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
                   new Date(chat.lastMessage?.sent_at).toLocaleDateString()) ||
                   ""}
               </div>
-              <div className="drop-down text-sm text-slate-600 relative">
+              <div className="drop-down text-sm relative">
                 <FaAngleDown
+                  className="hover:bg-slate-200 p-1 text-2xl text-sky-950 transition-all ease-in-out duration-200 rounded-full"
                   opacity={isDropdownVisible ? 1 : 0}
                   onClick={(ev) => openChatOption(ev)}
                 />
@@ -149,7 +150,8 @@ function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
                         className="p-2 hover:bg-gray-200 cursor-pointer">
                         Delete
                       </li>
-                      <li
+
+                      {/* <li
                         onClick={(ev) => {
                           handleOptionClick({
                             message: OptionType.UnreadOption,
@@ -161,7 +163,7 @@ function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
                         }}
                         className="p-2 hover:bg-gray-200 cursor-pointer">
                         Unread
-                      </li>
+                      </li> */}
                     </ul>
                   </div>
                 )}
