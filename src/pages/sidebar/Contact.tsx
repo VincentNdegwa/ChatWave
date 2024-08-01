@@ -3,18 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Chat, Participant, LastMessage } from "../../types";
 import { getUserId } from "../../modules/getUserId";
 import { FaAngleDown } from "react-icons/fa6";
-import useCustomAxios from "../../modules/customAxios";
 
 type Props = {
   onItemClick: (chatId: number) => void;
   chat: Chat;
+  handleDeleteChat: (participantId: number, userId: number) => void;
 };
 enum OptionType {
   DeleteOption = "Delete",
   UnreadOption = "Unread",
 }
 
-function Contact({ onItemClick, chat }: Props) {
+function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
   const navigate = useNavigate();
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [viewMenu, setViewMenu] = useState(false);
@@ -26,7 +26,6 @@ function Contact({ onItemClick, chat }: Props) {
     onItemClick(chat.id);
   };
 
-  const axios = useCustomAxios();
   useEffect(() => {
     setUserId(getUserId());
   }, []);
@@ -39,7 +38,6 @@ function Contact({ onItemClick, chat }: Props) {
       (participant) => participant.user.id !== currentUserIdNumber
     );
   };
-
 
   const getMyProfile = (participants: Participant[]) => {
     const currentUserId = userId;
@@ -95,14 +93,7 @@ function Contact({ onItemClick, chat }: Props) {
   const handleAction = (action: string) => {
     const myProfile: Participant | undefined = getMyProfile(chat.participants);
     if (action == "delete" && myProfile) {
-      axios
-        .delete(`chats/user/${myProfile.id}/${myProfile.user.id}`)
-        .then((res) => {
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      handleDeleteChat(myProfile.id, myProfile.user.id);
     }
   };
 
