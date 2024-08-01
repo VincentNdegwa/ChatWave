@@ -164,8 +164,8 @@ function Index({ mode, incommingCall }: Props) {
   };
 
   return (
-    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center md:p-1">
-      <div className="bg-slate-900 w-full md:w-4/6 h-full flex flex-col items-center relative">
+    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-sky-950 ">
+      <div className="bg-sky-900 w-full md:w-6/6 h-full flex flex-col items-center relative">
         {mode.mode === callMode.VIDEO && (
           <>
             <div
