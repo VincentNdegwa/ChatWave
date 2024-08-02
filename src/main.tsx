@@ -6,7 +6,7 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <div className="main-content-holder h-full shadow-md">
+    <div className="main-content-holder h-dvh shadow-md">
       <App />
     </div>
   </React.StrictMode>

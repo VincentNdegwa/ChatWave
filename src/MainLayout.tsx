@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ChatSide from "./pages/chatSide";
-import StartPage from "./pages/startPage";
 import Overlay from "./pages/Components/Overlay";
 import SideBar from "./pages/sidebar";
 import { useEffect, useState } from "react";
@@ -23,6 +22,7 @@ import ErrorPage from "./pages/Components/ErrorPage";
 import { AxiosError } from "axios";
 import socketConfigs from "./modules/socketConfigs";
 import CallPage from "./pages/CallPage/Index";
+import StartPage from "./pages/startPage";
 type Props = {
   isChatOpen: boolean;
   setIsChatOpen: (isOpen: boolean) => void;
@@ -65,7 +65,6 @@ function MainLayout({
   const [socket, setSocket] = useState(new socketConfigs().getSocket());
   const [incommingCall, SetIncommingCall] = useState<boolean>(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const navigateOpenChat = (chatId: number) => {
     window.localStorage.removeItem("chatId");
     window.localStorage.setItem("chatId", JSON.stringify(chatId));
@@ -207,7 +206,6 @@ function MainLayout({
     const data = chatsData.find((item) =>
       item.chat.participants.some((x) => x.user.id === user.id)
     );
-    // navigate("/chat");
     if (data) {
       setSingleChat(data);
       window.localStorage.setItem("chatId", JSON.stringify(data.chat.id));
@@ -247,12 +245,6 @@ function MainLayout({
     });
   };
 
-  useEffect(() => {
-    if (location.key === "/") {
-      setIsChatOpen(false);
-    }
-  });
-
   // useEffect(() => {
   //   const handleResize = () => {
   //     setScreenWidth(window.innerWidth);
@@ -276,7 +268,7 @@ function MainLayout({
     return <CallPage mode={newCall} incommingCall={incommingCall} />;
   }
   return (
-    <div className="flex h-dvh w-full md:divide-x">
+    <div className="flex h-full w-full md:divide-x">
       {alertVisible && alert.message && (
         <AlertNotification
           message={alert.message}
@@ -303,7 +295,7 @@ function MainLayout({
           isChatOpen ? "block" : "hidden"
         } md:w-4/6 md:block`}>
         <>
-          {true && (
+          {singleChat ? (
             <ChatSide
               onItemClick={() => setIsChatOpen(!isChatOpen)}
               openProfile={(participant: Participant) =>
@@ -313,6 +305,8 @@ function MainLayout({
               handleCall={handleCall}
               addNewRole={addNewRole}
             />
+          ) : (
+            <StartPage />
           )}
         </>
         {/* <Routes>
