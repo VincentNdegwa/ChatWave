@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Chat, Participant, LastMessage } from "../../types";
 import { getUserId } from "../../modules/getUserId";
 import { FaAngleDown } from "react-icons/fa6";
@@ -15,14 +14,12 @@ enum OptionType {
 }
 
 function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
-  const navigate = useNavigate();
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [viewMenu, setViewMenu] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [userId, setUserId] = useState(getUserId());
 
-  const handleNavigate = (path: string) => {
-    navigate(path);
+  const handleNavigate = () => {
     onItemClick(chat.id);
   };
 
@@ -101,7 +98,7 @@ function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
     <>
       {profile && (
         <div
-          onClick={() => handleNavigate("/chat")}
+          onClick={() => handleNavigate()}
           onMouseEnter={() => setIsDropdownVisible(true)}
           onMouseLeave={() => setIsDropdownVisible(false)}
           className="flex gap-3 p-2 hover:bg-gray-50 ease-in duration-100 rounded-md cursor-pointer relative">

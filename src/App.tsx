@@ -32,7 +32,7 @@ export default function App({}: Props) {
         <Route path="/otp-verification" element={<OTPVerification />} />
 
         <Route
-          path="/*"
+          path="/"
           element={
             <MainLayout
               isChatOpen={isChatOpen}

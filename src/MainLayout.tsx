@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ChatSide from "./pages/chatSide";
 import StartPage from "./pages/startPage";
 import Overlay from "./pages/Components/Overlay";
@@ -52,6 +52,8 @@ function MainLayout({
   const [chatsData, setChatsData] = useState<RoleList>([]);
   const [singleChat, setSingleChat] = useState<any>([]);
   const [newCall, SetNewCall] = useState<callerData>();
+  // const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  // const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const [startCall, setStartCall] = useState<callerData>({
     start: false,
@@ -63,12 +65,13 @@ function MainLayout({
   const [socket, setSocket] = useState(new socketConfigs().getSocket());
   const [incommingCall, SetIncommingCall] = useState<boolean>(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const navigateOpenChat = (chatId: number) => {
     window.localStorage.removeItem("chatId");
     window.localStorage.setItem("chatId", JSON.stringify(chatId));
-    setIsChatOpen(true);
     const chats = chatsData.find((chatItem) => chatItem.chat.id === chatId);
     if (chats) {
+      setIsChatOpen(true);
       setSingleChat(chats);
     }
   };
@@ -204,7 +207,7 @@ function MainLayout({
     const data = chatsData.find((item) =>
       item.chat.participants.some((x) => x.user.id === user.id)
     );
-    navigate("/chat");
+    // navigate("/chat");
     if (data) {
       setSingleChat(data);
       window.localStorage.setItem("chatId", JSON.stringify(data.chat.id));
@@ -244,6 +247,23 @@ function MainLayout({
     });
   };
 
+  useEffect(() => {
+    if (location.key === "/") {
+      setIsChatOpen(false);
+    }
+  });
+
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     setScreenWidth(window.innerWidth);
+  //   };
+  //   handleResize();
+  //   if (screenWidth < 840) {
+  //     setIsMobile(true);
+  //     setIsChatOpen(false);
+  //   }
+  // }, [screenWidth, setIsChatOpen]);
+
   if (loading) {
     return <Loading />;
   }
@@ -282,7 +302,20 @@ function MainLayout({
         className={`w-full ${
           isChatOpen ? "block" : "hidden"
         } md:w-4/6 md:block`}>
-        <Routes>
+        <>
+          {true && (
+            <ChatSide
+              onItemClick={() => setIsChatOpen(!isChatOpen)}
+              openProfile={(participant: Participant) =>
+                openOverlayProfile(participant)
+              }
+              chatData={singleChat}
+              handleCall={handleCall}
+              addNewRole={addNewRole}
+            />
+          )}
+        </>
+        {/* <Routes>
           <Route path="/" element={<StartPage />} />
           <Route
             path="/chat"
@@ -298,7 +331,7 @@ function MainLayout({
               />
             }
           />
-        </Routes>
+        </Routes> */}
       </div>
       <Overlay
         isOverLayOpen={isOverLayOpen}
