@@ -245,16 +245,6 @@ function MainLayout({
     });
   };
 
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     setScreenWidth(window.innerWidth);
-  //   };
-  //   handleResize();
-  //   if (screenWidth < 840) {
-  //     setIsMobile(true);
-  //     setIsChatOpen(false);
-  //   }
-  // }, [screenWidth, setIsChatOpen]);
 
   if (loading) {
     return <Loading />;
