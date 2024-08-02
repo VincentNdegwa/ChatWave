@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaMicrophone, FaMicrophoneSlash, FaVideo } from "react-icons/fa";
 import socketConfigs from "../../modules/socketConfigs";
-import { callMode, callerData } from "../../types";
+import { Participant, callMode, callerData } from "../../types";
 import { MediaConnection, Peer } from "peerjs";
 import { MdOutlineCallEnd } from "react-icons/md";
 
@@ -20,10 +20,13 @@ function Index({ mode, incommingCall }: Props) {
   const [peer, setPeer] = useState<Peer | null>(null);
   const [peerId, setPeerId] = useState<string>();
   const [localStream, setLocalStream] = useState<MediaStream>();
-  const localStreamRef = useRef<MediaStream | null>(null); // Add a ref for local stream
+  const localStreamRef = useRef<MediaStream | null>(null);
   const [inCall, setInCall] = useState<MediaConnection>();
   const [remoteStreamIsSet, setRemoteStreamIsSet] = useState<boolean>(false);
   const [muted, setMuted] = useState<boolean>(false);
+
+  const callerUser: Participant | undefined = mode.sender;
+  // const receiverUser: Participant | undefined = mode.receiver;
 
   useEffect(() => {
     if (mode.start && !incommingCall) {
@@ -33,14 +36,14 @@ function Index({ mode, incommingCall }: Props) {
 
   useEffect(() => {
     if (incommingCall) {
-      console.log("incomming call from: ", mode.sender_id);
+      console.log("incomming call from: ", callerUser?.user.id);
 
       const nPeer = new Peer();
       nPeer.on("open", (id: string) => {
-        if (mode.sender_id != undefined) {
+        if (callerUser?.user.id != undefined) {
           console.log("answering peer id: " + id);
           socket.emit("answer-call", {
-            to: mode.sender_id?.toString(),
+            to: callerUser?.user.id?.toString(),
             peerId: id,
           });
         }
@@ -108,8 +111,8 @@ function Index({ mode, incommingCall }: Props) {
   }, [peerId]);
 
   const setupOutgoingConnection = () => {
-    if (mode.sender_id && !incommingCall) {
-      socket.emit("join", mode.sender_id);
+    if (callerUser?.user.id && !incommingCall) {
+      socket.emit("join", callerUser?.user.id);
       const newPeer = new Peer();
       setPeer(newPeer);
 

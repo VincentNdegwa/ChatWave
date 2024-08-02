@@ -9,8 +9,8 @@ type Props = {
   chatData: Role;
   handleCall: (callType: {
     mode: callMode;
-    sender_id: number | null;
-    receiver_id: number | undefined;
+    sender: Participant | undefined;
+    receiver: Participant | undefined;
   }) => void;
 };
 function ChatHead({ onItemClick, openProfile, chatData, handleCall }: Props) {
@@ -23,7 +23,17 @@ function ChatHead({ onItemClick, openProfile, chatData, handleCall }: Props) {
     );
   };
 
+  const getMyProfile = (participants: Participant[]) => {
+    const currentUserId = getUserId();
+    const currentUserIdNumber =
+      currentUserId !== undefined ? Number(currentUserId) : undefined;
+    return participants.find(
+      (participant) => participant.user.id === currentUserIdNumber
+    );
+  };
+
   const profile = getUserProfile(chatData.chat.participants);
+  const myProfile = getMyProfile(chatData.chat.participants);
 
   return (
     <div className="flex justify-between items-center">
@@ -54,8 +64,8 @@ function ChatHead({ onItemClick, openProfile, chatData, handleCall }: Props) {
           onClick={() =>
             handleCall({
               mode: callMode.VIDEO,
-              sender_id: getUserId(),
-              receiver_id: profile?.user.id,
+              sender: myProfile,
+              receiver: profile,
             })
           }
           className="rounded-lg bg-green-700 p-3 text-white cursor-pointer hover:bg-green-400 transition duration-300">
@@ -65,8 +75,8 @@ function ChatHead({ onItemClick, openProfile, chatData, handleCall }: Props) {
           onClick={() =>
             handleCall({
               mode: callMode.VOICE,
-              sender_id: getUserId(),
-              receiver_id: profile?.user.id,
+              sender: myProfile,
+              receiver: profile,
             })
           }
           className="rounded-lg bg-sky-700 p-3 text-white cursor-pointer hover:bg-sky-400 transition duration-300">

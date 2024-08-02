@@ -78,6 +78,7 @@ export enum callMode {
 export interface callerData {
   start: boolean;
   mode: callMode;
-  sender_id: number | null;
-  receiver_id: number | undefined;
+  sender: Participant | undefined;
+  receiver: Participant | undefined;
 }
+

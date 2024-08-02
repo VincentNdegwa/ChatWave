@@ -17,8 +17,8 @@ type Props = {
   chatData: Role;
   handleCall: (callType: {
     mode: callMode;
-    sender_id: number | null;
-    receiver_id: number | undefined;
+    sender: Participant | undefined;
+    receiver: Participant | undefined;
   }) => void;
   addNewRole: (role: Role) => void;
 };

@@ -58,8 +58,8 @@ function MainLayout({
   const [startCall, setStartCall] = useState<callerData>({
     start: false,
     mode: callMode.VOICE,
-    sender_id: null,
-    receiver_id: undefined,
+    sender: undefined,
+    receiver: undefined,
   });
 
   const [socket, setSocket] = useState(new socketConfigs().getSocket());
@@ -234,14 +234,14 @@ function MainLayout({
   };
   const handleCall = (callType: {
     mode: callMode;
-    sender_id: number | null;
-    receiver_id: number | undefined;
+    sender: Participant | undefined;
+    receiver: Participant | undefined;
   }) => {
     setStartCall({
       start: true,
       mode: callType.mode,
-      sender_id: callType.sender_id,
-      receiver_id: callType.receiver_id,
+      sender: callType.sender,
+      receiver: callType.receiver,
     });
   };
 
@@ -309,23 +309,6 @@ function MainLayout({
             <StartPage />
           )}
         </>
-        {/* <Routes>
-          <Route path="/" element={<StartPage />} />
-          <Route
-            path="/chat"
-            element={
-              <ChatSide
-                onItemClick={() => setIsChatOpen(!isChatOpen)}
-                openProfile={(participant: Participant) =>
-                  openOverlayProfile(participant)
-                }
-                chatData={singleChat}
-                handleCall={handleCall}
-                addNewRole={addNewRole}
-              />
-            }
-          />
-        </Routes> */}
       </div>
       <Overlay
         isOverLayOpen={isOverLayOpen}
