@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from "react";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
-import { Role, Message } from "../../types";
+import { Role, Message, ReadStatus } from "../../types";
 import { getChatId, getUserId } from "../../modules/getUserId";
 import socketConfigs from "../../modules/socketConfigs";
 import useCustomAxios from "../../modules/customAxios";
@@ -26,26 +26,36 @@ function ChatConversation({ chatData }: Props) {
 
   useEffect(() => {
     scrollToBottom();
-    setMessages(chatData.chat.messages);
-  }, [chatData.chat.messages, messages]);
-
-  useEffect(() => {
-    scrollToBottom();
   }, [messages]);
 
   useEffect(() => {
     const uid = getUserId();
     setUserId(uid);
+
     const skt = new socketConfigs().getSocket();
     setSocket(skt);
     skt.emit("join", uid);
   }, []);
 
   useEffect(() => {
-    const chatId = getChatId();
-    if (userId && chatId) {
+    scrollToBottom();
+    setMessages(chatData.chat.messages);
+    const messageId = chatData.chat.messages.map((x) => {
+      if (x.sender.id !== userId && x.read_status == ReadStatus.UNREAD) {
+        return x.id;
+      }
+    });
+    if (messageId && messageId.length != 0) {
+      readMessages(messageId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatData.chat.messages, messages, userId]);
+
+  useEffect(() => {
+    const cId = getChatId();
+    if (userId && cId) {
       axios
-        .get(`/chats/user/${userId}/${chatId}`)
+        .get(`/chats/user/${userId}/${cId}`)
         .then((res) => {
           if (!res.data.error) {
             setMessages(res.data.data.chat.messages);
@@ -58,6 +68,29 @@ function ChatConversation({ chatData }: Props) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const readMessages = (messageIds: (string | number | undefined)[]) => {
+    if (messageIds.length > 0) {
+      const senderId = chatData.chat.participants.find(
+        (x) => x.user.id != userId
+      )?.user.id;
+
+      const cId = getChatId();
+      if (senderId !== undefined && cId != null) {
+        const newIds = messageIds.filter(
+          (x): x is string | number => x !== undefined
+        );
+
+        const payload: {
+          senderId: string | number;
+          chatId: string | number;
+          messageIds: (number | string)[];
+        } = { senderId: senderId, chatId: cId, messageIds: newIds };
+        console.log(payload);
+        // socket.emit("readMessage", payload);
+      }
+    }
+  };
 
   socket.on("nothing", () => {});
 
@@ -114,7 +147,13 @@ function ChatConversation({ chatData }: Props) {
                         )}
 
                         {msg.status == MessageStatus.SENT && (
-                          <IoCheckmarkDoneOutline />
+                          <IoCheckmarkDoneOutline
+                            className={
+                              msg.read_status == ReadStatus.READ
+                                ? "text-blue-950"
+                                : "text-slate-600"
+                            }
+                          />
                         )}
                       </div>
                     )}

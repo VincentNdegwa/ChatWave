@@ -27,7 +27,10 @@ export interface Participant {
   role: string;
   user: User;
 }
-
+export enum ReadStatus {
+  READ = "read",
+  UNREAD = "unread",
+}
 export interface Message {
   id: number | string;
   text: string;
@@ -36,6 +39,7 @@ export interface Message {
   sender: User;
   status: MessageStatus;
   message_id: string | null;
+  read_status: ReadStatus;
 }
 export interface newMessage {
   id: number | string;
