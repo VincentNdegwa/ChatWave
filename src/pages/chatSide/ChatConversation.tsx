@@ -86,8 +86,8 @@ function ChatConversation({ chatData }: Props) {
           chatId: string | number;
           messageIds: (number | string)[];
         } = { senderId: senderId, chatId: cId, messageIds: newIds };
-        console.log(payload);
-        // socket.emit("readMessage", payload);
+        // console.log(payload);
+        socket.emit("readMessage", payload);
       }
     }
   };

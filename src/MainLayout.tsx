@@ -52,8 +52,6 @@ function MainLayout({
   const [chatsData, setChatsData] = useState<RoleList>([]);
   const [singleChat, setSingleChat] = useState<any>([]);
   const [newCall, SetNewCall] = useState<callerData>();
-  // const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  // const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const [startCall, setStartCall] = useState<callerData>({
     start: false,
@@ -136,6 +134,23 @@ function MainLayout({
       socket.off("messageReceived", handleMessageReceived);
     };
   }, [chatsData, socket]);
+
+  useEffect(() => {
+    const handleMessageRead = (data: {
+      senderId: string | number;
+      chatId: string | number;
+      messageIds: (number | string)[];
+    }) => {
+      console.log(data);
+    };
+
+    socket.on("readMessage", handleMessageRead);
+    // return () => {
+    //   socket.off("readMessage", handleMessageRead);
+    // };
+  }, [socket]);
+
+
 
   const addNewRole = (role: Role) => {
     setChatsData((prev) => [role, ...prev]);
