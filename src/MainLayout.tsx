@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ChatSide from "./pages/chatSide";
 import Overlay from "./pages/Components/Overlay";
 import SideBar from "./pages/sidebar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useCustomAxios from "./modules/customAxios";
 import { getUser, getUserId } from "./modules/getUserId";
 import Loading from "./pages/Components/Loading";
@@ -55,6 +55,8 @@ function MainLayout({
   const [chatsData, setChatsData] = useState<RoleList>([]);
   const [singleChat, setSingleChat] = useState<any>([]);
   const [newCall, SetNewCall] = useState<callerData>();
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const [startCall, setStartCall] = useState<callerData>({
     start: false,
@@ -74,6 +76,25 @@ function MainLayout({
       setSingleChat(chats);
     }
   };
+
+  const isMobileDevice = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+  };
+
+  const handleFullscreen = async () => {
+    if (isMobileDevice()) {
+      if (document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+      }
+      setIsFullscreen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (isMobileDevice() && buttonRef.current) {
+      buttonRef.current.click();
+    }
+  }, []);
 
   useEffect(() => {
     const userId = getUserId();
@@ -314,6 +335,11 @@ function MainLayout({
           isChatOpen ? "hidden" : "block"
         } md:w-2/6 md:block text-sky-950 sticky top-0 left-0 h-full`}>
         <div className="h-full">
+          {!isFullscreen && isMobileDevice() && (
+            <button ref={buttonRef} onClick={handleFullscreen}>
+              Enable Fullscreen
+            </button>
+          )}
           <SideBar
             onItemClick={(chatId: number) => navigateOpenChat(chatId)}
             chatsData={chatsData}
