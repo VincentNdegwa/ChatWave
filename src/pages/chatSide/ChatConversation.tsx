@@ -8,6 +8,7 @@ import useCustomAxios from "../../modules/customAxios";
 import { MessageStatus } from "./type";
 import { LuLoader } from "react-icons/lu";
 import { MdSmsFailed } from "react-icons/md";
+import { IoCheckmarkOutline } from "react-icons/io5";
 
 type Props = {
   chatData: Role;
@@ -45,7 +46,8 @@ function ChatConversation({ chatData }: Props) {
         return x.id;
       }
     });
-    if (messageId && messageId.length != 0) {
+    
+    if (messageId && messageId.length > 0) {
       readMessages(messageId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -146,15 +148,15 @@ function ChatConversation({ chatData }: Props) {
                           <MdSmsFailed className=" text-red-500 animate-bounce" />
                         )}
 
-                        {msg.status == MessageStatus.SENT && (
-                          <IoCheckmarkDoneOutline
-                            className={
-                              msg.read_status == ReadStatus.READ
-                                ? "text-blue-950"
-                                : "text-slate-600"
-                            }
-                          />
-                        )}
+                        {msg.status == MessageStatus.SENT &&
+                          msg.read_status == ReadStatus.UNREAD && (
+                            <IoCheckmarkOutline className="text-slate-600" />
+                          )}
+
+                        {msg.status == MessageStatus.SENT &&
+                          msg.read_status == ReadStatus.READ && (
+                            <IoCheckmarkDoneOutline />
+                          )}
                       </div>
                     )}
                   </div>

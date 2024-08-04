@@ -11,6 +11,7 @@ import AlertNotification from "./pages/Components/AlertNotification";
 import {
   Chat,
   Participant,
+  ReadStatus,
   Role,
   RoleList,
   User,
@@ -141,16 +142,33 @@ function MainLayout({
       chatId: string | number;
       messageIds: (number | string)[];
     }) => {
-      console.log(data);
+      setChatsData((prevChatsData) => {
+        const updatedChat = prevChatsData.map((role) => {
+          if (role.chat.id == data.chatId) {
+            const messagesToUpdate = role.chat.messages.map((msg) => {
+              if (data.messageIds.includes(msg.id)) {
+                return { ...msg, read_status: ReadStatus.READ };
+              }
+              return msg;
+            });
+
+            return {
+              ...role,
+              chat: { ...role.chat, messages: messagesToUpdate },
+            };
+          }
+          return role;
+        });
+        return updatedChat;
+      });
     };
 
     socket.on("readMessage", handleMessageRead);
-    // return () => {
-    //   socket.off("readMessage", handleMessageRead);
-    // };
+
+    return () => {
+      socket.off("readMessage", handleMessageRead);
+    };
   }, [socket]);
-
-
 
   const addNewRole = (role: Role) => {
     setChatsData((prev) => [role, ...prev]);
@@ -259,7 +277,6 @@ function MainLayout({
       receiver: callType.receiver,
     });
   };
-
 
   if (loading) {
     return <Loading />;
