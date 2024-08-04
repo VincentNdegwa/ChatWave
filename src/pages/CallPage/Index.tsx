@@ -3,20 +3,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import { FaMicrophone, FaMicrophoneSlash, FaVideo } from "react-icons/fa";
-import socketConfigs from "../../modules/socketConfigs";
 import { Participant, callMode, callerData } from "../../types";
 import { MediaConnection, Peer } from "peerjs";
 import { MdOutlineCallEnd } from "react-icons/md";
+import CustomSocket from "../../modules/CustomSocket";
 
 type Props = {
   mode: callerData;
   incommingCall: boolean;
 };
 
+const socket = CustomSocket.getSocket();
+
 function Index({ mode, incommingCall }: Props) {
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const socket = new socketConfigs().getSocket();
   const [peer, setPeer] = useState<Peer | null>(null);
   const [peerId, setPeerId] = useState<string>();
   const [localStream, setLocalStream] = useState<MediaStream>();
@@ -26,7 +27,6 @@ function Index({ mode, incommingCall }: Props) {
   const [muted, setMuted] = useState<boolean>(false);
 
   const callerUser: Participant | undefined = mode.sender;
-  // const receiverUser: Participant | undefined = mode.receiver;
 
   useEffect(() => {
     if (mode.start && !incommingCall) {

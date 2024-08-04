@@ -21,9 +21,9 @@ import {
 } from "./types";
 import ErrorPage from "./pages/Components/ErrorPage";
 import { AxiosError } from "axios";
-import socketConfigs from "./modules/socketConfigs";
 import CallPage from "./pages/CallPage/Index";
 import StartPage from "./pages/startPage";
+import CustomSocket from "./modules/CustomSocket";
 type Props = {
   isChatOpen: boolean;
   setIsChatOpen: (isOpen: boolean) => void;
@@ -33,6 +33,8 @@ type Props = {
   component: JSX.Element | undefined;
   overLayHeader: string;
 };
+
+const socket = CustomSocket.getSocket();
 
 function MainLayout({
   isChatOpen,
@@ -61,7 +63,6 @@ function MainLayout({
     receiver: undefined,
   });
 
-  const [socket, setSocket] = useState(new socketConfigs().getSocket());
   const [incommingCall, SetIncommingCall] = useState<boolean>(false);
   const navigate = useNavigate();
   const navigateOpenChat = (chatId: number) => {
@@ -75,7 +76,6 @@ function MainLayout({
   };
 
   useEffect(() => {
-    const socket = new socketConfigs().getSocket();
     const userId = getUserId();
     socket.emit("join", userId);
 
@@ -89,6 +89,7 @@ function MainLayout({
     const us = getUser();
     if (uid && us) {
       setUserId(uid);
+      socket.emit("join", uid);
       setCurrentUser(us);
     } else {
       navigate("/login");
@@ -96,11 +97,9 @@ function MainLayout({
   }, [navigate]);
 
   useEffect(() => {
-    const skt = new socketConfigs().getSocket();
-    setSocket(skt);
     const uid = getUserId();
     if (uid) {
-      skt.emit("join", getUserId());
+      socket.emit("join", getUserId());
     }
   }, []);
 
@@ -134,7 +133,7 @@ function MainLayout({
     return () => {
       socket.off("messageReceived", handleMessageReceived);
     };
-  }, [chatsData, socket]);
+  }, [chatsData]);
 
   useEffect(() => {
     const handleMessageRead = (data: {
@@ -168,7 +167,7 @@ function MainLayout({
     return () => {
       socket.off("readMessage", handleMessageRead);
     };
-  }, [socket]);
+  }, []);
 
   const addNewRole = (role: Role) => {
     setChatsData((prev) => [role, ...prev]);

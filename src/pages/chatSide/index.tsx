@@ -1,15 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { getChatId, getUser, getUserId } from "../../modules/getUserId";
-import { Message, Participant, Role, User, callMode } from "../../types";
+import {
+  Message,
+  Participant,
+  ReadStatus,
+  Role,
+  User,
+  callMode,
+} from "../../types";
 import ChatConversation from "./ChatConversation";
 import ChatHead from "./ChatHead";
 import SenderBox from "./SenderBox";
 import useCustomAxios from "../../modules/customAxios";
 import AlertNotification from "../Components/AlertNotification";
-import socketConfigs from "../../modules/socketConfigs";
 import { MessageStatus, PendingMessage } from "./type";
 import { v4 as uuidv4 } from "uuid";
+import CustomSocket from "../../modules/CustomSocket";
 
 type Props = {
   onItemClick: () => void;
@@ -22,6 +29,8 @@ type Props = {
   }) => void;
   addNewRole: (role: Role) => void;
 };
+
+const socket = CustomSocket.getSocket();
 
 function Index({
   onItemClick,
@@ -38,7 +47,6 @@ function Index({
   const [savedChatData, setSavedChatData] = useState<Role>(chatData);
   const [pendingMessages, setPendingMessages] = useState<Message[] | []>([]);
   const axios = useCustomAxios();
-  const socket = new socketConfigs();
 
   const messageSend = (text: string) => {
     const user: User | null = getUser();
@@ -94,7 +102,7 @@ function Index({
 
   useEffect(() => {
     if (userId) {
-      socket.joinRoom("join", userId);
+      socket.emit("join", userId);
     }
   }, [userId]);
 
@@ -106,6 +114,7 @@ function Index({
       updated_at: null,
       sender: user,
       message_id: null,
+      read_status: ReadStatus.UNREAD,
       status: MessageStatus.SENDING,
     };
 
@@ -136,9 +145,8 @@ function Index({
       )?.user.id,
       message_id: pMessage.id,
     };
-
-    const skt = socket.getSocket();
-    skt.emit("newMessage", data);
+    socket.emit("join", userId);
+    socket.emit("newMessage", data);
   };
 
   useEffect(() => {

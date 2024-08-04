@@ -15,6 +15,7 @@ function ContactList({ onItemClick, chatsData }: Props) {
   useEffect(() => {
     setContactData(chatsData);
   }, [chatsData]);
+  
   const handleDeleteChat = (participantId: number, userId: number) => {
     axios
       .delete(`chats/user/${participantId}/${userId}`)

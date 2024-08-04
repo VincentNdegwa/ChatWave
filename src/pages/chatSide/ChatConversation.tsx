@@ -3,22 +3,23 @@ import { useEffect, useRef, useState } from "react";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { Role, Message, ReadStatus } from "../../types";
 import { getChatId, getUserId } from "../../modules/getUserId";
-import socketConfigs from "../../modules/socketConfigs";
 import useCustomAxios from "../../modules/customAxios";
 import { MessageStatus } from "./type";
 import { LuLoader } from "react-icons/lu";
 import { MdSmsFailed } from "react-icons/md";
 import { IoCheckmarkOutline } from "react-icons/io5";
+import CustomSocket from "../../modules/CustomSocket";
 
 type Props = {
   chatData: Role;
 };
 
+const socket = CustomSocket.getSocket();
+
 function ChatConversation({ chatData }: Props) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState(chatData.chat.messages || []);
   const [userId, setUserId] = useState(getUserId());
-  const [socket, setSocket] = useState(new socketConfigs().getSocket());
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView();
@@ -33,9 +34,7 @@ function ChatConversation({ chatData }: Props) {
     const uid = getUserId();
     setUserId(uid);
 
-    const skt = new socketConfigs().getSocket();
-    setSocket(skt);
-    skt.emit("join", uid);
+    socket.emit("join", uid);
   }, []);
 
   useEffect(() => {
@@ -46,7 +45,7 @@ function ChatConversation({ chatData }: Props) {
         return x.id;
       }
     });
-    
+
     if (messageId && messageId.length > 0) {
       readMessages(messageId);
     }
