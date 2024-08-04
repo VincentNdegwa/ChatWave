@@ -277,6 +277,18 @@ function MainLayout({
     });
   };
 
+  useEffect(() => {
+    function handkeKeyPress(event: KeyboardEvent) {
+      if (event.key == "Escape") {
+        window.localStorage.removeItem("chatId");
+        setIsChatOpen(false);
+        setSingleChat(false);
+        console.log(event.key);
+      }
+    }
+    window.addEventListener("keydown", handkeKeyPress);
+  });
+
   if (loading) {
     return <Loading />;
   }
