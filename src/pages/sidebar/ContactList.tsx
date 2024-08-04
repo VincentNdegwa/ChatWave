@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { RoleList } from "../../types";
+import { RoleCountList } from "../../types";
 import Contact from "./Contact";
 import useCustomAxios from "../../modules/customAxios";
 
 type Props = {
   onItemClick: (chatId: number) => void;
-  chatsData: RoleList;
+  chatsData: RoleCountList;
 };
 
 function ContactList({ onItemClick, chatsData }: Props) {
-  const [contactData, setContactData] = useState<RoleList>(chatsData);
+  const [contactData, setContactData] = useState<RoleCountList>(chatsData);
   const axios = useCustomAxios();
 
   useEffect(() => {
     setContactData(chatsData);
   }, [chatsData]);
-  
+
   const handleDeleteChat = (participantId: number, userId: number) => {
     axios
       .delete(`chats/user/${participantId}/${userId}`)
@@ -29,16 +29,28 @@ function ContactList({ onItemClick, chatsData }: Props) {
       });
   };
 
+  const handleItemClick = (id: number) => {
+    onItemClick(id);
+    const data = chatsData.map((x) => {
+      if (x.chat.id == id) {
+        return { ...x, unreadCount: 0 };
+      }
+      return x;
+    });
+    setContactData(data);
+  };
+
   return (
     <div className="w-full flex flex-col gap-1">
       {contactData &&
         contactData.map((chatItem) => {
           return (
             <Contact
-              onItemClick={onItemClick}
+              onItemClick={handleItemClick}
               key={chatItem.chat.id}
               chat={chatItem.chat}
               handleDeleteChat={handleDeleteChat}
+              count={chatItem.unreadCount}
             />
           );
         })}

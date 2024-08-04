@@ -73,7 +73,15 @@ export interface Role {
   chat: Chat;
 }
 
+export interface RoleCount {
+  id: number | string;
+  role: string;
+  chat: Chat;
+  unreadCount: number | string;
+}
+
 export type RoleList = Role[];
+export type RoleCountList = RoleCount[];
 
 export enum callMode {
   VIDEO = "video",

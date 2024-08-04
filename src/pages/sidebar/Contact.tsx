@@ -7,6 +7,7 @@ type Props = {
   onItemClick: (chatId: number) => void;
   chat: Chat;
   handleDeleteChat: (participantId: number, userId: number) => void;
+  count: number | string;
 };
 enum OptionType {
   DeleteOption = "Delete",
@@ -125,6 +126,7 @@ function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
                   new Date(chat.lastMessage?.sent_at).toLocaleDateString()) ||
                   ""}
               </div>
+              {/* <div>{count}</div> */}
               <div className="drop-down text-sm relative">
                 <FaAngleDown
                   className="hover:bg-slate-200 p-1 text-2xl text-sky-950 transition-all ease-in-out duration-200 rounded-full"

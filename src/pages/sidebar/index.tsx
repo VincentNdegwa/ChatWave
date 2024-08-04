@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
-import { getUser } from "../../modules/getUserId";
-import { RoleList, User, alertType } from "../../types";
+import { getUser, getUserId } from "../../modules/getUserId";
+import {
+  ReadStatus,
+  RoleCountList,
+  RoleList,
+  User,
+  alertType,
+} from "../../types";
 import ContactList from "./ContactList";
 import SearchBar from "./SearchBar";
 import UserProfile from "./UserProfile";
@@ -28,7 +34,9 @@ function Index({
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
   const [editOpen, setEditOpen] = useState<boolean>(false);
   const [viewUser, setViewUsers] = useState<boolean>(false);
-  const [conversations, setConversations] = useState<RoleList>(chatsData);
+  const [conversations, setConversations] = useState<RoleCountList>(
+    getCountData()
+  );
 
   const openProfile = () => {
     const user = getUser();
@@ -58,8 +66,27 @@ function Index({
   };
 
   useEffect(() => {
-    setConversations(chatsData);
+    const data = getCountData();
+    setConversations(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatsData]);
+
+  function getCountData() {
+    const data = chatsData.map((role) => {
+      let count = 0;
+      role.chat.messages.map((msg) => {
+        if (
+          msg.sender.id != getUserId() &&
+          msg.read_status == ReadStatus.UNREAD
+        ) {
+          count++;
+        }
+        return msg;
+      });
+      return { ...role, unreadCount: count };
+    });
+    return data;
+  }
 
   useEffect(() => {
     const jsonUser = window.localStorage.getItem("user");
