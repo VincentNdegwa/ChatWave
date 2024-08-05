@@ -21,6 +21,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   const localStreamRef = useRef<MediaStream | null>(null);
   const [senderPeer, setSenderPeer] = useState<Peer>();
   const [receiverPeerId, setReceiverPeerId] = useState<string>();
+  const [receivingPeer, setReceiverPeer] = useState<Peer>();
 
   const [remoteStreamIsSet, setRemoteStreamIsSet] = useState<boolean>(false);
 
@@ -51,7 +52,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
     if (incommingCall && callAccepted) {
       receiveCall();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callAccepted, incommingCall]);
 
   const callUser = async () => {
@@ -78,9 +79,10 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   };
 
   const receiveCall = () => {
-    console.log("incomming call from: ", callerUser?.user.id);
+    console.log("received call from: ", callerUser?.user.id);
 
     const receivingPeer = new Peer();
+    setReceiverPeer(receivingPeer);
 
     receivingPeer.on("open", (id: string) => {
       if (callerUser?.user.id != undefined) {
@@ -91,8 +93,11 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
         });
       }
     });
-
+  };
+  if (receivingPeer && incommingCall) {
     receivingPeer.on("call", async (call: MediaConnection) => {
+      console.log("listening call");
+
       const str = await getLocalStream();
       if (str) {
         setLocalStream(str);
@@ -110,7 +115,9 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
         }
       }
     });
-  };
+  } else {
+    console.log("found no peer");
+  }
 
   const getLocalStream = async (): Promise<MediaStream | null> => {
     navigator.mediaDevices
