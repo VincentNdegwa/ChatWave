@@ -17,6 +17,7 @@ import AlertNotification from "../Components/AlertNotification";
 import { MessageStatus, PendingMessage } from "./type";
 import { v4 as uuidv4 } from "uuid";
 import CustomSocket from "../../modules/CustomSocket";
+import StartPage from "../startPage";
 
 type Props = {
   onItemClick: () => void;
@@ -230,7 +231,7 @@ function Index({
           </div>
         </>
       ) : (
-        <div>Loading...</div>
+        <StartPage />
       )}
     </div>
   );

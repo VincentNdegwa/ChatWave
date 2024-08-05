@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getUser, getUserId } from "../../modules/getUserId";
+import { BsArrowsFullscreen } from "react-icons/bs";
+
 import {
   ReadStatus,
   RoleCountList,
@@ -20,6 +22,8 @@ type Props = {
   notificationAlert: (alert: alertType) => void;
   handleLoading: (statu: boolean) => void;
   createChat: (user: User) => void;
+  fullScreenMode: boolean;
+  handleFullscreen: () => void;
 };
 
 function Index({
@@ -28,6 +32,8 @@ function Index({
   notificationAlert,
   handleLoading,
   createChat,
+  fullScreenMode,
+  handleFullscreen,
 }: Props) {
   const [userProf, setUserProf] = useState<User | null>(getUser());
   const [contactOpen, setContactOpen] = useState<boolean>(true);
@@ -158,6 +164,13 @@ function Index({
           <UserChats closeUserChat={closeAllSlides} createChat={createChat} />
         )}
       </div>
+      {fullScreenMode && (
+        <div
+          className="absolute bottom-10 right-3 bg-sky-900 text-white text-2xl p-3 rounded-full cursor-pointer"
+          onClick={handleFullscreen}>
+          <BsArrowsFullscreen />
+        </div>
+      )}
     </div>
   );
 }

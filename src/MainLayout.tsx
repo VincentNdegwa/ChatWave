@@ -90,6 +90,15 @@ function MainLayout({
     }
   };
 
+  const handleFullScreenChange = () => {
+    if (!document.fullscreenElement) {
+      setIsFullscreen(false);
+    } else {
+      setIsFullscreen(true);
+    }
+  };
+  window.addEventListener("fullscreenchange", handleFullScreenChange);
+
   useEffect(() => {
     if (isMobileDevice() && buttonRef.current) {
       buttonRef.current.click();
@@ -335,17 +344,14 @@ function MainLayout({
           isChatOpen ? "hidden" : "block"
         } md:w-2/6 md:block text-sky-950 sticky top-0 left-0 h-full`}>
         <div className="h-full">
-          {!isFullscreen && isMobileDevice() && (
-            <button ref={buttonRef} onClick={handleFullscreen}>
-              Enable Fullscreen
-            </button>
-          )}
           <SideBar
             onItemClick={(chatId: number) => navigateOpenChat(chatId)}
             chatsData={chatsData}
             notificationAlert={displayNotification}
             handleLoading={handleLoading}
             createChat={createChat}
+            fullScreenMode={!isFullscreen && isMobileDevice()}
+            handleFullscreen={handleFullscreen}
           />
         </div>
       </div>
