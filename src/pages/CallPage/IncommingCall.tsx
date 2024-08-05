@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { MdCallEnd } from "react-icons/md";
 import { Participant, callMode, callerData } from "../../types";
 import { FaMicrophone, FaMicrophoneSlash, FaVideo } from "react-icons/fa";
@@ -22,11 +23,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   const [senderPeer, setSenderPeer] = useState<Peer>();
   const [receiverPeerId, setReceiverPeerId] = useState<string>();
   const [inCall, setInCall] = useState<MediaConnection>();
-
-  // const [receivingPeer, setReceiverPeer] = useState<Peer>();
-
   const [remoteStreamIsSet, setRemoteStreamIsSet] = useState<boolean>(false);
-
   const [callAccepted, setCallAccepted] = useState<boolean>(false);
   const callerUser: Participant | undefined = mode.sender;
 
@@ -46,14 +43,12 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
     if (!incommingCall) {
       callUser();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, incommingCall]);
 
   useEffect(() => {
     if (incommingCall && callAccepted) {
       receiveCall();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callAccepted, incommingCall]);
 
   const callUser = async () => {
@@ -79,9 +74,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
 
   const receiveCall = () => {
     console.log("received call from: ", callerUser?.user.id);
-
     const peer = new Peer();
-    // setReceiverPeer(peer);
 
     peer.on("open", (id: string) => {
       if (callerUser?.user.id != undefined) {
@@ -93,7 +86,6 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
       }
     });
 
-    // if (receivingPeer) {
     peer.on("call", async (call) => {
       const str = await getLocalStream();
       setLocalStream(str);
@@ -111,7 +103,6 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
         }
       });
     });
-    // }
   };
 
   inCall?.on("stream", (remStream) => {
@@ -173,39 +164,55 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   return (
     <div className="w-full h-full bg-sky-950 relative">
       <div className="w-full h-full">
-        {incommingCall && (
-          <div className="h-full flex justify-center">
-            <div className="flex flex-col pt-52">
-              <img
-                src={
-                  mode.sender?.user.profile?.profile_pic || "images/avatar.jpg"
-                }
-                className="rounded-full h-[250px] w-[250px]"
-                alt="profile"
-              />
-              <div className="text-2xl text-center text-white font-bold">
-                {mode.sender?.user.profile?.first_name +
-                  " " +
-                  mode.sender?.user.profile?.last_name ||
-                  mode.sender?.user.phone_number ||
-                  "Unknown"}
-              </div>
-              <div className="text-sm text-center text-sky-300">
-                {mode.mode == callMode.VIDEO && "Incomming Video Call"}
-                {mode.mode == callMode.VOICE && "Incomming Voice Call"}
+        {incommingCall && !callAccepted && (
+          <>
+            <div className="h-full flex justify-center">
+              <div className="flex flex-col pt-52">
+                <img
+                  src={
+                    mode.sender?.user.profile?.profile_pic ||
+                    "images/avatar.jpg"
+                  }
+                  className="rounded-full h-[250px] w-[250px]"
+                  alt="profile"
+                />
+                <div className="text-2xl text-center text-white font-bold">
+                  {mode.sender?.user.profile?.first_name +
+                    " " +
+                    mode.sender?.user.profile?.last_name ||
+                    mode.sender?.user.phone_number ||
+                    "Unknown"}
+                </div>
+                <div className="text-sm text-center text-sky-300">
+                  {mode.mode === callMode.VIDEO && "Incoming Video Call"}
+                  {mode.mode === callMode.VOICE && "Incoming Voice Call"}
+                </div>
               </div>
             </div>
-          </div>
+
+            <div className="flex space-x-3 md:space-x-5 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
+              <div
+                onClick={() => handleCallResponse("reject")}
+                className="cursor-pointer h-20 w-20 rounded-full justify-center bg-red-700 flex items-center gap-x-2 text-white p-2 shadow-lg hover:bg-red-500 transition-all duration-300">
+                <MdCallEnd size={24} />
+              </div>
+              <div
+                onClick={() => handleCallResponse("answer")}
+                className="cursor-pointer h-20 w-20 rounded-full justify-center bg-green-700 flex items-center gap-x-2 text-white p-2 shadow-lg hover:bg-green-500 transition-all duration-300">
+                <MdCallEnd size={24} />
+              </div>
+            </div>
+          </>
         )}
 
         {!incommingCall && (
           <>
-            {mode.mode == callMode.VIDEO && (
+            {mode.mode === callMode.VIDEO && (
               <div className="videocall w-full h-full relative">
                 <div
                   className={
                     remoteStreamIsSet
-                      ? "absolute top-0 right-0 w-40 h-40 z-20"
+                      ? "absolute bottom-4 right-4 w-40 h-40 z-20"
                       : "absolute top-0 right-0 w-full h-full rounded-2xl z-10"
                   }>
                   <video
@@ -219,7 +226,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
                   className={
                     remoteStreamIsSet
                       ? "absolute top-0 right-0 w-full h-full rounded-2xl z-10"
-                      : "absolute top-0 right-0 w-40 h-40 z-20"
+                      : "hidden"
                   }>
                   <video
                     ref={remoteVideoRef}
@@ -230,49 +237,82 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
               </div>
             )}
 
-            {mode.mode == callMode.VOICE && (
+            {mode.mode === callMode.VOICE && (
               <div className="voicecall w-full h-full"></div>
             )}
+
+            <div className="flex space-x-3 md:space-x-5 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
+              <button className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300">
+                <FaVideo size={24} />
+              </button>
+              <button
+                className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300"
+                onClick={toggleMute}>
+                {muted ? (
+                  <FaMicrophoneSlash size={24} />
+                ) : (
+                  <FaMicrophone size={24} />
+                )}
+              </button>
+              <div
+                onClick={() => handleCallResponse("reject")}
+                className="cursor-pointer h-fit bg-red-700 flex items-center gap-x-2 text-white p-2 rounded-sm shadow-lg hover:bg-red-500 transition-all duration-300">
+                <MdOutlineCallEnd size={24} />
+                Leave
+              </div>
+            </div>
+          </>
+        )}
+
+        {incommingCall && callAccepted && (
+          <>
+            {mode.mode === callMode.VIDEO && (
+              <div className="videocall w-full h-full relative">
+                <div className="absolute top-0 right-0 w-full h-full rounded-2xl z-10">
+                  <video
+                    ref={remoteVideoRef}
+                    autoPlay
+                    disablePictureInPicture
+                    className="object-cover w-full h-full"></video>
+                </div>
+                <div className="absolute bottom-4 right-4 w-40 h-40 z-20">
+                  <video
+                    ref={localVideoRef}
+                    autoPlay
+                    muted
+                    disablePictureInPicture
+                    className="object-cover w-full h-full"></video>
+                </div>
+              </div>
+            )}
+
+            {mode.mode === callMode.VOICE && (
+              <div className="voicecall w-full h-full"></div>
+            )}
+
+            <div className="flex space-x-3 md:space-x-5 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
+              <button className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300">
+                <FaVideo size={24} />
+              </button>
+              <button
+                className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300"
+                onClick={toggleMute}>
+                {muted ? (
+                  <FaMicrophoneSlash size={24} />
+                ) : (
+                  <FaMicrophone size={24} />
+                )}
+              </button>
+              <div
+                onClick={() => handleCallResponse("reject")}
+                className="cursor-pointer h-fit bg-red-700 flex items-center gap-x-2 text-white p-2 rounded-sm shadow-lg hover:bg-red-500 transition-all duration-300">
+                <MdOutlineCallEnd size={24} />
+                Leave
+              </div>
+            </div>
           </>
         )}
       </div>
-      {incommingCall && (
-        <div className="flex space-x-3 md:space-x-5 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
-          <div
-            onClick={() => handleCallResponse("reject")}
-            className="cursor-pointer h-20 w-20 rounded-full justify-center bg-red-700 flex items-center gap-x-2 text-white p-2 shadow-lg hover:bg-red-500 transition-all duration-300">
-            <MdCallEnd size={24} />
-          </div>
-          <div
-            onClick={() => handleCallResponse("answer")}
-            className="cursor-pointer h-20 w-20 rounded-full justify-center bg-green-700 flex items-center gap-x-2 text-white p-2 shadow-lg hover:bg-green-500 transition-all duration-300">
-            <MdCallEnd size={24} />
-          </div>
-        </div>
-      )}
-
-      {!incommingCall && (
-        <div className="flex space-x-3 md:space-x-5 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
-          <button className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300">
-            <FaVideo size={24} />
-          </button>
-          <button
-            className="cursor-pointer h-fit text-white p-3 rounded-full shadow-lg hover:bg-black hover:bg-opacity-50 transition-all duration-300"
-            onClick={toggleMute}>
-            {muted ? (
-              <FaMicrophoneSlash size={24} />
-            ) : (
-              <FaMicrophone size={24} />
-            )}
-          </button>
-          <div
-            onClick={() => handleCallResponse("reject")}
-            className="cursor-pointer h-fit bg-red-700 flex items-center gap-x-2 text-white p-2 rounded-sm shadow-lg hover:bg-red-500 transition-all duration-300">
-            <MdOutlineCallEnd size={24} />
-            Leave
-          </div>
-        </div>
-      )}
     </div>
   );
 };
