@@ -19,6 +19,7 @@ function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
   const [viewMenu, setViewMenu] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [userId, setUserId] = useState(getUserId());
+  const isOnline = false;
 
   const handleNavigate = () => {
     onItemClick(chat.id);
@@ -103,7 +104,10 @@ function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
           onMouseEnter={() => setIsDropdownVisible(true)}
           onMouseLeave={() => setIsDropdownVisible(false)}
           className="flex gap-3 p-2 hover:bg-gray-50 ease-in duration-100 rounded-md cursor-pointer relative">
-          <div className="h-[40px] w-[45px] ">
+          <div className="h-[40px] w-[45px] relative ">
+            {isOnline && (
+              <span className="absolute top-0 left-0 bg-green-600 h-2 w-2 rounded-full"></span>
+            )}
             <img
               src={profile?.user.profile?.profile_pic || "/images/avatar.jpg"}
               alt="profile-pic"
@@ -120,7 +124,7 @@ function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
                 {renderLastMessage(chat.lastMessage)}
               </div>
             </div>
-            <div className="flex flex-col items-end justify-between">
+            <div className="flex flex-col items-end h-full">
               <div className="text-xs text-sky-950">
                 {(chat.lastMessage?.sent_at &&
                   new Date(chat.lastMessage?.sent_at).toLocaleDateString()) ||
@@ -133,6 +137,7 @@ function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
                   opacity={isDropdownVisible ? 1 : 0}
                   onClick={(ev) => openChatOption(ev)}
                 />
+
                 {viewMenu && (
                   <div
                     ref={dropdownRef}
@@ -149,20 +154,6 @@ function Contact({ onItemClick, chat, handleDeleteChat }: Props) {
                         className="p-2 hover:bg-gray-200 cursor-pointer">
                         Delete
                       </li>
-
-                      {/* <li
-                        onClick={(ev) => {
-                          handleOptionClick({
-                            message: OptionType.UnreadOption,
-                            ev,
-                            action: "unread",
-                          });
-
-                          setViewMenu(false);
-                        }}
-                        className="p-2 hover:bg-gray-200 cursor-pointer">
-                        Unread
-                      </li> */}
                     </ul>
                   </div>
                 )}
