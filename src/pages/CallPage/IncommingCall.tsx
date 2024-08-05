@@ -268,18 +268,28 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
           <>
             {mode.mode === callMode.VIDEO && (
               <div className="videocall w-full h-full relative">
-                <div className="absolute top-0 right-0 w-full h-full rounded-2xl z-10">
-                  <video
-                    ref={remoteVideoRef}
-                    autoPlay
-                    disablePictureInPicture
-                    className="object-cover w-full h-full"></video>
-                </div>
-                <div className="absolute bottom-4 right-4 w-40 h-40 z-20">
+                <div
+                  className={
+                    remoteStreamIsSet
+                      ? "absolute top-4 right-4 w-40 h-40 z-20"
+                      : "absolute top-0 right-0 w-full h-full rounded-2xl z-10"
+                  }>
                   <video
                     ref={localVideoRef}
                     autoPlay
                     muted
+                    disablePictureInPicture
+                    className="object-cover w-full h-full"></video>
+                </div>
+                <div
+                  className={
+                    remoteStreamIsSet
+                      ? "absolute top-0 right-0 w-full h-full rounded-2xl z-10"
+                      : "hidden"
+                  }>
+                  <video
+                    ref={remoteVideoRef}
+                    autoPlay
                     disablePictureInPicture
                     className="object-cover w-full h-full"></video>
                 </div>
