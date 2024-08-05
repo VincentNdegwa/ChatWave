@@ -90,6 +90,9 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
       const str = await getLocalStream();
       setLocalStream(str);
       localStreamRef.current = str;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = str;
+      }
       console.log("got the local stream");
 
       call.answer(localStreamRef.current);
@@ -122,6 +125,9 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
       });
       setLocalStream(stream);
       localStreamRef.current = stream;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
       return stream;
     } catch (err) {
       console.error("Error getting media stream:", err);
@@ -212,7 +218,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
                 <div
                   className={
                     remoteStreamIsSet
-                      ? "absolute top-4 right-4 w-40 h-40 z-20"
+                      ? "absolute top-4 right-0 w-40 h-40 z-20"
                       : "absolute top-0 right-0 w-full h-full rounded-2xl z-10"
                   }>
                   <video
