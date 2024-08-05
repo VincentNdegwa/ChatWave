@@ -31,6 +31,13 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
     setMuted(!muted);
   };
   const handleCallResponse = (status: string) => {
+    if (status == "answer") {
+      setCallAccepted(true);
+    }
+
+    if (status == "reject") {
+      setCallAccepted(false);
+    }
     console.log(status);
   };
   useEffect(() => {
