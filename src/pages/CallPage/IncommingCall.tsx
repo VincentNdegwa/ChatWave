@@ -67,6 +67,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
       });
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
+        setConnecting(false);
         setLocalStream(stream);
         const peer = new Peer();
         peer.on("open", (id: string) => {
@@ -136,6 +137,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
       localStreamRef.current = stream;
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
+        setConnecting(false);
       }
       return stream;
     } catch (err) {
@@ -176,6 +178,8 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
       }
     }
   }, [localStream, receiverPeerId, senderPeer]);
+
+  
 
   return (
     <div className="w-full h-full bg-sky-950 relative">
@@ -245,7 +249,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
                 <CallerNotifier mode={mode} status="Connecting..." />
               </div>
             )}
-            {!connecting&& mode.mode === callMode.VIDEO && (
+            {!connecting && mode.mode === callMode.VIDEO && (
               <VideoCallDisplays
                 remoteStreamIsSet={remoteStreamIsSet}
                 localVideoRef={localVideoRef}
