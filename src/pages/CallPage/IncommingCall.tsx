@@ -21,7 +21,9 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   const localStreamRef = useRef<MediaStream | null>(null);
   const [senderPeer, setSenderPeer] = useState<Peer>();
   const [receiverPeerId, setReceiverPeerId] = useState<string>();
-  const [receivingPeer, setReceiverPeer] = useState<Peer>();
+  const [inCall, setInCall] = useState<MediaConnection>();
+
+  // const [receivingPeer, setReceiverPeer] = useState<Peer>();
 
   const [remoteStreamIsSet, setRemoteStreamIsSet] = useState<boolean>(false);
 
@@ -31,16 +33,15 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   const toggleMute = () => {
     setMuted(!muted);
   };
-  const handleCallResponse = (status: string) => {
-    if (status == "answer") {
-      setCallAccepted(true);
-    }
 
-    if (status == "reject") {
+  const handleCallResponse = (status: string) => {
+    if (status === "answer") {
+      setCallAccepted(true);
+    } else if (status === "reject") {
       setCallAccepted(false);
     }
-    console.log(status);
   };
+
   useEffect(() => {
     if (!incommingCall) {
       callUser();
@@ -56,35 +57,33 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   }, [callAccepted, incommingCall]);
 
   const callUser = async () => {
-    navigator.mediaDevices
-      .getUserMedia({
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: mode.mode === callMode.VIDEO,
-      })
-      .then((stream: MediaStream) => {
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-          setLocalStream(stream);
-          const peer = new Peer();
-          peer.on("open", (id: string) => {
-            console.log(`caller peerId ${id}`);
-          });
-          setSenderPeer(peer);
-          socket.emit("call-user", mode);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
       });
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+        setLocalStream(stream);
+        const peer = new Peer();
+        peer.on("open", (id: string) => {
+          console.log(`caller peerId ${id}`);
+        });
+        setSenderPeer(peer);
+        socket.emit("call-user", mode);
+      }
+    } catch (err) {
+      console.error("Error getting local stream:", err);
+    }
   };
 
   const receiveCall = () => {
     console.log("received call from: ", callerUser?.user.id);
 
-    const receivingPeer = new Peer();
-    setReceiverPeer(receivingPeer);
+    const peer = new Peer();
+    // setReceiverPeer(peer);
 
-    receivingPeer.on("open", (id: string) => {
+    peer.on("open", (id: string) => {
       if (callerUser?.user.id != undefined) {
         console.log("answering peer id: " + id);
         socket.emit("answer-call", {
@@ -93,30 +92,49 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
         });
       }
     });
-  };
-  if (receivingPeer && incommingCall) {
-    receivingPeer.on("call", async (call: MediaConnection) => {
-      const str = await getLocalStream();
-      if (str) {
-        setLocalStream(str);
-        if (localVideoRef.current) {
-          localStreamRef.current = str;
-          call.answer(localStreamRef.current);
-          console.log("called the caller");
 
-          call.on("stream", (remStream) => {
-            if (remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject = remStream;
-              setRemoteStreamIsSet(true);
-              console.log("Setting up the remote stream");
-            }
-          });
+    // if (receivingPeer) {
+    peer.on("call", async (call) => {
+      console.log("getting on call");
+
+      try {
+        console.log("getting stream");
+        const str = await getLocalStream();
+        if (str) {
+          setLocalStream(str);
+          if (localVideoRef.current) {
+            localStreamRef.current = str;
+            setInCall(call);
+            call.answer(localStreamRef.current);
+            console.log("called the caller");
+
+            call.on("stream", (remStream) => {
+              if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = remStream;
+                setRemoteStreamIsSet(true);
+                console.log("Setting up the remote stream");
+              }
+            });
+
+            call.on("error", (err) => {
+              console.error("PeerJS call error:", err);
+            });
+          }
         }
+      } catch (err) {
+        console.error("Error receiving call:", err);
       }
     });
-  } else {
-    console.log("found no peer");
-  }
+    // }
+  };
+
+  inCall?.on("stream", (remStream) => {
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = remStream;
+      setRemoteStreamIsSet(true);
+      console.log("Setting up the remote stream");
+    }
+  });
 
   const getLocalStream = async (): Promise<MediaStream | null> => {
     try {
@@ -129,7 +147,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
       return stream;
     } catch (err) {
       console.error("Error getting media stream:", err);
-      throw err;
+      return null;
     }
   };
 
@@ -139,29 +157,28 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   });
 
   useEffect(() => {
-    if (receiverPeerId != undefined) {
+    if (receiverPeerId) {
       console.log("call answered " + receiverPeerId);
-      if (senderPeer != null) {
-        if (localStream) {
-          const call = senderPeer.call(receiverPeerId, localStream);
-          console.log(`calling receiverPeerId: ${receiverPeerId}`);
-          call.on("stream", (remoteStream: MediaStream) => {
-            if (remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject = remoteStream;
-              setRemoteStreamIsSet(true);
-            }
-          });
+      if (senderPeer && localStream) {
+        const call = senderPeer.call(receiverPeerId, localStream);
+        console.log(`calling receiverPeerId: ${receiverPeerId}`);
+        call.on("stream", (remoteStream: MediaStream) => {
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = remoteStream;
+            setRemoteStreamIsSet(true);
+            console.log("Received remote stream");
+          }
+        });
 
-          call.on("close", () => {
-            if (remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject = null;
-            }
-          });
+        call.on("close", () => {
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = null;
+          }
+        });
 
-          call.on("error", (err) => {
-            console.error("PeerJS call error:", err);
-          });
-        }
+        call.on("error", (err) => {
+          console.error("PeerJS call error:", err);
+        });
       }
     }
   }, [localStream, receiverPeerId, senderPeer]);
@@ -176,7 +193,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
                 src={
                   mode.sender?.user.profile?.profile_pic || "images/avatar.jpg"
                 }
-                className=" rounded-full h-[250px] w-[250px]"
+                className="rounded-full h-[250px] w-[250px]"
                 alt="profile"
               />
               <div className="text-2xl text-center text-white font-bold">
@@ -236,12 +253,12 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
         <div className="flex space-x-3 md:space-x-5 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
           <div
             onClick={() => handleCallResponse("reject")}
-            className="cursor-pointer h-20 w-20 rounded-full  justify-center bg-red-700 flex items-center gap-x-2 text-white p-2 shadow-lg hover:bg-red-500 transition-all duration-300">
+            className="cursor-pointer h-20 w-20 rounded-full justify-center bg-red-700 flex items-center gap-x-2 text-white p-2 shadow-lg hover:bg-red-500 transition-all duration-300">
             <MdCallEnd size={24} />
           </div>
           <div
             onClick={() => handleCallResponse("answer")}
-            className="cursor-pointer h-20 w-20 rounded-full  justify-center bg-green-700 flex items-center gap-x-2 text-white p-2 shadow-lg hover:bg-green-500 transition-all duration-300">
+            className="cursor-pointer h-20 w-20 rounded-full justify-center bg-green-700 flex items-center gap-x-2 text-white p-2 shadow-lg hover:bg-green-500 transition-all duration-300">
             <MdCallEnd size={24} />
           </div>
         </div>
@@ -272,4 +289,5 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
     </div>
   );
 };
+
 export default IncommingCall;
