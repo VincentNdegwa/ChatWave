@@ -43,8 +43,6 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   useEffect(() => {
     if (!incommingCall) {
       callUser();
-    } else {
-      setCallAccepted(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, incommingCall]);
@@ -53,7 +51,8 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
     if (incommingCall && callAccepted) {
       receiveCall();
     }
-  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [callAccepted, incommingCall]);
 
   const callUser = async () => {
     navigator.mediaDevices
@@ -227,12 +226,12 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
       {incommingCall && (
         <div className="flex space-x-3 md:space-x-5 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
           <div
-            onClick={() => handleCallResponse("answer")}
+            onClick={() => handleCallResponse("reject")}
             className="cursor-pointer h-20 w-20 rounded-full  justify-center bg-red-700 flex items-center gap-x-2 text-white p-2 shadow-lg hover:bg-red-500 transition-all duration-300">
             <MdCallEnd size={24} />
           </div>
           <div
-            onClick={() => handleCallResponse("reject")}
+            onClick={() => handleCallResponse("answer")}
             className="cursor-pointer h-20 w-20 rounded-full  justify-center bg-green-700 flex items-center gap-x-2 text-white p-2 shadow-lg hover:bg-green-500 transition-all duration-300">
             <MdCallEnd size={24} />
           </div>
