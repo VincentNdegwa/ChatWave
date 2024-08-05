@@ -228,23 +228,18 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
 
         {incommingCall && callAccepted && (
           <>
-            {!remoteStreamIsSet &&
-              !localVideoRef.current?.srcObject &&
-              !remoteVideoRef.current?.srcObject && (
-                <div className="flex justify-center">
-                  <CallerNotifier mode={mode} status="Connecting..." />
-                </div>
-              )}
-            {remoteStreamIsSet &&
-              localVideoRef.current?.srcObject &&
-              remoteVideoRef.current?.srcObject &&
-              mode.mode === callMode.VIDEO && (
-                <VideoCallDisplays
-                  remoteStreamIsSet={remoteStreamIsSet}
-                  localVideoRef={localVideoRef}
-                  remoteVideoRef={remoteVideoRef}
-                />
-              )}
+            {!localStream && (
+              <div className="flex justify-center">
+                <CallerNotifier mode={mode} status="Connecting..." />
+              </div>
+            )}
+            {localStream && mode.mode === callMode.VIDEO && (
+              <VideoCallDisplays
+                remoteStreamIsSet={remoteStreamIsSet}
+                localVideoRef={localVideoRef}
+                remoteVideoRef={remoteVideoRef}
+              />
+            )}
 
             {mode.mode === callMode.VOICE && (
               <div className="voicecall w-full h-full"></div>
