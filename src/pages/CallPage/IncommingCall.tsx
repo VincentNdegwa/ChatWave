@@ -228,12 +228,12 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
 
         {incommingCall && callAccepted && (
           <>
-            {!localStream && (
+            {!remoteStreamIsSet && (
               <div className="flex justify-center">
                 <CallerNotifier mode={mode} status="Connecting..." />
               </div>
             )}
-            {localStream && mode.mode === callMode.VIDEO && (
+            {remoteStreamIsSet && mode.mode === callMode.VIDEO && (
               <VideoCallDisplays
                 remoteStreamIsSet={remoteStreamIsSet}
                 localVideoRef={localVideoRef}
