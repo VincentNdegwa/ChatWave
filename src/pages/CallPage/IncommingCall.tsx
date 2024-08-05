@@ -95,35 +95,21 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
 
     // if (receivingPeer) {
     peer.on("call", async (call) => {
-      console.log("getting on call");
+      const str = await getLocalStream();
+      setLocalStream(str);
+      localStreamRef.current = str;
+      console.log("got the local stream");
 
-      try {
-        console.log("getting stream");
-        const str = await getLocalStream();
-        if (str) {
-          setLocalStream(str);
-          if (localVideoRef.current) {
-            localStreamRef.current = str;
-            setInCall(call);
-            call.answer(localStreamRef.current);
-            console.log("called the caller");
+      call.answer(localStreamRef.current);
+      setInCall(call);
 
-            call.on("stream", (remStream) => {
-              if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = remStream;
-                setRemoteStreamIsSet(true);
-                console.log("Setting up the remote stream");
-              }
-            });
-
-            call.on("error", (err) => {
-              console.error("PeerJS call error:", err);
-            });
-          }
+      call.on("stream", (remStream) => {
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.srcObject = remStream;
+          setRemoteStreamIsSet(true);
+          console.log("Setting up the remote stream");
         }
-      } catch (err) {
-        console.error("Error receiving call:", err);
-      }
+      });
     });
     // }
   };
@@ -136,7 +122,8 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
     }
   });
 
-  const getLocalStream = async (): Promise<MediaStream | null> => {
+  const getLocalStream = async (): Promise<MediaStream> => {
+    console.log("getting media stream");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -147,7 +134,7 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
       return stream;
     } catch (err) {
       console.error("Error getting media stream:", err);
-      return null;
+      throw err;
     }
   };
 
