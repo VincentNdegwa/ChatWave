@@ -96,14 +96,13 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   };
   if (receivingPeer && incommingCall) {
     receivingPeer.on("call", async (call: MediaConnection) => {
-      console.log("listening call");
-
       const str = await getLocalStream();
       if (str) {
         setLocalStream(str);
         if (localVideoRef.current) {
           localStreamRef.current = str;
           call.answer(localStreamRef.current);
+          console.log("called the caller");
 
           call.on("stream", (remStream) => {
             if (remoteVideoRef.current) {
@@ -120,15 +119,18 @@ const IncommingCall = ({ mode, incommingCall }: props) => {
   }
 
   const getLocalStream = async (): Promise<MediaStream | null> => {
-    navigator.mediaDevices
-      .getUserMedia({
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: mode.mode === callMode.VIDEO,
-      })
-      .then((stream: MediaStream) => {
-        return stream;
       });
-    return null;
+      setLocalStream(stream);
+      localStreamRef.current = stream;
+      return stream;
+    } catch (err) {
+      console.error("Error getting media stream:", err);
+      throw err;
+    }
   };
 
   socket.on("call-accepted", (data) => {
