@@ -25,7 +25,6 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
   const [inCall, setInCall] = useState<MediaConnection>();
   const [remoteStreamIsSet, setRemoteStreamIsSet] = useState<boolean>(false);
   const [callAccepted, setCallAccepted] = useState<boolean>(false);
-  const [connecting, setConnecting] = useState<boolean>(false);
 
   const callerUser: Participant | undefined = mode.sender;
 
@@ -41,7 +40,6 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
   const handleCallResponse = (status: string) => {
     if (status === "answer") {
       setCallAccepted(true);
-      setConnecting(true);
     } else if (status === "reject") {
       setCallAccepted(false);
     }
@@ -106,7 +104,6 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
           setRemoteStreamIsSet(true);
-          setConnecting(false);
           console.log("Setting up the remote stream");
         }
       });
@@ -146,7 +143,6 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
           setRemoteStreamIsSet(true);
-          setConnecting(false);
           console.log("Received remote stream");
         }
       });
@@ -232,18 +228,23 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
 
         {incommingCall && callAccepted && (
           <>
-            {connecting && (
-              <div className="flex justify-center">
-                <CallerNotifier mode={mode} status="Connecting..." />
-              </div>
-            )}
-            {!connecting && mode.mode === callMode.VIDEO && (
-              <VideoCallDisplays
-                remoteStreamIsSet={remoteStreamIsSet}
-                localVideoRef={localVideoRef}
-                remoteVideoRef={remoteVideoRef}
-              />
-            )}
+            {!remoteStreamIsSet &&
+              !localVideoRef.current?.srcObject &&
+              !remoteVideoRef.current?.srcObject && (
+                <div className="flex justify-center">
+                  <CallerNotifier mode={mode} status="Connecting..." />
+                </div>
+              )}
+            {remoteStreamIsSet &&
+              localVideoRef.current?.srcObject &&
+              remoteVideoRef.current?.srcObject &&
+              mode.mode === callMode.VIDEO && (
+                <VideoCallDisplays
+                  remoteStreamIsSet={remoteStreamIsSet}
+                  localVideoRef={localVideoRef}
+                  remoteVideoRef={remoteVideoRef}
+                />
+              )}
 
             {mode.mode === callMode.VOICE && (
               <div className="voicecall w-full h-full"></div>
