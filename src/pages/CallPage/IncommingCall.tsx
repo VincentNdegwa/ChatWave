@@ -14,7 +14,6 @@ type Props = {
 };
 
 const socket = CustomSocket.getSocket();
-
 const IncommingCall = ({ mode, incommingCall }: Props) => {
   const [muted, setMuted] = useState<boolean>(false);
   const [localStream, setLocalStream] = useState<MediaStream>();
@@ -25,6 +24,7 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
   const [inCall, setInCall] = useState<MediaConnection>();
   const [remoteStreamIsSet, setRemoteStreamIsSet] = useState<boolean>(false);
   const [callAccepted, setCallAccepted] = useState<boolean>(false);
+  const [connected, setConnected] = useState<boolean>(false);
 
   const callerUser: Participant | undefined = mode.sender;
 
@@ -81,6 +81,7 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
   const receiveCall = () => {
     console.log("received call from: ", callerUser?.user.id);
     const peer = new Peer();
+    setConnected(false);
 
     peer.on("open", (id: string) => {
       if (callerUser?.user.id !== undefined) {
@@ -94,6 +95,8 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
 
     peer.on("call", async (call) => {
       const stream = await getLocalStream();
+      console.log("got the media stream now");
+
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
@@ -102,8 +105,10 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
 
       call.on("stream", (remoteStream) => {
         if (remoteVideoRef.current) {
+          setConnected(true);
           remoteVideoRef.current.srcObject = remoteStream;
           setRemoteStreamIsSet(true);
+
           console.log("Setting up the remote stream");
         }
       });
@@ -228,12 +233,12 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
 
         {incommingCall && callAccepted && (
           <>
-            {!remoteStreamIsSet && (
+            {!connected && (
               <div className="flex justify-center">
                 <CallerNotifier mode={mode} status="Connecting..." />
               </div>
             )}
-            {remoteStreamIsSet && mode.mode === callMode.VIDEO && (
+            {connected && mode.mode === callMode.VIDEO && (
               <VideoCallDisplays
                 remoteStreamIsSet={remoteStreamIsSet}
                 localVideoRef={localVideoRef}
