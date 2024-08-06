@@ -7,6 +7,7 @@ import Peer, { MediaConnection } from "peerjs";
 import CallerNotifier from "./CalllerNotifier";
 import VideoCallDisplays from "./VideoCallDisplays";
 import { Participant, callMode, callerData } from "../../types";
+import AudioCallDisplay from "./AudioCallDisplay";
 
 type Props = {
   mode: callerData;
@@ -19,6 +20,9 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
   const [localStream, setLocalStream] = useState<MediaStream>();
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+
+  const localAudioRef = useRef<HTMLAudioElement>(null);
+  const remoteAudioRef = useRef<HTMLAudioElement>(null);
   const [senderPeer, setSenderPeer] = useState<Peer>();
   const [receiverPeerId, setReceiverPeerId] = useState<string>();
   const [inCall, setInCall] = useState<MediaConnection>();
@@ -97,21 +101,26 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
       setInCall(call);
 
       call.on("stream", (remoteStream) => {
-        if (remoteVideoRef.current) {
+        setRemoteStreamIsSet(true);
+        console.log("Setting up the remote stream");
+        if (remoteVideoRef.current && mode.mode === callMode.VIDEO) {
           remoteVideoRef.current.srcObject = remoteStream;
-          setRemoteStreamIsSet(true);
-
-          console.log("Setting up the remote stream");
+        }
+        if (remoteAudioRef.current && mode.mode === callMode.VOICE) {
+          remoteAudioRef.current.srcObject = remoteStream;
         }
       });
     });
   };
 
   inCall?.on("stream", (remStream) => {
-    if (remoteVideoRef.current) {
+    if (remoteVideoRef.current && mode.mode === callMode.VIDEO) {
       remoteVideoRef.current.srcObject = remStream;
       setRemoteStreamIsSet(true);
       console.log("Setting up the remote stream");
+    }
+    if (remoteAudioRef.current && mode.mode === callMode.VOICE) {
+      remoteAudioRef.current.srcObject = remStream;
     }
   });
 
@@ -127,8 +136,11 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
       video: mode.mode === callMode.VIDEO,
     });
     setLocalStream(stream);
-    if (localVideoRef.current) {
+    if (localVideoRef.current && mode.mode === callMode.VIDEO) {
       localVideoRef.current.srcObject = stream;
+    }
+    if (localAudioRef.current && mode.mode === callMode.VOICE) {
+      localAudioRef.current.srcObject = stream;
     }
     return stream;
   };
@@ -140,10 +152,12 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
       console.log(`calling receiverPeerId: ${receiverPeerId}`);
 
       call.on("stream", (remoteStream: MediaStream) => {
-        if (remoteVideoRef.current) {
+        setRemoteStreamIsSet(true);
+        if (remoteVideoRef.current && mode.mode === callMode.VIDEO) {
           remoteVideoRef.current.srcObject = remoteStream;
-          setRemoteStreamIsSet(true);
-          console.log("Received remote stream");
+        }
+        if (remoteAudioRef.current && mode.mode === callMode.VOICE) {
+          remoteAudioRef.current.srcObject = remoteStream;
         }
       });
 
@@ -200,7 +214,11 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
             )}
 
             {mode.mode === callMode.VOICE && (
-              <div className="voicecall w-full h-full"></div>
+              <AudioCallDisplay
+                remoteStreamIsSet={remoteStreamIsSet}
+                localAudioRef={localAudioRef}
+                remoteAudioRef={remoteAudioRef}
+              />
             )}
 
             <div className="flex space-x-3 md:space-x-5 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
@@ -241,8 +259,12 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
               />
             )}
 
-            {mode.mode === callMode.VOICE && (
-              <div className="voicecall w-full h-full"></div>
+            {connected && mode.mode === callMode.VOICE && (
+              <AudioCallDisplay
+                remoteStreamIsSet={remoteStreamIsSet}
+                localAudioRef={localAudioRef}
+                remoteAudioRef={remoteAudioRef}
+              />
             )}
 
             <div className="flex space-x-3 md:space-x-5 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
