@@ -99,30 +99,10 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
 
       call.answer(localStream || stream);
       setInCall(call);
-
-      call.on("stream", (remoteStream) => {
-        setRemoteStreamIsSet(true);
-        console.log("Setting up the remote stream");
-        if (remoteVideoRef.current && mode.mode === callMode.VIDEO) {
-          remoteVideoRef.current.srcObject = remoteStream;
-        }
-        if (remoteAudioRef.current && mode.mode === callMode.VOICE) {
-          remoteAudioRef.current.srcObject = remoteStream;
-        }
-      });
+      call.on("stream", (stream) => getRemoteStream(stream));
     });
   };
-
-  inCall?.on("stream", (remStream) => {
-    if (remoteVideoRef.current && mode.mode === callMode.VIDEO) {
-      remoteVideoRef.current.srcObject = remStream;
-      setRemoteStreamIsSet(true);
-      console.log("Setting up the remote stream");
-    }
-    if (remoteAudioRef.current && mode.mode === callMode.VOICE) {
-      remoteAudioRef.current.srcObject = remStream;
-    }
-  });
+  inCall?.on("stream", (stream) => getRemoteStream(stream));
 
   useEffect(() => {
     console.log(
@@ -145,21 +125,23 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
     return stream;
   };
 
+  const getRemoteStream = (remoteStream: MediaStream) => {
+    setRemoteStreamIsSet(true);
+    if (remoteVideoRef.current && mode.mode === callMode.VIDEO) {
+      remoteVideoRef.current.srcObject = remoteStream;
+    }
+    if (remoteAudioRef.current && mode.mode === callMode.VOICE) {
+      remoteAudioRef.current.srcObject = remoteStream;
+    }
+  };
+
   useEffect(() => {
     if (receiverPeerId && senderPeer && localStream) {
       console.log("call answered " + receiverPeerId);
       const call = senderPeer.call(receiverPeerId, localStream);
       console.log(`calling receiverPeerId: ${receiverPeerId}`);
 
-      call.on("stream", (remoteStream: MediaStream) => {
-        setRemoteStreamIsSet(true);
-        if (remoteVideoRef.current && mode.mode === callMode.VIDEO) {
-          remoteVideoRef.current.srcObject = remoteStream;
-        }
-        if (remoteAudioRef.current && mode.mode === callMode.VOICE) {
-          remoteAudioRef.current.srcObject = remoteStream;
-        }
-      });
+      call.on("stream", (stream) => getRemoteStream(stream));
 
       call.on("close", () => {
         if (remoteVideoRef.current) {
