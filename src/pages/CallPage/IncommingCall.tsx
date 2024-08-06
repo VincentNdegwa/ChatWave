@@ -59,14 +59,8 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
 
   const callUser = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: mode.mode === callMode.VIDEO,
-      });
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-      setLocalStream(stream);
+      await getLocalStream();
+
       const peer = new Peer();
       peer.on("open", (id: string) => {
         console.log(`caller peerId ${id}`);

@@ -34,7 +34,7 @@ const VideoCallDisplays = ({
         <video
           ref={remoteVideoRef}
           autoPlay
-          muted
+          // muted
           disablePictureInPicture
           className="object-cover w-full h-full"></video>
       </div>
