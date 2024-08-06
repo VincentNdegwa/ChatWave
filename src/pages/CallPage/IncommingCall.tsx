@@ -97,17 +97,9 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
       console.log("got the media stream now");
       setConnected(true);
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: mode.mode === callMode.VIDEO,
-      });
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-      setLocalStream(stream);
-      setLocalStream(stream);
+      const stream = await getLocalStream();
 
-      call.answer(stream);
+      call.answer(localStream || stream);
       setInCall(call);
 
       call.on("stream", (remoteStream) => {
@@ -133,14 +125,17 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
     console.log(`This is the status of the connected: ${connected}`);
   }, [connected]);
 
-  // const getLocalStream = async (): Promise<MediaStream> => {
-  //   const stream = await navigator.mediaDevices.getUserMedia({
-  //     audio: true,
-  //     video: mode.mode === callMode.VIDEO,
-  //   });
-  //   setLocalStream(stream);
-  //   return stream;
-  // };
+  const getLocalStream = async (): Promise<MediaStream> => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: mode.mode === callMode.VIDEO,
+    });
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = stream;
+    }
+    setLocalStream(stream);
+    return stream;
+  };
 
   useEffect(() => {
     if (receiverPeerId && senderPeer && localStream) {
