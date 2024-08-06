@@ -78,11 +78,11 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
     }
   };
 
-  const receiveCall = () => {
+  const receiveCall = async () => {
     console.log("received call from: ", callerUser?.user.id);
     const peer = new Peer();
-    setConnected(false);
 
+    setConnected(false);
     peer.on("open", (id: string) => {
       if (callerUser?.user.id !== undefined) {
         console.log("answering peer id: " + id);
@@ -93,26 +93,28 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
       }
     });
 
-    peer.on("call", async (call) => {
-      const stream = await getLocalStream();
-      console.log("got the media stream now");
-      setConnected(true);
+    const stream = await getLocalStream();
+    setLocalStream(stream);
 
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-      call.answer(stream);
-      setInCall(call);
+        peer.on("call", (call) => {
+          console.log("got the media stream now");
+          setConnected(true);
 
-      call.on("stream", (remoteStream) => {
-        if (remoteVideoRef.current) {
-          remoteVideoRef.current.srcObject = remoteStream;
-          setRemoteStreamIsSet(true);
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = stream;
+          }
+          call.answer(stream);
+          setInCall(call);
 
-          console.log("Setting up the remote stream");
-        }
-      });
-    });
+          call.on("stream", (remoteStream) => {
+            if (remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = remoteStream;
+              setRemoteStreamIsSet(true);
+
+              console.log("Setting up the remote stream");
+            }
+          });
+        });
   };
 
   inCall?.on("stream", (remStream) => {
