@@ -93,28 +93,32 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
       }
     });
 
-    const stream = await getLocalStream();
-    setLocalStream(stream);
+    peer.on("call", async (call) => {
+      console.log("got the media stream now");
+      setConnected(true);
 
-        peer.on("call", (call) => {
-          console.log("got the media stream now");
-          setConnected(true);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: mode.mode === callMode.VIDEO,
+      });
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+      setLocalStream(stream);
+      setLocalStream(stream);
 
-          if (localVideoRef.current) {
-            localVideoRef.current.srcObject = stream;
-          }
-          call.answer(stream);
-          setInCall(call);
+      call.answer(stream);
+      setInCall(call);
 
-          call.on("stream", (remoteStream) => {
-            if (remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject = remoteStream;
-              setRemoteStreamIsSet(true);
+      call.on("stream", (remoteStream) => {
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.srcObject = remoteStream;
+          setRemoteStreamIsSet(true);
 
-              console.log("Setting up the remote stream");
-            }
-          });
-        });
+          console.log("Setting up the remote stream");
+        }
+      });
+    });
   };
 
   inCall?.on("stream", (remStream) => {
@@ -129,20 +133,14 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
     console.log(`This is the status of the connected: ${connected}`);
   }, [connected]);
 
-  const getLocalStream = async (): Promise<MediaStream> => {
-    console.log("getting media stream");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: mode.mode === callMode.VIDEO,
-      });
-      setLocalStream(stream);
-      return stream;
-    } catch (err) {
-      console.error("Error getting media stream:", err);
-      throw err;
-    }
-  };
+  // const getLocalStream = async (): Promise<MediaStream> => {
+  //   const stream = await navigator.mediaDevices.getUserMedia({
+  //     audio: true,
+  //     video: mode.mode === callMode.VIDEO,
+  //   });
+  //   setLocalStream(stream);
+  //   return stream;
+  // };
 
   useEffect(() => {
     if (receiverPeerId && senderPeer && localStream) {
