@@ -186,7 +186,11 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
         {incommingCall && !callAccepted && (
           <>
             <div className="h-full flex justify-center">
-              <CallerNotifier mode={mode} status="" />
+              <CallerNotifier
+                mode={mode}
+                status=""
+                incommingCall={incommingCall}
+              />
             </div>
             <div className="flex space-x-3 md:space-x-5 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4 z-30 bg-black bg-opacity-30 rounded-md p-1 items-center">
               <div
@@ -218,6 +222,8 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
                 remoteStreamIsSet={remoteStreamIsSet}
                 localAudioRef={localAudioRef}
                 remoteAudioRef={remoteAudioRef}
+                mode={mode}
+                incommingCall={incommingCall}
               />
             )}
 
@@ -248,7 +254,11 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
           <>
             {!connected && (
               <div className="flex justify-center">
-                <CallerNotifier mode={mode} status="Connecting..." />
+                <CallerNotifier
+                  mode={mode}
+                  status="Connecting..."
+                  incommingCall={incommingCall}
+                />
               </div>
             )}
             {connected && mode.mode === callMode.VIDEO && (
@@ -264,6 +274,8 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
                 remoteStreamIsSet={remoteStreamIsSet}
                 localAudioRef={localAudioRef}
                 remoteAudioRef={remoteAudioRef}
+                mode={mode}
+                incommingCall={incommingCall}
               />
             )}
 

@@ -1,23 +1,41 @@
-import { callMode, callerData } from "../../types";
+import { Participant, callMode, callerData } from "../../types";
 
-type props = {
+type Props = {
   mode: callerData;
   status: string;
+  incommingCall: boolean;
 };
 
-const CallerNotifier = ({ mode, status }: props) => {
+const CallerNotifier = ({ mode, status, incommingCall }: Props) => {
+  const user: Participant | undefined = incommingCall
+    ? mode.sender
+    : mode.receiver;
+
+  if (!user) {
+    return (
+      <div className="flex flex-col pt-52">
+        <img
+          src="images/avatar.jpg"
+          className="rounded-full h-[250px] w-[250px]"
+          alt="profile"
+        />
+        <div className="text-2xl text-center text-white font-bold">
+          "Unknown"
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col pt-52">
       <img
-        src={mode.sender?.user.profile?.profile_pic || "images/avatar.jpg"}
+        src={user.user.profile?.profile_pic || "images/avatar.jpg"}
         className="rounded-full h-[250px] w-[250px]"
         alt="profile"
       />
       <div className="text-2xl text-center text-white font-bold">
-        {mode.sender?.user.profile?.first_name +
-          " " +
-          mode.sender?.user.profile?.last_name ||
-          mode.sender?.user.phone_number ||
+        {user.user.profile?.first_name + " " + user.user.profile?.last_name ||
+          user.user.phone_number ||
           "Unknown"}
       </div>
       <div className="text-sm text-center text-sky-300">
@@ -32,4 +50,5 @@ const CallerNotifier = ({ mode, status }: props) => {
     </div>
   );
 };
+
 export default CallerNotifier;
