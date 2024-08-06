@@ -116,7 +116,9 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
   });
 
   useEffect(() => {
-    console.log(`This is the status of the connected: ${connected}`);
+    console.log(
+      `This is the status of the connected: ${connected ? true : false}`
+    );
   }, [connected]);
 
   const getLocalStream = async (): Promise<MediaStream> => {
@@ -124,10 +126,10 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
       audio: true,
       video: mode.mode === callMode.VIDEO,
     });
+    setLocalStream(stream);
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = stream;
     }
-    setLocalStream(stream);
     return stream;
   };
 
