@@ -96,6 +96,7 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
     peer.on("call", async (call) => {
       const stream = await getLocalStream();
       console.log("got the media stream now");
+      setConnected(true);
 
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
@@ -105,7 +106,6 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
 
       call.on("stream", (remoteStream) => {
         if (remoteVideoRef.current) {
-          setConnected(true);
           remoteVideoRef.current.srcObject = remoteStream;
           setRemoteStreamIsSet(true);
 
@@ -122,6 +122,10 @@ const IncommingCall = ({ mode, incommingCall }: Props) => {
       console.log("Setting up the remote stream");
     }
   });
+
+  useEffect(() => {
+    console.log(`This is the status of the connected: ${connected}`);
+  }, [connected]);
 
   const getLocalStream = async (): Promise<MediaStream> => {
     console.log("getting media stream");
